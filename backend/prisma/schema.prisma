@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(ARTIST)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  clients      Client[]
+  appointments Appointment[]
+}
+
+enum Role {
+  ARTIST
+  ADMIN
+}
+
+model Client {
+  id             String   @id @default(uuid())
+  artistId       String
+  artist         User     @relation(fields: [artistId], references: [id])
+  firstName      String
+  lastName       String
+  email          String?
+  phone          String?
+  tattooHistory  String?  @db.Text
+  customFields   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  appointments   Appointment[]
+  consentForms   ConsentForm[]
+  images         ClientImage[]
+}
+
+model ClientImage {
+  id        String   @id @default(uuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  imageUrl  String
+  type      ImageType
+  createdAt DateTime @default(now())
+}
+
+enum ImageType {
+  REFERENCE
+  PREVIOUS_WORK
+}
+
+model Appointment {
+  id             String   @id @default(uuid())
+  clientId       String
+  client         Client   @relation(fields: [clientId], references: [id])
+  artistId       String
+  artist         User     @relation(fields: [artistId], references: [id])
+  title          String
+  description    String?
+  startTime      DateTime
+  endTime        DateTime
+  status         ApptStatus @default(SCHEDULED)
+  price          Decimal?
+  depositAmount  Decimal?
+  depositPaid    Boolean  @default(false)
+  stripePaymentId String?
+
+  googleEventId  String?
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  consentForm    ConsentForm?
+}
+
+enum ApptStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model ConsentForm {
+  id            String   @id @default(uuid())
+  clientId      String
+  client        Client   @relation(fields: [clientId], references: [id])
+  appointmentId String   @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  
+  formData      Json
+  signatureUrl  String
+  signedAt      DateTime @default(now())
+}
