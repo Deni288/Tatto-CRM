@@ -1,11 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient({
-    datasources: {
-        db: {
-            url: process.env.DATABASE_URL,
-        },
-    },
-});
+// Jednostavna inicijalizacija - Prisma će sama potražiti DATABASE_URL u Environment Variables
+const prisma = new PrismaClient();
 
 export default prisma;
