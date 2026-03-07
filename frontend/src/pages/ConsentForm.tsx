@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, ShieldAlert } from 'lucide-react';
+import { gooeyToast } from 'goey-toast';
 import { SignaturePad } from '../components/ui/SignaturePad';
 
 // Mock context for the form
@@ -24,12 +25,12 @@ export const ConsentForm = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!signature) {
-            alert('Please provide your signature.');
+            gooeyToast.error('Please provide your signature.');
             return;
         }
         // Simulate API call
         console.log({ formData, signature });
-        alert('Consent form submitted successfully!');
+        gooeyToast.success('Consent form submitted successfully!');
         navigate('/appointments');
     };
 

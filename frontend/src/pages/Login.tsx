@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth.store';
 import { motion } from 'framer-motion';
+import { gooeyToast } from 'goey-toast';
 
 export const Login = () => {
     const [email, setEmail] = useState('artist@tattoo.com');
@@ -16,6 +17,7 @@ export const Login = () => {
             { id: '1', name: 'Ink Master', email, role: 'ARTIST' },
             'mock-jwt-token-123'
         );
+        gooeyToast.success('Welcome back, let\'s create some art!');
         navigate('/');
     };
 
