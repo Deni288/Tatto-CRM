@@ -45,7 +45,7 @@ export const AppLayout = () => {
             >
                 <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between h-16 px-4 border-b border-slate-800">
-                        <span className="text-xl font-bold text-gold-500 tracking-wider">TATT<span className="text-white">CRM</span></span>
+                        <span className="text-xl font-bold text-gold-500 tracking-wider">Tattoo <span className="text-white">CRM</span></span>
                         <button
                             className="lg:hidden text-slate-400 hover:text-white"
                             onClick={() => setIsMobileMenuOpen(false)}
@@ -106,7 +106,7 @@ export const AppLayout = () => {
                     >
                         <Menu size={24} />
                     </button>
-                    <span className="text-lg font-bold text-gold-500 tracking-wider">TATT<span className="text-white">CRM</span></span>
+                    <span className="text-lg font-bold text-gold-500 tracking-wider">Tattoo <span className="text-white">CRM</span></span>
                     <div className="w-6" /> {/* Spacer */}
                 </header>
 

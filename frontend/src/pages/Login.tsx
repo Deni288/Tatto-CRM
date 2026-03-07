@@ -31,7 +31,7 @@ export const Login = () => {
                 <div className="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl">
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold tracking-wider mb-2">
-                            <span className="text-gold-500">TATT</span>CRM
+                            <span className="text-gold-500">Tattoo</span> CRM
                         </h1>
                         <p className="text-slate-400 text-sm">Sign in to manage your studio</p>
                     </div>
