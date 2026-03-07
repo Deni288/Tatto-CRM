@@ -19,7 +19,7 @@ function App() {
 
   return (
     <>
-      <Toaster position="bottom-right" />
+      <GooeyToaster position="bottom-right" theme="dark" />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
