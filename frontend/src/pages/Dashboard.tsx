@@ -7,21 +7,23 @@ import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 
 import { useClientStore } from '../store/client.store';
-import { useEffect, useState } from 'react';
+import { useDashboardStore } from '../store/dashboard.store';
+import { useEffect } from 'react';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
-    const { clients, fetchClients } = useClientStore();
-    const [appointments] = useState<any[]>([]);
+    const { fetchClients } = useClientStore();
+    const { stats: dashboardStats, isLoading, fetchDashboardStats } = useDashboardStore();
 
     useEffect(() => {
         fetchClients();
-    }, [fetchClients]);
+        fetchDashboardStats();
+    }, [fetchClients, fetchDashboardStats]);
 
     const stats = [
-        { name: "Today's Revenue", value: "$0.00", icon: DollarSign, trend: "0%" },
-        { name: 'Upcoming Appts', value: appointments.length.toString(), icon: Calendar, trend: "No upcoming appointments" },
-        { name: 'Total Clients', value: clients.length.toString(), icon: Users, trend: "Registered clients" },
+        { name: "Today's Revenue", value: dashboardStats ? `$${dashboardStats.todaysRevenue.toFixed(2)}` : "$0.00", icon: DollarSign, trend: "Earnings today" },
+        { name: 'Upcoming Appts', value: dashboardStats ? dashboardStats.upcomingAppointmentsCount.toString() : "0", icon: Calendar, trend: "Scheduled ahead" },
+        { name: 'New Clients', value: dashboardStats ? dashboardStats.newClientsThisMonth.toString() : "0", icon: Users, trend: "Registered this month" },
     ];
 
     const containerVariants: Variants = {
@@ -39,8 +41,14 @@ export const Dashboard = () => {
 
     return (
         <div className="space-y-6 md:space-y-8 max-w-7xl mx-auto pb-6">
+            {isLoading && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-sm rounded-xl">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gold-500"></div>
+                </div>
+            )}
+            
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Welcome back, Ink Master</h1>
                     <p className="text-sm md:text-base text-slate-400 mt-1">Here is what's happening in your studio today.</p>
@@ -102,7 +110,9 @@ export const Dashboard = () => {
                             {/* Mobile-optimized List/Cards */}
                             <div className="flex-1 overflow-hidden">
                                 <ul className="divide-y divide-slate-800/50">
-                                    {appointments.map((appt) => (
+                                    {(dashboardStats?.todaysAppointments || []).map((appt) => {
+                                        const clientName = appt.client ? `${appt.client.firstName} ${appt.client.lastName}` : 'Unknown Client';
+                                        return (
                                         <li
                                             key={appt.id}
                                             className="p-4 md:p-6 hover:bg-slate-800/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer active:bg-slate-800/60"
@@ -110,14 +120,14 @@ export const Dashboard = () => {
                                         >
                                             <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                                                 <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 bg-slate-950 border border-slate-800 rounded-full flex items-center justify-center text-sm md:text-base text-gold-500 font-bold shadow-inner">
-                                                    {appt.clientName.substring(0, 2).toUpperCase()}
+                                                    {clientName.substring(0, 2).toUpperCase()}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm md:text-base text-white font-medium truncate group-hover:text-gold-500 transition-colors">
-                                                        {appt.clientName}
-                                                        <span className="sm:hidden text-slate-400 font-normal ml-2 text-xs">— {appt.time}</span>
+                                                        {clientName}
+                                                        <span className="sm:hidden text-slate-400 font-normal ml-2 text-xs">— {new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                     </p>
-                                                    <p className="text-xs md:text-sm text-slate-400 mt-0.5 md:mt-1 truncate">{appt.type}</p>
+                                                    <p className="text-xs md:text-sm text-slate-400 mt-0.5 md:mt-1 truncate">{appt.title}</p>
                                                 </div>
                                             </div>
 
@@ -125,11 +135,11 @@ export const Dashboard = () => {
                                                 <div className="text-right hidden sm:block">
                                                     <p className="text-sm text-slate-300 flex items-center gap-1.5">
                                                         <Clock size={14} className="text-slate-500" />
-                                                        {appt.time}
+                                                        {new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </p>
                                                 </div>
                                                 <Badge
-                                                    variant={appt.status === 'In Progress' ? 'success' : 'neutral'}
+                                                    variant={appt.status === 'COMPLETED' ? 'success' : appt.status === 'CANCELLED' ? 'error' : 'neutral'}
                                                     className="text-[10px] md:text-xs tracking-wide py-0.5 px-2"
                                                 >
                                                     {appt.status}
@@ -137,8 +147,8 @@ export const Dashboard = () => {
                                                 <ChevronRight className="w-4 h-4 text-slate-600 sm:hidden" />
                                             </div>
                                         </li>
-                                    ))}
-                                    {appointments.length === 0 && (
+                                    )})}
+                                    {(!dashboardStats?.todaysAppointments || dashboardStats.todaysAppointments.length === 0) && (
                                         <div className="p-8 text-center text-slate-500 text-sm">
                                             No appointments scheduled for today.
                                         </div>

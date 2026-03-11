@@ -6,7 +6,7 @@ import authRoutes from './routes/auth.routes';
 import clientRoutes from './routes/client.routes';
 import appointmentRoutes from './routes/appointment.routes';
 import consentRoutes from './routes/consent.routes';
-
+import dashboardRoutes from './routes/dashboard.routes';
 dotenv.config();
 
 const app = express();
@@ -27,7 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/consents', consentRoutes);
-
+app.use('/api/dashboard', dashboardRoutes);
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
