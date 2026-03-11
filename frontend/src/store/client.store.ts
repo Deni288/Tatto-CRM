@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { api } from '../api/axiosInstance';
 import type { ClientFormData } from '../schemas/client.schema';
-
+import type { Appointment } from './appointment.store';
 export interface Client {
     id: string;
     firstName: string;
@@ -11,6 +11,7 @@ export interface Client {
     tattooHistory: string | null;
     customFields: Record<string, any> | null;
     createdAt: string;
+    appointments?: Appointment[];
 }
 
 interface ClientState {

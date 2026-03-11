@@ -17,10 +17,11 @@ const appointmentSchema = z.object({
     description: z.string().optional(),
     startTime: z.string().min(1, 'Start time is required'),
     endTime: z.string().min(1, 'End time is required'),
-    price: z.preprocess((val) => (val ? Number(val) : undefined), z.number().optional()),
-    depositAmount: z.preprocess((val) => (val ? Number(val) : undefined), z.number().optional()),
+    price: z.union([z.string(), z.number()]).optional().transform(v => v === '' || v === undefined ? undefined : Number(v)),
+    depositAmount: z.union([z.string(), z.number()]).optional().transform(v => v === '' || v === undefined ? undefined : Number(v)),
 });
 
+type AppointmentFormInput = z.input<typeof appointmentSchema>;
 type AppointmentFormData = z.infer<typeof appointmentSchema>;
 
 interface NewBookingModalProps {
@@ -29,11 +30,11 @@ interface NewBookingModalProps {
 }
 
 export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) => {
-    const { clients, fetchClients } = useClientStore();
+    const { clients, fetchClients, selectedClient, fetchClientById } = useClientStore();
     const { addAppointment } = useAppointmentStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<AppointmentFormData>({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<AppointmentFormInput>({
         resolver: zodResolver(appointmentSchema),
     });
 
@@ -52,6 +53,11 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
             };
             
             await addAppointment(payload);
+            
+            if (selectedClient?.id === payload.clientId) {
+                await fetchClientById(payload.clientId);
+            }
+
             gooeyToast.success('Booking created successfully!');
             reset();
             onOpenChange(false);
@@ -81,7 +87,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
                         </Dialog.Close>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                    <form onSubmit={handleSubmit(onSubmit as any)} className="p-6 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
                         
                         <div className="space-y-2">
                             <Label htmlFor="clientId" className="text-slate-300">Client</Label>

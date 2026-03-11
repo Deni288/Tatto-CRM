@@ -137,9 +137,50 @@ export const ClientDetails = () => {
                     )}
 
                     {activeTab === 'appointments' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center py-12 text-slate-500">
-                            <Calendar size={48} className="mx-auto mb-4 opacity-20" />
-                            <p>Appointment history coming soon.</p>
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {client.appointments && client.appointments.length > 0 ? (
+                                <div className="space-y-4">
+                                    {client.appointments.map(apt => (
+                                        <div key={apt.id} className="bg-slate-950 p-5 rounded-xl border border-slate-800/80 hover:border-slate-700/80 transition-colors flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group">
+                                            <div className="flex-1">
+                                                <h4 className="font-semibold text-white text-lg group-hover:text-gold-500 transition-colors">{apt.title}</h4>
+                                                <div className="flex items-center text-sm text-slate-400 mt-1.5 space-x-2">
+                                                    <Calendar size={14} className="text-slate-500" />
+                                                    <span>
+                                                        {new Date(apt.startTime).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })} 
+                                                        &nbsp;—&nbsp; 
+                                                        {new Date(apt.endTime).toLocaleTimeString([], { timeStyle: 'short' })}
+                                                    </span>
+                                                </div>
+                                                {apt.description && <p className="text-sm text-slate-500 mt-3 bg-slate-900/50 p-3 rounded-lg border border-slate-800/50">{apt.description}</p>}
+                                            </div>
+                                            <div className="w-full sm:w-auto flex flex-row sm:flex-col justify-between sm:justify-center items-center sm:items-end gap-3 pt-3 sm:pt-0 border-t border-slate-800 sm:border-0 mt-2 sm:mt-0">
+                                                <div className="text-gold-400 font-semibold text-lg bg-gold-500/5 px-3 py-1 rounded-lg border border-gold-500/10">
+                                                    {apt.price ? `$${apt.price}` : '—'}
+                                                </div>
+                                                <span className={`text-xs px-3 py-1.5 rounded-full font-medium tracking-wide uppercase ${
+                                                    apt.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
+                                                    apt.status === 'CANCELLED' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 
+                                                    'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                                }`}>
+                                                    {apt.status || 'SCHEDULED'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-16 text-slate-500 bg-slate-900/30 rounded-2xl border border-slate-800/50 border-dashed">
+                                    <div className="bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Calendar size={32} className="text-slate-400" />
+                                    </div>
+                                    <h3 className="text-white font-medium mb-1">No appointments yet</h3>
+                                    <p className="text-slate-400 text-sm max-w-sm mx-auto mb-6">This client doesn't have any booked appointments. Create a new booking to get started.</p>
+                                    <Button variant="secondary" className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700" onClick={() => document.dispatchEvent(new CustomEvent('open-new-booking-modal'))}>
+                                        <Plus size={16} className="mr-2" /> Book Appointment
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
