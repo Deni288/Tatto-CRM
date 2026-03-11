@@ -4,6 +4,10 @@ import { motion } from 'framer-motion';
 import { Check, ShieldAlert } from 'lucide-react';
 import { gooeyToast } from 'goey-toast';
 import { SignaturePad } from '../components/ui/SignaturePad';
+import { Card } from '../components/tremor/Card';
+import { Checkbox } from '../components/tremor/Checkbox';
+import { Label } from '../components/tremor/Label';
+import { Button } from '../components/tremor/Button';
 
 // Mock context for the form
 const MOCK_DATA = {
@@ -41,20 +45,20 @@ export const ConsentForm = () => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden"
+                className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden"
             >
-                <div className="p-6 md:p-10 border-b border-slate-800 bg-slate-900/50">
+                <div className="p-6 md:p-10 border-b border-white/5 bg-white/2">
                     <div className="flex items-center space-x-4 mb-4">
-                        <div className="p-3 bg-red-500/10 text-red-400 rounded-xl">
+                        <div className="p-3 bg-red-500/10 text-red-400 rounded-xl border border-red-500/20 shadow-[0_0_15px_-3px_rgba(239,68,68,0.3)]">
                             <ShieldAlert size={32} />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-white">Tattoo Consent Form</h1>
+                            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-white to-slate-400">Tattoo Consent Form</h1>
                             <p className="text-slate-400">Please read carefully and sign before your procedure.</p>
                         </div>
                     </div>
 
-                    <div className="mt-6 p-4 bg-slate-800/50 rounded-lg text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="mt-6 p-6 bg-black/40 border border-white/5 rounded-2xl text-sm grid grid-cols-1 md:grid-cols-2 gap-6 shadow-inner">
                         <div>
                             <span className="text-slate-500 block mb-1">Client Name</span>
                             <span className="text-white font-medium">{MOCK_DATA.clientName}</span>
@@ -70,81 +74,78 @@ export const ConsentForm = () => {
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-8">
+                <Card className="p-0 border-white/10 shadow-2xl overflow-hidden mt-6">
+                    <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-8">
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-white border-b border-white/10 pb-2">Agreements & Acknowledgments</h3>
 
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-white border-b border-slate-800 pb-2">Agreements & Acknowledgments</h3>
+                            <div className="flex items-start space-x-4 p-4 rounded-xl border border-white/5 bg-white/1 hover:bg-white/3 hover:border-white/10 transition-all duration-300">
+                                <Checkbox
+                                    id="risk-consent"
+                                    checked={formData.acknowledgedRisks}
+                                    onCheckedChange={(checked) => setFormData(p => ({ ...p, acknowledgedRisks: checked === true }))}
+                                    className="mt-1"
+                                />
+                                <Label htmlFor="risk-consent" className="text-slate-300 text-sm leading-relaxed cursor-pointer font-normal">
+                                    I acknowledge that receiving a tattoo involves inherent risks, including but not limited to infection, allergic reactions to pigments, and scarring. I assume all responsibility for these risks.
+                                </Label>
+                            </div>
 
-                        <label className="flex items-start space-x-4 p-4 rounded-xl border border-slate-800 hover:bg-slate-800/30 cursor-pointer transition-colors">
-                            <input
-                                type="checkbox"
-                                className="mt-1 w-5 h-5 accent-gold-500 bg-slate-950 border-slate-700 rounded cursor-pointer"
-                                checked={formData.acknowledgedRisks}
-                                onChange={(e) => setFormData(p => ({ ...p, acknowledgedRisks: e.target.checked }))}
-                                required
-                            />
-                            <span className="text-slate-300 text-sm leading-relaxed">
-                                I acknowledge that receiving a tattoo involves inherent risks, including but not limited to infection, allergic reactions to pigments, and scarring. I assume all responsibility for these risks.
-                            </span>
-                        </label>
+                            <div className="flex items-start space-x-4 p-4 rounded-xl border border-white/5 bg-white/1 hover:bg-white/3 hover:border-white/10 transition-all duration-300">
+                                <Checkbox
+                                    id="influence-consent"
+                                    checked={formData.notUnderInfluence}
+                                    onCheckedChange={(checked) => setFormData(p => ({ ...p, notUnderInfluence: checked === true }))}
+                                    className="mt-1"
+                                />
+                                <Label htmlFor="influence-consent" className="text-slate-300 text-sm leading-relaxed cursor-pointer font-normal">
+                                    I am not currently under the influence of alcohol, drugs, or any medication that could impair my judgment or thin my blood (e.g., Aspirin, Ibuprofen) within the last 24 hours.
+                                </Label>
+                            </div>
 
-                        <label className="flex items-start space-x-4 p-4 rounded-xl border border-slate-800 hover:bg-slate-800/30 cursor-pointer transition-colors">
-                            <input
-                                type="checkbox"
-                                className="mt-1 w-5 h-5 accent-gold-500 bg-slate-950 border-slate-700 rounded cursor-pointer"
-                                checked={formData.notUnderInfluence}
-                                onChange={(e) => setFormData(p => ({ ...p, notUnderInfluence: e.target.checked }))}
-                                required
-                            />
-                            <span className="text-slate-300 text-sm leading-relaxed">
-                                I am not currently under the influence of alcohol, drugs, or any medication that could impair my judgment or thin my blood (e.g., Aspirin, Ibuprofen) within the last 24 hours.
-                            </span>
-                        </label>
+                            <div className="flex items-start space-x-4 p-4 rounded-xl border border-white/5 bg-white/1 hover:bg-white/3 hover:border-white/10 transition-all duration-300">
+                                <Checkbox
+                                    id="truth-consent"
+                                    checked={formData.providedTrueInfo}
+                                    onCheckedChange={(checked) => setFormData(p => ({ ...p, providedTrueInfo: checked === true }))}
+                                    className="mt-1"
+                                />
+                                <Label htmlFor="truth-consent" className="text-slate-300 text-sm leading-relaxed cursor-pointer font-normal">
+                                    I confirm that all medical history and personal information provided to the artist is true and accurate to the best of my knowledge.
+                                </Label>
+                            </div>
 
-                        <label className="flex items-start space-x-4 p-4 rounded-xl border border-slate-800 hover:bg-slate-800/30 cursor-pointer transition-colors">
-                            <input
-                                type="checkbox"
-                                className="mt-1 w-5 h-5 accent-gold-500 bg-slate-950 border-slate-700 rounded cursor-pointer"
-                                checked={formData.providedTrueInfo}
-                                onChange={(e) => setFormData(p => ({ ...p, providedTrueInfo: e.target.checked }))}
-                                required
-                            />
-                            <span className="text-slate-300 text-sm leading-relaxed">
-                                I confirm that all medical history and personal information provided to the artist is true and accurate to the best of my knowledge.
-                            </span>
-                        </label>
+                            <div className="flex items-start space-x-4 p-4 rounded-xl border border-white/5 bg-white/1 hover:bg-white/3 hover:border-white/10 transition-all duration-300">
+                                <Checkbox
+                                    id="photo-consent"
+                                    checked={formData.photoConsent}
+                                    onCheckedChange={(checked) => setFormData(p => ({ ...p, photoConsent: checked === true }))}
+                                    className="mt-1"
+                                />
+                                <Label htmlFor="photo-consent" className="text-slate-300 text-sm leading-relaxed cursor-pointer font-normal">
+                                    <span className="text-slate-500 font-semibold mr-2">(Optional)</span>
+                                    I grant permission for the artist to photograph my tattoo and use the images for portfolio, social media, and promotional purposes.
+                                </Label>
+                            </div>
+                        </div>
 
-                        <label className="flex items-start space-x-4 p-4 rounded-xl border border-slate-800 hover:bg-slate-800/30 cursor-pointer transition-colors">
-                            <input
-                                type="checkbox"
-                                className="mt-1 w-5 h-5 accent-gold-500 bg-slate-950 border-slate-700 rounded cursor-pointer"
-                                checked={formData.photoConsent}
-                                onChange={(e) => setFormData(p => ({ ...p, photoConsent: e.target.checked }))}
-                            />
-                            <span className="text-slate-300 text-sm leading-relaxed">
-                                <span className="text-slate-500 font-semibold mr-2">(Optional)</span>
-                                I grant permission for the artist to photograph my tattoo and use the images for portfolio, social media, and promotional purposes.
-                            </span>
-                        </label>
-                    </div>
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-white border-b border-white/10 pb-2">Digital Signature</h3>
+                            <SignaturePad onSignatureChange={setSignature} />
+                        </div>
 
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-white border-b border-slate-800 pb-2">Digital Signature</h3>
-                        <SignaturePad onSignatureChange={setSignature} />
-                    </div>
-
-                    <div className="pt-6 border-t border-slate-800">
-                        <button
-                            type="submit"
-                            disabled={!allRequiredChecked || !signature}
-                            className="w-full flex items-center justify-center py-4 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-gold-500 hover:bg-gold-400 text-slate-950"
-                        >
-                            <Check className="mr-2" />
-                            Sign and Submit Consent Form
-                        </button>
-                    </div>
-
-                </form>
+                        <div className="pt-6 border-t border-white/10">
+                            <Button
+                                type="submit"
+                                disabled={!allRequiredChecked || !signature}
+                                className="w-full py-3 bg-gold-500 hover:bg-gold-400 text-slate-900 border-none justify-center disabled:opacity-50"
+                            >
+                                <Check className="mr-2" size={20} />
+                                Sign and Submit Consent Form
+                            </Button>
+                        </div>
+                    </form>
+                </Card>
             </motion.div>
         </div>
     );

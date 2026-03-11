@@ -1,20 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, Search, ChevronRight } from 'lucide-react';
-
-// Mock data
-const MOCK_CLIENTS = [
-    { id: '1', firstName: 'John', lastName: 'Doe', phone: '+1 234 567 8900', lastAppt: '2026-02-15' },
-    { id: '2', firstName: 'Sarah', lastName: 'Connor', phone: '+1 987 654 3210', lastAppt: '2026-03-01' },
-    { id: '3', firstName: 'Mike', lastName: 'Tyson', phone: '+1 555 555 5555', lastAppt: '2025-11-20' },
-];
+import { Plus, ChevronRight, Loader2 } from 'lucide-react';
+import { Card } from '../components/tremor/Card';
+import { Input } from '../components/tremor/Input';
+import { Button } from '../components/tremor/Button';
+import { useClientStore } from '../store/client.store';
+import { NewClientModal } from '../components/clients/NewClientModal';
 
 export const Clients = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
+    
+    const { clients, isLoading, fetchClients } = useClientStore();
 
-    const filtered = MOCK_CLIENTS.filter(c =>
+    useEffect(() => {
+        fetchClients();
+    }, [fetchClients]);
+
+    const filtered = clients.filter(c =>
         `${c.firstName} ${c.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -22,62 +27,80 @@ export const Clients = () => {
         <div className="space-y-6 max-w-5xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-white">Clients</h1>
-                    <p className="text-slate-400 text-sm">Manage your client database</p>
+                    <h1 className="text-3xl font-bold text-slate-50 tracking-tight">Clients</h1>
+                    <p className="text-slate-400 mt-1 text-sm">Manage your client database</p>
                 </div>
 
-                <button className="flex items-center justify-center px-4 py-2 bg-gold-500 hover:bg-gold-400 text-slate-950 font-medium rounded-lg transition-colors">
-                    <Plus size={20} className="mr-2" />
+                <Button 
+                    onClick={() => setIsModalOpen(true)}
+                    className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none px-6"
+                >
+                    <Plus size={18} className="mr-2 -ml-1 shrink-0" />
                     New Client
-                </button>
+                </Button>
             </div>
 
             <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
-                <input
-                    type="text"
-                    placeholder="Search clients..."
+                <Input
+                    type="search"
+                    placeholder="Search clients by name..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-10 pr-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500 transition-all"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                    className="max-w-md bg-slate-900/50 backdrop-blur-md"
                 />
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-                {filtered.length > 0 ? (
+            <Card className="p-0 sm:p-0 overflow-hidden bg-slate-900/50 backdrop-blur-md border border-slate-800/80 shadow-xl min-h-[400px]">
+                {isLoading ? (
+                    <div className="flex items-center justify-center h-[400px]">
+                        <Loader2 className="w-8 h-8 text-gold-500 animate-spin" />
+                    </div>
+                ) : filtered.length > 0 ? (
                     <ul className="divide-y divide-slate-800">
                         {filtered.map((client) => (
                             <motion.li
                                 key={client.id}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="group flex items-center justify-between p-4 hover:bg-slate-800/50 cursor-pointer transition-colors"
+                                className="group flex items-center justify-between p-4 px-6 hover:bg-slate-800/40 cursor-pointer transition-all duration-200"
                                 onClick={() => navigate(`/clients/${client.id}`)}
                             >
                                 <div className="flex items-center space-x-4">
-                                    <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-gold-500 font-bold text-lg">
+                                    <div className="w-12 h-12 rounded-full bg-slate-950 flex items-center justify-center text-gold-500 font-bold border border-slate-800 shadow-inner shrink-0">
                                         {client.firstName[0]}{client.lastName[0]}
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-medium group-hover:text-gold-500 transition-colors">
+                                        <h3 className="text-slate-200 font-semibold group-hover:text-gold-500 transition-colors">
                                             {client.firstName} {client.lastName}
                                         </h3>
-                                        <p className="text-sm text-slate-400">{client.phone}</p>
+                                        <p className="text-sm text-slate-400 mt-0.5">{client.phone || client.email || 'No contact info'}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center text-sm text-slate-500 space-x-4">
-                                    <span className="hidden sm:inline-block">Last Appt: {client.lastAppt}</span>
                                     <ChevronRight size={20} className="text-slate-600 group-hover:text-gold-500 transition-colors" />
                                 </div>
                             </motion.li>
                         ))}
                     </ul>
                 ) : (
-                    <div className="p-8 text-center text-slate-500">
-                        No clients found matching "{searchTerm}"
+                    <div className="flex flex-col items-center justify-center h-[400px] text-center p-8">
+                        <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4 text-slate-500">
+                            <Plus size={32} />
+                        </div>
+                        <h3 className="text-lg font-medium text-slate-200 mb-1">No clients found</h3>
+                        <p className="text-slate-400 max-w-sm">
+                            {searchTerm ? `No clients matching "${searchTerm}"` : "You haven't added any clients yet. Add your first client to get started."}
+                        </p>
+                        {!searchTerm && (
+                            <Button onClick={() => setIsModalOpen(true)} className="mt-6 bg-slate-800 hover:bg-slate-700 text-white border-none">
+                                Add Client
+                            </Button>
+                        )}
                     </div>
                 )}
-            </div>
+            </Card>
+
+            <NewClientModal open={isModalOpen} onOpenChange={setIsModalOpen} />
         </div>
     );
 };
