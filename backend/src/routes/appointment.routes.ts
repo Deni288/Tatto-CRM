@@ -10,12 +10,11 @@ import {
 
 const router = Router();
 
-router.use(requireAuth);
-
-router.get('/', getAppointments);
-router.post('/', createAppointment);
-router.put('/:id', updateAppointment);
-router.patch('/:id/status', updateAppointmentStatus);
-router.delete('/:id', deleteAppointment);
+// Routes
+router.get('/', requireAuth, getAppointments);
+router.post('/', requireAuth, createAppointment);
+router.put('/:id', requireAuth, updateAppointment);
+router.patch('/:id/status', requireAuth, updateAppointmentStatus);
+router.delete('/:id', requireAuth, deleteAppointment);
 
 export default router;

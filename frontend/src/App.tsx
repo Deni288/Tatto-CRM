@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { GooeyToaster } from 'goey-toast';
+import 'goey-toast/styles.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/auth.store';
 import { AppLayout } from './components/layout/AppLayout';

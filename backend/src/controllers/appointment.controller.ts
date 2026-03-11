@@ -67,29 +67,33 @@ export const updateAppointment = async (req: Request, res: Response) => {
 };
 
 export const updateAppointmentStatus = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
-    const artistId = req.user!.userId;
-    const { status } = req.body;
-
     // Validate valid ApptStatus enum (Prisma)
     const validStatuses = ['SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW'];
-    if (!validStatuses.includes(status)) {
+    if (!validStatuses.includes(req.body.status)) {
         res.status(400).json({ error: 'Invalid status provided' });
         return;
     }
 
-    const existing = await prisma.appointment.findFirst({ where: { id, artistId } });
-    if (!existing) {
-        res.status(404).json({ error: 'Appointment not found' });
-        return;
+    try {
+        const result = await prisma.appointment.updateMany({
+            where: { 
+                id: req.params.id as string, 
+                artistId: req.user!.userId 
+            },
+            data: { 
+                status: req.body.status 
+            },
+        });
+
+        if (result.count === 0) {
+            res.status(404).json({ error: 'Appointment not found or unauthorized' });
+            return;
+        }
+
+        res.json({ success: true, count: result.count });
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to update status', details: error.message });
     }
-
-    const appointment = await prisma.appointment.update({
-        where: { id },
-        data: { status },
-    });
-
-    res.json(appointment);
 };
 
 export const deleteAppointment = async (req: Request, res: Response) => {
