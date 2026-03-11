@@ -66,6 +66,32 @@ export const updateAppointment = async (req: Request, res: Response) => {
     res.json(appointment);
 };
 
+export const updateAppointmentStatus = async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const artistId = req.user!.userId;
+    const { status } = req.body;
+
+    // Validate valid ApptStatus enum (Prisma)
+    const validStatuses = ['SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW'];
+    if (!validStatuses.includes(status)) {
+        res.status(400).json({ error: 'Invalid status provided' });
+        return;
+    }
+
+    const existing = await prisma.appointment.findFirst({ where: { id, artistId } });
+    if (!existing) {
+        res.status(404).json({ error: 'Appointment not found' });
+        return;
+    }
+
+    const appointment = await prisma.appointment.update({
+        where: { id },
+        data: { status },
+    });
+
+    res.json(appointment);
+};
+
 export const deleteAppointment = async (req: Request, res: Response) => {
     const id = req.params.id as string;
     const artistId = req.user!.userId;

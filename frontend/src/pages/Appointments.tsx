@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Plus, Calendar as CalendarIcon, Clock, MoreVertical, Loader2 } from 'lucide-react';
+import { Plus, Calendar as CalendarIcon, Clock, MoreVertical, Loader2, CheckCircle, XCircle, Trash2, Edit2 } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Card } from '../components/tremor/Card';
 import { Input } from '../components/tremor/Input';
 import { Button } from '../components/tremor/Button';
 import { Badge } from '../components/tremor/Badge';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { useAppointmentStore } from '../store/appointment.store';
+import { useAppointmentStore, type Appointment } from '../store/appointment.store';
 import { NewBookingModal } from '../components/appointments/NewBookingModal';
+import { EditBookingModal } from '../components/appointments/EditBookingModal';
+import { gooeyToast } from 'goey-toast';
 
 export const Appointments = () => {
-    const { appointments, isLoading, fetchAppointments } = useAppointmentStore();
+    const { appointments, isLoading, fetchAppointments, updateStatus, deleteAppointment } = useAppointmentStore();
     const [searchTerm, setSearchTerm] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
 
     useEffect(() => {
         fetchAppointments();
@@ -24,6 +29,26 @@ export const Appointments = () => {
                appt.title.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
+    const handleStatusChange = async (id: string, status: string) => {
+        try {
+            await updateStatus(id, status);
+            gooeyToast.success(`Appointment marked as ${status.toLowerCase()}`);
+        } catch (error) {
+            gooeyToast.error('Failed to change status');
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (window.confirm('Are you sure you want to delete this appointment? This action cannot be undone.')) {
+            try {
+                await deleteAppointment(id);
+                gooeyToast.success('Appointment deleted successfully');
+            } catch (error) {
+                gooeyToast.error('Failed to delete appointment');
+            }
+        }
+    };
+
     return (
         <div className="space-y-6 max-w-5xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -33,7 +58,7 @@ export const Appointments = () => {
                 </div>
 
                 <Button 
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => setIsNewModalOpen(true)}
                     className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none px-6"
                 >
                     <Plus size={18} className="mr-1.5 -ml-1 shrink-0" />
@@ -100,9 +125,56 @@ export const Appointments = () => {
                                                 {appt.status.replace('_', ' ')}
                                             </Badge>
                                         </div>
-                                        <button className="text-slate-500 hover:text-white p-2 hover:bg-slate-800 rounded-lg transition-colors">
-                                            <MoreVertical size={20} />
-                                        </button>
+                                        <DropdownMenu.Root>
+                                            <DropdownMenu.Trigger asChild>
+                                                <button className="text-slate-500 hover:text-white p-2 hover:bg-slate-800 rounded-lg transition-colors outline-none">
+                                                    <MoreVertical size={20} />
+                                                </button>
+                                            </DropdownMenu.Trigger>
+                                            
+                                            <DropdownMenu.Portal>
+                                                <DropdownMenu.Content className="min-w-[200px] bg-slate-900 border border-slate-800 rounded-xl p-1 shadow-xl shadow-black/40 z-50 animate-in fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2">
+                                                    <DropdownMenu.Item 
+                                                        onClick={() => {
+                                                            setSelectedAppointment(appt);
+                                                            setIsEditModalOpen(true);
+                                                        }}
+                                                        className="flex items-center px-3 py-2.5 text-sm text-slate-200 outline-none hover:bg-slate-800 hover:text-white rounded-lg cursor-pointer transition-colors"
+                                                    >
+                                                        <Edit2 size={16} className="mr-2 text-slate-400" />
+                                                        Edit Appointment
+                                                    </DropdownMenu.Item>
+
+                                                    <DropdownMenu.Separator className="h-px bg-slate-800 my-1" />
+
+                                                    <DropdownMenu.Item 
+                                                        onClick={() => handleStatusChange(appt.id, 'COMPLETED')}
+                                                        className="flex items-center px-3 py-2.5 text-sm text-slate-200 outline-none hover:bg-slate-800 hover:text-green-400 rounded-lg cursor-pointer transition-colors"
+                                                    >
+                                                        <CheckCircle size={16} className="mr-2 text-green-500" />
+                                                        Mark as Completed
+                                                    </DropdownMenu.Item>
+                                                    
+                                                    <DropdownMenu.Item 
+                                                        onClick={() => handleStatusChange(appt.id, 'CANCELLED')}
+                                                        className="flex items-center px-3 py-2.5 text-sm text-slate-200 outline-none hover:bg-slate-800 hover:text-orange-400 rounded-lg cursor-pointer transition-colors"
+                                                    >
+                                                        <XCircle size={16} className="mr-2 text-orange-500" />
+                                                        Cancel Appointment
+                                                    </DropdownMenu.Item>
+
+                                                    <DropdownMenu.Separator className="h-px bg-slate-800 my-1" />
+
+                                                    <DropdownMenu.Item 
+                                                        onClick={() => handleDelete(appt.id)}
+                                                        className="flex items-center px-3 py-2.5 text-sm outline-none hover:bg-red-500/10 text-red-500 rounded-lg cursor-pointer transition-colors"
+                                                    >
+                                                        <Trash2 size={16} className="mr-2" />
+                                                        Delete
+                                                    </DropdownMenu.Item>
+                                                </DropdownMenu.Content>
+                                            </DropdownMenu.Portal>
+                                        </DropdownMenu.Root>
                                     </div>
                                 </motion.li>
                             );
@@ -116,7 +188,7 @@ export const Appointments = () => {
                             {searchTerm ? `No appointments matching "${searchTerm}"` : "You haven't scheduled any appointments yet."}
                         </p>
                         {!searchTerm && (
-                            <Button onClick={() => setIsModalOpen(true)} className="mt-6 bg-slate-800 hover:bg-slate-700 text-white border-none">
+                            <Button onClick={() => setIsNewModalOpen(true)} className="mt-6 bg-slate-800 hover:bg-slate-700 text-white border-none">
                                 New Booking
                             </Button>
                         )}
@@ -124,7 +196,12 @@ export const Appointments = () => {
                 )}
             </Card>
 
-            <NewBookingModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+            <NewBookingModal open={isNewModalOpen} onOpenChange={setIsNewModalOpen} />
+            <EditBookingModal 
+                open={isEditModalOpen} 
+                onOpenChange={setIsEditModalOpen} 
+                appointment={selectedAppointment} 
+            />
         </div>
     );
 };

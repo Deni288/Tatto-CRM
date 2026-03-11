@@ -21,9 +21,9 @@ export const Dashboard = () => {
     }, [fetchClients, fetchDashboardStats]);
 
     const stats = [
-        { name: "Today's Revenue", value: dashboardStats ? `$${Number(dashboardStats.todaysRevenue || 0).toFixed(2)}` : "$0.00", icon: DollarSign, trend: "Earnings today" },
-        { name: 'Upcoming Appts', value: dashboardStats ? Number(dashboardStats.upcomingAppointmentsCount || 0).toString() : "0", icon: Calendar, trend: "Scheduled ahead" },
-        { name: 'New Clients', value: dashboardStats ? Number(dashboardStats.newClientsThisMonth || 0).toString() : "0", icon: Users, trend: "Registered this month" },
+        { name: "Today's Revenue", value: dashboardStats ? `$${(Number(dashboardStats?.todaysRevenue) || 0).toFixed(2)}` : "$0.00", icon: DollarSign, trend: "Earnings today" },
+        { name: 'Upcoming Appts', value: dashboardStats ? (Number(dashboardStats?.upcomingAppointmentsCount) || 0).toString() : "0", icon: Calendar, trend: "Scheduled ahead" },
+        { name: 'New Clients', value: dashboardStats ? (Number(dashboardStats?.newClientsThisMonth) || 0).toString() : "0", icon: Users, trend: "Registered this month" },
     ];
 
     const containerVariants: Variants = {

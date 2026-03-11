@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { api } from '../api/axiosInstance';
 import type { Client } from './client.store';
+import { useDashboardStore } from './dashboard.store';
 
 export interface Appointment {
     id: string;
@@ -34,6 +35,9 @@ interface AppointmentState {
     error: string | null;
     fetchAppointments: () => Promise<void>;
     addAppointment: (data: AppointmentFormData) => Promise<void>;
+    updateAppointment: (id: string, data: Partial<AppointmentFormData>) => Promise<void>;
+    updateStatus: (id: string, status: string) => Promise<void>;
+    deleteAppointment: (id: string) => Promise<void>;
 }
 
 export const useAppointmentStore = create<AppointmentState>()((set, get) => ({
@@ -56,13 +60,48 @@ export const useAppointmentStore = create<AppointmentState>()((set, get) => ({
         try {
             await api.post('/appointments', data);
             
-            // To immediately display the client name without refetching the whole list, 
-            // the backend just returns the appointment data usually.
-            // Ideally backend expands client on post. For simplicity, we refetch all to guarantee relation population.
+            // Refresh list and dashboard stats
             get().fetchAppointments();
+            useDashboardStore.getState().fetchDashboardStats();
             
         } catch (err: any) {
             set({ error: err.response?.data?.error || 'Failed to add appointment', isLoading: false });
+            throw err;
+        }
+    },
+
+    updateAppointment: async (id: string, data: Partial<AppointmentFormData>) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.put(`/appointments/${id}`, data);
+            get().fetchAppointments();
+            useDashboardStore.getState().fetchDashboardStats();
+        } catch (err: any) {
+            set({ error: err.response?.data?.error || 'Failed to update appointment', isLoading: false });
+            throw err;
+        }
+    },
+
+    updateStatus: async (id: string, status: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.patch(`/appointments/${id}/status`, { status });
+            get().fetchAppointments();
+            useDashboardStore.getState().fetchDashboardStats();
+        } catch (err: any) {
+            set({ error: err.response?.data?.error || 'Failed to update appointment status', isLoading: false });
+            throw err;
+        }
+    },
+
+    deleteAppointment: async (id: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.delete(`/appointments/${id}`);
+            get().fetchAppointments();
+            useDashboardStore.getState().fetchDashboardStats();
+        } catch (err: any) {
+            set({ error: err.response?.data?.error || 'Failed to delete appointment', isLoading: false });
             throw err;
         }
     }
