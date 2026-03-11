@@ -1,127 +1,111 @@
 import { Request, Response } from 'express';
 import prisma from '../config/db';
-import { z } from 'zod';
-
-const clientSchema = z.object({
-    firstName: z.string().min(1),
-    lastName: z.string().min(1),
-    email: z.string().email().optional().or(z.literal('')),
-    phone: z.string().optional().or(z.literal('')),
-    tattooHistory: z.string().optional(),
-    customFields: z.record(z.string(), z.any()).optional(),
-});
+import { clientSchema } from '../schemas/client.schema';
 
 export const getClients = async (req: Request, res: Response) => {
+    console.log("=> [API] getClients Invoked");
+    const artistId = req.user!.userId;
     try {
-        const artistId = req.user!.userId;
         const clients = await prisma.client.findMany({
             where: { artistId },
             orderBy: { createdAt: 'desc' },
         });
         res.json(clients);
-    } catch (error) {
-        console.error('Error fetching clients:', error);
-        res.status(500).json({ error: 'Internal server error' });
+    } catch (err) {
+        console.error("=> [API] getClients Prisma Error:", err);
+        throw err;
     }
 };
 
 export const getClientById = async (req: Request, res: Response) => {
-    try {
-        const id = req.params.id as string;
-        const artistId = req.user!.userId;
+    const id = req.params.id as string;
+    const artistId = req.user!.userId;
 
-        const client = await prisma.client.findFirst({
-            where: { id, artistId },
-            include: {
-                appointments: true,
-                consentForms: true,
-                images: true,
-            }
-        });
-
-        if (!client) {
-            return res.status(404).json({ error: 'Client not found' });
+    const client = await prisma.client.findFirst({
+        where: { id, artistId },
+        include: {
+            appointments: true,
+            consentForms: true,
+            images: true,
         }
+    });
 
-        res.json(client);
-    } catch (error) {
-        console.error('Error fetching client:', error);
-        res.status(500).json({ error: 'Internal server error' });
+    if (!client) {
+        res.status(404).json({ error: 'Client not found' });
+        return;
     }
+
+    res.json(client);
 };
 
 export const createClient = async (req: Request, res: Response) => {
-    try {
-        const parsed = clientSchema.safeParse(req.body);
-        if (!parsed.success) {
-            return res.status(400).json({ error: 'Invalid input', details: parsed.error.issues });
-        }
+    console.log("=> [API] Incoming Create Client:", req.body);
+    const parsed = clientSchema.safeParse(req.body);
+    if (!parsed.success) {
+        console.error("=> [API] Zod Validation Error:", parsed.error.issues);
+        res.status(400).json({ error: 'Invalid input', details: parsed.error.issues });
+        return;
+    }
 
+    try {
         const artistId = req.user!.userId;
         const client = await prisma.client.create({
             data: {
                 ...parsed.data,
-                customFields: parsed.data.customFields as any,
                 artistId,
                 email: parsed.data.email || null,
                 phone: parsed.data.phone || null,
+                tattooHistory: parsed.data.tattooHistory || null,
             },
         });
-
+        console.log("=> [API] Client created successfully:", client.id);
         res.status(201).json(client);
-    } catch (error) {
-        console.error('Error creating client:', error);
-        res.status(500).json({ error: 'Internal server error' });
+    } catch (err) {
+        console.error("=> [API] Prisma Error:", err);
+        throw err;
     }
 };
 
 export const updateClient = async (req: Request, res: Response) => {
-    try {
-        const id = req.params.id as string;
-        const artistId = req.user!.userId;
+    const id = req.params.id as string;
+    const artistId = req.user!.userId;
 
-        const parsed = clientSchema.safeParse(req.body);
-        if (!parsed.success) {
-            return res.status(400).json({ error: 'Invalid input', details: parsed.error.issues });
-        }
-
-        // Verify ownership
-        const existing = await prisma.client.findFirst({ where: { id, artistId } });
-        if (!existing) {
-            return res.status(404).json({ error: 'Client not found' });
-        }
-
-        const client = await prisma.client.update({
-            where: { id },
-            data: {
-                ...parsed.data,
-                customFields: parsed.data.customFields as any,
-                email: parsed.data.email || null,
-                phone: parsed.data.phone || null,
-            },
-        });
-
-        res.json(client);
-    } catch (error) {
-        console.error('Error updating client:', error);
-        res.status(500).json({ error: 'Internal server error' });
+    const parsed = clientSchema.safeParse(req.body);
+    if (!parsed.success) {
+        res.status(400).json({ error: 'Invalid input', details: parsed.error.issues });
+        return;
     }
+
+    // Verify ownership
+    const existing = await prisma.client.findFirst({ where: { id, artistId } });
+    if (!existing) {
+        res.status(404).json({ error: 'Client not found' });
+        return;
+    }
+
+    const client = await prisma.client.update({
+        where: { id },
+        data: {
+            ...parsed.data,
+            email: parsed.data.email || null,
+            phone: parsed.data.phone || null,
+            tattooHistory: parsed.data.tattooHistory || null,
+        },
+    });
+
+    res.json(client);
 };
 
 export const deleteClient = async (req: Request, res: Response) => {
-    try {
-        const id = req.params.id as string;
-        const artistId = req.user!.userId;
+    const id = req.params.id as string;
+    const artistId = req.user!.userId;
 
-        const existing = await prisma.client.findFirst({ where: { id, artistId } });
-        if (!existing) {
-            return res.status(404).json({ error: 'Client not found' });
-        }
-
-        await prisma.client.delete({ where: { id } });
-        res.status(204).send();
-    } catch (error) {
-        console.error('Error deleting client:', error);
-        res.status(500).json({ error: 'Internal server error' });
+    const existing = await prisma.client.findFirst({ where: { id, artistId } });
+    if (!existing) {
+        res.status(404).json({ error: 'Client not found' });
+        return;
     }
+
+    await prisma.client.delete({ where: { id } });
+    res.status(204).send();
 };
