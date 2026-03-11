@@ -135,7 +135,7 @@ export const Appointments = () => {
                                             <DropdownMenu.Portal>
                                                 <DropdownMenu.Content className="min-w-[200px] bg-slate-900 border border-slate-800 rounded-xl p-1 shadow-xl shadow-black/40 z-50 animate-in fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2">
                                                     <DropdownMenu.Item 
-                                                        onClick={() => {
+                                                        onSelect={() => {
                                                             setSelectedAppointment(appt);
                                                             setIsEditModalOpen(true);
                                                         }}
@@ -148,7 +148,7 @@ export const Appointments = () => {
                                                     <DropdownMenu.Separator className="h-px bg-slate-800 my-1" />
 
                                                     <DropdownMenu.Item 
-                                                        onClick={() => handleStatusChange(appt.id, 'COMPLETED')}
+                                                        onSelect={() => handleStatusChange(appt.id, 'COMPLETED')}
                                                         className="flex items-center px-3 py-2.5 text-sm text-slate-200 outline-none hover:bg-slate-800 hover:text-green-400 rounded-lg cursor-pointer transition-colors"
                                                     >
                                                         <CheckCircle size={16} className="mr-2 text-green-500" />
@@ -156,7 +156,7 @@ export const Appointments = () => {
                                                     </DropdownMenu.Item>
                                                     
                                                     <DropdownMenu.Item 
-                                                        onClick={() => handleStatusChange(appt.id, 'CANCELLED')}
+                                                        onSelect={() => handleStatusChange(appt.id, 'CANCELLED')}
                                                         className="flex items-center px-3 py-2.5 text-sm text-slate-200 outline-none hover:bg-slate-800 hover:text-orange-400 rounded-lg cursor-pointer transition-colors"
                                                     >
                                                         <XCircle size={16} className="mr-2 text-orange-500" />
@@ -166,7 +166,7 @@ export const Appointments = () => {
                                                     <DropdownMenu.Separator className="h-px bg-slate-800 my-1" />
 
                                                     <DropdownMenu.Item 
-                                                        onClick={() => handleDelete(appt.id)}
+                                                        onSelect={() => handleDelete(appt.id)}
                                                         className="flex items-center px-3 py-2.5 text-sm outline-none hover:bg-red-500/10 text-red-500 rounded-lg cursor-pointer transition-colors"
                                                     >
                                                         <Trash2 size={16} className="mr-2" />
