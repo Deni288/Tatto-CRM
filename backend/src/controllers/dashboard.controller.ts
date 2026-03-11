@@ -59,9 +59,25 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         }
     });
 
-    // Zbroj polja price (ili depositAmount) za sve termine danas u memoriji da osiguramo točnost ako baza vraća stringove
-    const todaysRevenue = todaysAppointments.reduce((acc, appt) => 
-        acc + Number(appt.price || 0) + Number(appt.depositAmount || 0), 0);
+    // 1. todaysRevenue: Zbroj polja price (ili depositAmount) za sve termine danas
+    const todaysAppointmentsRevenue = await prisma.appointment.aggregate({
+        where: {
+            artistId,
+            startTime: {
+                gte: startOfDay,
+                lte: endOfDay
+            }
+        },
+        _sum: {
+            price: true,
+            depositAmount: true
+        }
+    });
+
+    // Prisma's calculate _sum on Decimals returns a Decimal object which needs parsing
+    const todaysRevenue = 
+        Number(todaysAppointmentsRevenue._sum.price?.toString() || 0) + 
+        Number(todaysAppointmentsRevenue._sum.depositAmount?.toString() || 0);
 
     res.json({
         todaysRevenue,
