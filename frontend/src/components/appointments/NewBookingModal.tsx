@@ -17,8 +17,8 @@ const appointmentSchema = z.object({
     description: z.string().optional(),
     startTime: z.string().min(1, 'Start time is required'),
     endTime: z.string().min(1, 'End time is required'),
-    price: z.union([z.string(), z.number()]).optional().transform(v => v === '' || v === undefined ? undefined : Number(v)),
-    depositAmount: z.union([z.string(), z.number()]).optional().transform(v => v === '' || v === undefined ? undefined : Number(v)),
+    price: z.coerce.number().min(0).nullable().optional().default(0),
+    depositAmount: z.coerce.number().min(0).nullable().optional().default(0),
 });
 
 type AppointmentFormInput = z.input<typeof appointmentSchema>;
@@ -149,7 +149,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
                                     min="0"
                                     step="0.01"
                                     placeholder="0.00"
-                                    {...register('price')}
+                                    {...register('price', { valueAsNumber: true })}
                                 />
                             </div>
                             <div className="space-y-2">
@@ -160,7 +160,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
                                     min="0"
                                     step="0.01"
                                     placeholder="0.00"
-                                    {...register('depositAmount')}
+                                    {...register('depositAmount', { valueAsNumber: true })}
                                 />
                             </div>
                         </div>

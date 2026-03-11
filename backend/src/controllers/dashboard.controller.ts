@@ -19,22 +19,6 @@ export const getDashboardStats = async (req: Request, res: Response) => {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    // 1. todaysRevenue: Zbroj polja price (ili depositAmount) za sve termine danas
-    const todaysAppointmentsRevenue = await prisma.appointment.aggregate({
-        where: {
-            artistId,
-            startTime: {
-                gte: startOfDay,
-                lte: endOfDay
-            }
-        },
-        _sum: {
-            price: true,
-            depositAmount: true
-        }
-    });
-
-    const todaysRevenue = Number(todaysAppointmentsRevenue._sum.price || 0) + Number(todaysAppointmentsRevenue._sum.depositAmount || 0);
 
     // 2. upcomingAppointmentsCount: Broj termina sa statusom SCHEDULED čiji je startTime u budućnosti
     const upcomingAppointmentsCount = await prisma.appointment.count({
@@ -74,6 +58,10 @@ export const getDashboardStats = async (req: Request, res: Response) => {
             startTime: 'asc'
         }
     });
+
+    // Zbroj polja price (ili depositAmount) za sve termine danas u memoriji da osiguramo točnost ako baza vraća stringove
+    const todaysRevenue = todaysAppointments.reduce((acc, appt) => 
+        acc + Number(appt.price || 0) + Number(appt.depositAmount || 0), 0);
 
     res.json({
         todaysRevenue,

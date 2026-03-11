@@ -29,6 +29,8 @@ export const createAppointment = async (req: Request, res: Response) => {
     const appointment = await prisma.appointment.create({
         data: {
             ...parsed.data,
+            price: parsed.data.price != null ? Number(parsed.data.price) : null,
+            depositAmount: parsed.data.depositAmount != null ? Number(parsed.data.depositAmount) : null,
             artistId,
         },
     });
@@ -54,7 +56,11 @@ export const updateAppointment = async (req: Request, res: Response) => {
 
     const appointment = await prisma.appointment.update({
         where: { id },
-        data: parsed.data,
+        data: {
+            ...parsed.data,
+            ...(parsed.data.price !== undefined && { price: parsed.data.price != null ? Number(parsed.data.price) : null }),
+            ...(parsed.data.depositAmount !== undefined && { depositAmount: parsed.data.depositAmount != null ? Number(parsed.data.depositAmount) : null }),
+        },
     });
 
     res.json(appointment);
