@@ -41,6 +41,7 @@ model Client {
   appointments Appointment[]
   consentForms ConsentForm[]
   images       ClientImage[]
+  gallery      ClientGallery[]
 }
 
 model ClientImage {
@@ -95,4 +96,13 @@ model ConsentForm {
   agreedToTerms     Boolean  @default(true)
   signatureName     String
   createdAt         DateTime @default(now())
+}
+
+model ClientGallery {
+  id          String   @id @default(uuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id])
+  imageUrl    String
+  description String?
+  createdAt   DateTime @default(now())
 }

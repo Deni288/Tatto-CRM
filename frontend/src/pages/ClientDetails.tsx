@@ -1,28 +1,44 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature } from 'lucide-react';
+import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature, Trash2 } from 'lucide-react';
 import { Card } from '../components/tremor/Card';
 import { TabNavigation, TabNavigationLink } from '../components/tremor/TabNavigation';
 import { Button } from '../components/tremor/Button';
 import { useClientStore } from '../store/client.store';
 import { useConsentStore } from '../store/consent.store';
+import { useGalleryStore } from '../store/gallery.store';
 import { NewConsentFormModal } from '../components/clients/NewConsentFormModal';
+import { AddImageModal } from '../components/clients/AddImageModal';
+import { gooeyToast } from 'goey-toast';
 
 export const ClientDetails = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<'info' | 'images' | 'appointments' | 'consents'>('info');
+    const [activeTab, setActiveTab] = useState<'info' | 'gallery' | 'appointments' | 'consents'>('info');
     const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
+    const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
 
     const { selectedClient: client, isLoading, error, fetchClientById } = useClientStore();
     const { consentForms, fetchClientConsents, isLoading: isConsentsLoading } = useConsentStore();
+    const { images: galleryImages, fetchGallery, deleteImage, isLoading: isGalleryLoading } = useGalleryStore();
 
     useEffect(() => {
         if (id) {
             fetchClientById(id);
             fetchClientConsents(id);
+            fetchGallery(id);
         }
-    }, [id, fetchClientById, fetchClientConsents]);
+    }, [id, fetchClientById, fetchClientConsents, fetchGallery]);
+
+    const handleDeleteImage = async (imageId: string) => {
+        if (!id) return;
+        try {
+            await deleteImage(id, imageId);
+            gooeyToast.success('Image removed from gallery');
+        } catch {
+            gooeyToast.error('Failed to delete image');
+        }
+    };
 
     if (isLoading) {
         return (
@@ -82,7 +98,7 @@ export const ClientDetails = () => {
                     <TabNavigation className="gap-2">
                         {[
                             { id: 'info', label: 'Details & History', icon: FileText },
-                            { id: 'images', label: 'Reference Images', icon: ImageIcon },
+                            { id: 'gallery', label: 'Gallery', icon: ImageIcon },
                             { id: 'appointments', label: 'Appointments', icon: Calendar },
                             { id: 'consents', label: 'Consent Forms', icon: FileSignature },
                         ].map((tab) => (
@@ -135,10 +151,68 @@ export const ClientDetails = () => {
                         </div>
                     )}
 
-                    {activeTab === 'images' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center py-12 text-slate-500">
-                            <ImageIcon size={48} className="mx-auto mb-4 opacity-20" />
-                            <p>Image gallery coming soon.</p>
+                    {activeTab === 'gallery' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-lg font-semibold text-white">Reference Gallery</h3>
+                                <Button 
+                                    onClick={() => setIsGalleryModalOpen(true)}
+                                    className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none"
+                                >
+                                    <Plus size={16} className="mr-1.5" /> Add Image
+                                </Button>
+                            </div>
+
+                            {isGalleryLoading ? (
+                                <div className="flex items-center justify-center h-32">
+                                    <Loader2 className="w-6 h-6 text-gold-500 animate-spin" />
+                                </div>
+                            ) : galleryImages && galleryImages.length > 0 ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {galleryImages.map(img => (
+                                        <div key={img.id} className="group relative rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700 transition-all bg-slate-950 aspect-square">
+                                            <img
+                                                src={img.imageUrl}
+                                                alt={img.description || 'Gallery image'}
+                                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiI+PHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSIvPjwvc3ZnPg==';
+                                                    (e.target as HTMLImageElement).className = 'w-16 h-16 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2';
+                                                }}
+                                            />
+                                            {/* Hover overlay with delete */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-3">
+                                                {img.description && (
+                                                    <p className="text-white text-sm font-medium truncate mb-2">{img.description}</p>
+                                                )}
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-slate-400">{new Date(img.createdAt).toLocaleDateString()}</span>
+                                                    <button
+                                                        onClick={() => handleDeleteImage(img.id)}
+                                                        className="p-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/40 hover:text-red-300 transition-colors"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-16 text-slate-500 bg-slate-900/30 rounded-2xl border border-slate-800/50 border-dashed">
+                                    <div className="bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <ImageIcon size={32} className="text-slate-400" />
+                                    </div>
+                                    <h3 className="text-white font-medium mb-1">No images yet</h3>
+                                    <p className="text-slate-400 text-sm max-w-sm mx-auto mb-6">Add reference images or finished work photos for this client.</p>
+                                    <Button
+                                        onClick={() => setIsGalleryModalOpen(true)}
+                                        className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
+                                    >
+                                        <Plus size={16} className="mr-1.5" /> Add First Image
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -256,6 +330,14 @@ export const ClientDetails = () => {
                     open={isConsentModalOpen} 
                     onOpenChange={setIsConsentModalOpen} 
                     clientId={client.id} 
+                />
+            )}
+
+            {client && (
+                <AddImageModal
+                    open={isGalleryModalOpen}
+                    onOpenChange={setIsGalleryModalOpen}
+                    clientId={client.id}
                 />
             )}
         </div>
