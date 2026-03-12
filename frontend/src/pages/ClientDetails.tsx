@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature, Trash2, Printer } from 'lucide-react';
 import { Card } from '../components/tremor/Card';
 import { TabNavigation, TabNavigationLink } from '../components/tremor/TabNavigation';
 import { Button } from '../components/tremor/Button';
@@ -9,6 +9,7 @@ import { useConsentStore } from '../store/consent.store';
 import { useGalleryStore } from '../store/gallery.store';
 import { NewConsentFormModal } from '../components/clients/NewConsentFormModal';
 import { AddImageModal } from '../components/clients/AddImageModal';
+import { PrintableConsentForm } from '../components/clients/PrintableConsentForm';
 import { gooeyToast } from 'goey-toast';
 
 export const ClientDetails = () => {
@@ -17,6 +18,7 @@ export const ClientDetails = () => {
     const [activeTab, setActiveTab] = useState<'info' | 'gallery' | 'appointments' | 'consents'>('info');
     const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
     const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
+    const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const { selectedClient: client, isLoading, error, fetchClientById } = useClientStore();
     const { consentForms, fetchClientConsents, isLoading: isConsentsLoading } = useConsentStore();
@@ -282,7 +284,7 @@ export const ClientDetails = () => {
                                 </div>
                             ) : consentForms && consentForms.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {consentForms.map(form => (
+                                    {consentForms.map((form, formIdx) => (
                                         <div key={form.id} className="bg-slate-950 p-5 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors">
                                             <div className="flex justify-between items-start mb-4 border-b border-slate-800/80 pb-3">
                                                 <div className="flex items-center text-slate-300">
@@ -292,6 +294,38 @@ export const ClientDetails = () => {
                                                 <span className="text-xs text-slate-500 bg-slate-900 px-2 py-1 rounded">
                                                     {new Date(form.createdAt).toLocaleDateString()}
                                                 </span>
+                                                <button
+                                                    onClick={() => {
+                                                        setTimeout(() => {
+                                                            const el = printRefs.current[formIdx];
+                                                            if (el) {
+                                                                const printWindow = window.open('', '_blank');
+                                                                if (printWindow) {
+                                                                    printWindow.document.write(`
+                                                                        <html>
+                                                                        <head>
+                                                                            <title>Consent Form - ${client.firstName} ${client.lastName}</title>
+                                                                            <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">
+                                                                            <style>
+                                                                                * { margin: 0; padding: 0; box-sizing: border-box; }
+                                                                                body { background: #fff; }
+                                                                                @media print { body { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+                                                                            </style>
+                                                                        </head>
+                                                                        <body>${el.innerHTML}</body>
+                                                                        </html>
+                                                                    `);
+                                                                    printWindow.document.close();
+                                                                    setTimeout(() => { printWindow.print(); }, 300);
+                                                                }
+                                                            }
+                                                        }, 100);
+                                                    }}
+                                                    className="p-1.5 rounded-lg text-slate-500 hover:text-gold-500 hover:bg-slate-800 transition-colors"
+                                                    title="Print / Save as PDF"
+                                                >
+                                                    <Printer size={16} />
+                                                </button>
                                             </div>
                                             
                                             <div className="space-y-3 pt-2 text-sm text-slate-400">
@@ -322,6 +356,17 @@ export const ClientDetails = () => {
                             )}
                         </div>
                     )}
+
+                    {/* Hidden printable forms */}
+                    {client && consentForms && consentForms.map((form, idx) => (
+                        <div key={`print-${form.id}`} style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+                            <PrintableConsentForm
+                                ref={(el: HTMLDivElement | null) => { printRefs.current[idx] = el; }}
+                                form={form}
+                                clientName={`${client.firstName} ${client.lastName}`}
+                            />
+                        </div>
+                    ))}
                 </div>
             </Card>
 
