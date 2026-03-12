@@ -1,23 +1,28 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2 } from 'lucide-react';
+import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature } from 'lucide-react';
 import { Card } from '../components/tremor/Card';
 import { TabNavigation, TabNavigationLink } from '../components/tremor/TabNavigation';
 import { Button } from '../components/tremor/Button';
 import { useClientStore } from '../store/client.store';
+import { useConsentStore } from '../store/consent.store';
+import { NewConsentFormModal } from '../components/clients/NewConsentFormModal';
 
 export const ClientDetails = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<'info' | 'images' | 'appointments'>('info');
+    const [activeTab, setActiveTab] = useState<'info' | 'images' | 'appointments' | 'consents'>('info');
+    const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
 
     const { selectedClient: client, isLoading, error, fetchClientById } = useClientStore();
+    const { consentForms, fetchClientConsents, isLoading: isConsentsLoading } = useConsentStore();
 
     useEffect(() => {
         if (id) {
             fetchClientById(id);
+            fetchClientConsents(id);
         }
-    }, [id, fetchClientById]);
+    }, [id, fetchClientById, fetchClientConsents]);
 
     if (isLoading) {
         return (
@@ -79,6 +84,7 @@ export const ClientDetails = () => {
                             { id: 'info', label: 'Details & History', icon: FileText },
                             { id: 'images', label: 'Reference Images', icon: ImageIcon },
                             { id: 'appointments', label: 'Appointments', icon: Calendar },
+                            { id: 'consents', label: 'Consent Forms', icon: FileSignature },
                         ].map((tab) => (
                             <TabNavigationLink
                                 key={tab.id}
@@ -183,8 +189,75 @@ export const ClientDetails = () => {
                             )}
                         </div>
                     )}
+
+                    {activeTab === 'consents' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-lg font-semibold text-white">Digital Consent Forms</h3>
+                                <Button 
+                                    onClick={() => setIsConsentModalOpen(true)}
+                                    className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none"
+                                >
+                                    <Plus size={16} className="mr-1.5" /> New Consent Form
+                                </Button>
+                            </div>
+
+                            {isConsentsLoading ? (
+                                <div className="flex items-center justify-center h-32">
+                                    <Loader2 className="w-6 h-6 text-gold-500 animate-spin" />
+                                </div>
+                            ) : consentForms && consentForms.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {consentForms.map(form => (
+                                        <div key={form.id} className="bg-slate-950 p-5 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors">
+                                            <div className="flex justify-between items-start mb-4 border-b border-slate-800/80 pb-3">
+                                                <div className="flex items-center text-slate-300">
+                                                    <FileSignature size={20} className="mr-2 text-gold-500" />
+                                                    <span className="font-medium text-white">Signed Form</span>
+                                                </div>
+                                                <span className="text-xs text-slate-500 bg-slate-900 px-2 py-1 rounded">
+                                                    {new Date(form.createdAt).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                            
+                                            <div className="space-y-3 pt-2 text-sm text-slate-400">
+                                                <div>
+                                                    <span className="block text-xs uppercase text-slate-500 mb-0.5">Medical Conditions</span>
+                                                    <span className="text-slate-300">{form.medicalConditions || 'None reported'}</span>
+                                                </div>
+                                                <div>
+                                                    <span className="block text-xs uppercase text-slate-500 mb-0.5">Allergies</span>
+                                                    <span className="text-slate-300">{form.allergies || 'None reported'}</span>
+                                                </div>
+                                                <div className="mt-4 pt-3 border-t border-slate-800/50 flex flex-col">
+                                                    <span className="text-xs text-emerald-500/80 uppercase font-medium tracking-wider mb-1">Digitally Signed By</span>
+                                                    <span className="font-[Satisfy,cursive] italic text-xl text-gold-500/90">{form.signatureName}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-16 text-slate-500 bg-slate-900/30 rounded-2xl border border-slate-800/50 border-dashed">
+                                    <div className="bg-slate-800/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <FileSignature size={32} className="text-slate-400" />
+                                    </div>
+                                    <h3 className="text-white font-medium mb-1">No consent forms found</h3>
+                                    <p className="text-slate-400 text-sm max-w-sm mx-auto mb-6">Collect digital signatures from your client before starting the session.</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </Card>
+
+            {client && (
+                <NewConsentFormModal 
+                    open={isConsentModalOpen} 
+                    onOpenChange={setIsConsentModalOpen} 
+                    clientId={client.id} 
+                />
+            )}
         </div>
     );
 };

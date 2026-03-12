@@ -8,9 +8,13 @@ import {
     deleteClient,
 } from '../controllers/client.controller';
 
+import consentRoutes from './consent.routes';
+
 const router = Router();
 
 router.use(requireAuth);
+
+router.use('/:clientId/consent-forms', consentRoutes);
 
 router.get('/', getClients);
 router.get('/:id', getClientById);

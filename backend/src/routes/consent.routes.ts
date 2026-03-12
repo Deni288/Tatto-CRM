@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.middleware';
 import {
-    getConsentByAppointmentId,
+    getClientConsentForms,
     createConsentForm,
 } from '../controllers/consent.controller';
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(requireAuth);
 
-router.get('/appointment/:appointmentId', getConsentByAppointmentId);
+router.get('/', getClientConsentForms);
 router.post('/', createConsentForm);
 
 export default router;

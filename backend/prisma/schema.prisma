@@ -26,30 +26,30 @@ enum Role {
 }
 
 model Client {
-  id             String   @id @default(uuid())
-  artistId       String
-  artist         User     @relation(fields: [artistId], references: [id])
-  firstName      String
-  lastName       String
-  email          String?
-  phone          String?
-  tattooHistory  String?  @db.Text
-  customFields   Json?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String   @id @default(uuid())
+  artistId      String
+  artist        User     @relation(fields: [artistId], references: [id])
+  firstName     String
+  lastName      String
+  email         String?
+  phone         String?
+  tattooHistory String?  @db.Text
+  customFields  Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  appointments   Appointment[]
-  consentForms   ConsentForm[]
-  images         ClientImage[]
+  appointments Appointment[]
+  consentForms ConsentForm[]
+  images       ClientImage[]
 }
 
 model ClientImage {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   clientId  String
-  client    Client   @relation(fields: [clientId], references: [id])
+  client    Client    @relation(fields: [clientId], references: [id])
   imageUrl  String
   type      ImageType
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 }
 
 enum ImageType {
@@ -58,27 +58,25 @@ enum ImageType {
 }
 
 model Appointment {
-  id             String   @id @default(uuid())
-  clientId       String
-  client         Client   @relation(fields: [clientId], references: [id])
-  artistId       String
-  artist         User     @relation(fields: [artistId], references: [id])
-  title          String
-  description    String?
-  startTime      DateTime
-  endTime        DateTime
-  status         ApptStatus @default(SCHEDULED)
-  price          Decimal?
-  depositAmount  Decimal?
-  depositPaid    Boolean  @default(false)
+  id              String     @id @default(uuid())
+  clientId        String
+  client          Client     @relation(fields: [clientId], references: [id])
+  artistId        String
+  artist          User       @relation(fields: [artistId], references: [id])
+  title           String
+  description     String?
+  startTime       DateTime
+  endTime         DateTime
+  status          ApptStatus @default(SCHEDULED)
+  price           Decimal?
+  depositAmount   Decimal?
+  depositPaid     Boolean    @default(false)
   stripePaymentId String?
 
-  googleEventId  String?
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  googleEventId String?
 
-  consentForm    ConsentForm?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ApptStatus {
@@ -89,13 +87,12 @@ enum ApptStatus {
 }
 
 model ConsentForm {
-  id            String   @id @default(uuid())
-  clientId      String
-  client        Client   @relation(fields: [clientId], references: [id])
-  appointmentId String   @unique
-  appointment   Appointment @relation(fields: [appointmentId], references: [id])
-  
-  formData      Json
-  signatureUrl  String
-  signedAt      DateTime @default(now())
+  id                String   @id @default(uuid())
+  clientId          String
+  client            Client   @relation(fields: [clientId], references: [id])
+  medicalConditions String?  @db.Text
+  allergies         String?  @db.Text
+  agreedToTerms     Boolean  @default(true)
+  signatureName     String
+  createdAt         DateTime @default(now())
 }
