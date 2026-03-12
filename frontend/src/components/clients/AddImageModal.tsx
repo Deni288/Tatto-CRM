@@ -11,7 +11,7 @@ import { useGalleryStore } from '../../store/gallery.store';
 import { gooeyToast } from 'goey-toast';
 
 const gallerySchema = z.object({
-    imageUrl: z.string().url("Must be a valid image URL"),
+    imageUrl: z.string().min(1, "Image URL is required"),
     description: z.string().optional(),
 });
 
@@ -47,6 +47,7 @@ export const AddImageModal = ({ open, onOpenChange, clientId }: AddImageModalPro
             setPreviewUrl('');
             onOpenChange(false);
         } catch (error: any) {
+            console.error('Gallery save error:', error);
             gooeyToast.error(error?.response?.data?.error || 'Failed to add image');
         } finally {
             setIsSubmitting(false);
@@ -79,7 +80,7 @@ export const AddImageModal = ({ open, onOpenChange, clientId }: AddImageModalPro
                             <Label htmlFor="imageUrl" className="text-slate-300">Image URL *</Label>
                             <Input
                                 id="imageUrl"
-                                type="url"
+                                type="text"
                                 placeholder="https://example.com/image.jpg"
                                 {...register('imageUrl')}
                                 className={errors.imageUrl ? "border-red-500" : ""}
