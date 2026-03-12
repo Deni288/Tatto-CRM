@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { cx } from '../../lib/utils';
 import { motion } from 'framer-motion';
+import { GlobalSearch } from './GlobalSearch';
 
 export const AppLayout = () => {
     const { isAuthenticated, logout, user } = useAuthStore();
@@ -45,6 +46,11 @@ export const AppLayout = () => {
                             <span className="text-xs text-slate-400 font-medium tracking-wide uppercase">Artist</span>
                             <span className="text-sm font-semibold text-white truncate">{user?.name}</span>
                         </div>
+                    </div>
+
+                    {/* Global Search */}
+                    <div className="px-4 py-3 border-b border-slate-800/50">
+                        <GlobalSearch />
                     </div>
 
                     {/* Desktop Navigation */}
@@ -103,6 +109,9 @@ export const AppLayout = () => {
                         Tattoo <span className="text-white">CRM</span>
                     </span>
                     <div className="flex items-center gap-3">
+                        <div className="w-40">
+                            <GlobalSearch />
+                        </div>
                         <button className="p-2 text-slate-400 hover:text-white bg-slate-800/50 rounded-full transition-colors relative">
                             <Bell size={20} />
                             <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 border-2 border-slate-900 rounded-full"></span>
