@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Calendar as CalendarIcon, Clock, MoreVertical, Loader2, CheckCircle, XCircle, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Calendar as CalendarIcon, Clock, MoreVertical, Loader2, CheckCircle, XCircle, Trash2, Edit2, MessageCircle } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Card } from '../components/tremor/Card';
 import { Input } from '../components/tremor/Input';
@@ -47,6 +47,26 @@ export const Appointments = () => {
                 gooeyToast.error('Failed to delete appointment');
             }
         }
+    };
+
+    const handleWhatsAppReminder = (appt: Appointment) => {
+        const client = appt.client;
+        if (!client?.phone) {
+            gooeyToast.error('This client has no phone number on file.');
+            return;
+        }
+
+        const cleanPhone = client.phone.replace(/[^0-9]/g, '');
+        if (!cleanPhone) {
+            gooeyToast.error('Client phone number is invalid.');
+            return;
+        }
+
+        const clientName = `${client.firstName} ${client.lastName}`;
+        const dateStr = format(new Date(appt.startTime), "dd.MM.yyyy 'u' HH:mm");
+        const text = `Bok ${clientName}, samo mali podsjetnik za tvoj termin za tetoviranje (${appt.title}) koji je zakazan za ${dateStr}. Vidimo se! 🖤`;
+
+        window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
     };
 
     return (
@@ -143,6 +163,14 @@ export const Appointments = () => {
                                                     >
                                                         <Edit2 size={16} className="mr-2 text-slate-400" />
                                                         Edit Appointment
+                                                    </DropdownMenu.Item>
+
+                                                    <DropdownMenu.Item 
+                                                        onSelect={() => handleWhatsAppReminder(appt)}
+                                                        className="flex items-center px-3 py-2.5 text-sm text-slate-200 outline-none hover:bg-emerald-500/10 hover:text-emerald-400 rounded-lg cursor-pointer transition-colors"
+                                                    >
+                                                        <MessageCircle size={16} className="mr-2 text-emerald-500" />
+                                                        Send WhatsApp Reminder
                                                     </DropdownMenu.Item>
 
                                                     <DropdownMenu.Separator className="h-px bg-slate-800 my-1" />
