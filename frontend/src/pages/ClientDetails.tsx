@@ -109,7 +109,7 @@ export const ClientDetails = () => {
                                 active={activeTab === tab.id}
                                 onClick={(e) => { e.preventDefault(); setActiveTab(tab.id as any); }}
                                 href="#"
-                                className="flex items-center py-4 px-2"
+                                className="flex items-center py-4 px-2 shrink-0"
                             >
                                 <tab.icon size={18} className="mr-2 shrink-0" />
                                 {tab.label}
