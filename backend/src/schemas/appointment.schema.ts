@@ -8,6 +8,7 @@ export const appointmentSchema = z.object({
     endTime: z.string().datetime('End time must be a valid ISO date'),
     price: z.coerce.number().min(0).nullable().optional().default(0),
     depositAmount: z.coerce.number().min(0).nullable().optional().default(0),
+    deposit: z.coerce.number().min(0).optional().default(0),
 });
 
 export type AppointmentFormData = z.infer<typeof appointmentSchema>;

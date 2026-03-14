@@ -31,6 +31,7 @@ export const createAppointment = async (req: Request, res: Response) => {
             ...parsed.data,
             price: parsed.data.price != null ? Number(parsed.data.price) : null,
             depositAmount: parsed.data.depositAmount != null ? Number(parsed.data.depositAmount) : null,
+            deposit: parsed.data.deposit ?? 0,
             artistId,
         },
     });

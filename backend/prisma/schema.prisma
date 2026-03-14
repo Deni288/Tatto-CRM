@@ -73,6 +73,7 @@ model Appointment {
   price           Decimal?
   depositAmount   Decimal?
   depositPaid     Boolean    @default(false)
+  deposit         Float      @default(0)
   stripePaymentId String?
 
   googleEventId String?
@@ -86,6 +87,19 @@ enum ApptStatus {
   COMPLETED
   CANCELLED
   NO_SHOW
+}
+
+model BookingRequest {
+  id             String   @id @default(uuid())
+  name           String
+  email          String
+  phone          String
+  tattooIdea     String
+  referenceLink  String?
+  preferredMonth String
+  status         String   @default("PENDING")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model ConsentForm {
