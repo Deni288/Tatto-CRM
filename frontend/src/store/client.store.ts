@@ -22,6 +22,7 @@ interface ClientState {
     fetchClients: () => Promise<void>;
     fetchClientById: (id: string) => Promise<void>;
     addClient: (data: ClientFormData) => Promise<void>;
+    deleteClient: (id: string) => Promise<void>;
 }
 
 export const useClientStore = create<ClientState>((set, get) => ({
@@ -59,5 +60,20 @@ export const useClientStore = create<ClientState>((set, get) => ({
             set({ error: err.response?.data?.error || 'Failed to add client', isLoading: false });
             throw err;
         }
-    }
+    },
+
+    deleteClient: async (id: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.delete(`/clients/${id}`);
+            set({
+                clients: get().clients.filter(c => c.id !== id),
+                selectedClient: null,
+                isLoading: false,
+            });
+        } catch (err: any) {
+            set({ error: err.response?.data?.error || 'Failed to delete client', isLoading: false });
+            throw err;
+        }
+    },
 }));

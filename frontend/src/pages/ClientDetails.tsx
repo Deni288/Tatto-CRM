@@ -20,9 +20,24 @@ export const ClientDetails = () => {
     const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
     const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    const { selectedClient: client, isLoading, error, fetchClientById } = useClientStore();
+    const { selectedClient: client, isLoading, error, fetchClientById, deleteClient } = useClientStore();
     const { consentForms, fetchClientConsents, isLoading: isConsentsLoading } = useConsentStore();
     const { images: galleryImages, fetchGallery, deleteImage, isLoading: isGalleryLoading } = useGalleryStore();
+
+    const handleDeleteClient = async () => {
+        if (!id) return;
+        const confirmed = window.confirm(
+            'Are you sure you want to remove this client? Their records will be archived.'
+        );
+        if (!confirmed) return;
+        try {
+            await deleteClient(id);
+            gooeyToast.success('Client has been archived successfully');
+            navigate('/clients');
+        } catch {
+            gooeyToast.error('Failed to archive client');
+        }
+    };
 
     useEffect(() => {
         if (id) {
@@ -89,10 +104,20 @@ export const ClientDetails = () => {
                         </div>
                     </div>
 
-                    <Button variant="secondary" className="flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700">
-                        <Edit3 size={18} className="mr-2" />
-                        Edit Profile
-                    </Button>
+                    <div className="flex items-center gap-3">
+                        <Button variant="secondary" className="flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700">
+                            <Edit3 size={18} className="mr-2" />
+                            Edit Profile
+                        </Button>
+                        <Button
+                            onClick={handleDeleteClient}
+                            variant="secondary"
+                            className="flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border-red-500/20 hover:border-red-500/40 transition-colors"
+                        >
+                            <Trash2 size={18} className="mr-2" />
+                            Delete Client
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Custom Tabs */}
