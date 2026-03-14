@@ -100,6 +100,9 @@ export const deleteClient = async (req: Request, res: Response) => {
     const id = req.params.id as string;
     const artistId = req.user!.userId;
 
+    // 👇 OVO JE NAŠA ZAMKA 👇
+    console.log("🚨 ALARM: SOFT DELETE FUNKCIJA JE POKRENUTA ZA KLIJENTA:", id);
+
     const existing = await prisma.client.findFirst({ where: { id, artistId, isActive: true } });
     if (!existing) {
         res.status(404).json({ error: 'Client not found' });
