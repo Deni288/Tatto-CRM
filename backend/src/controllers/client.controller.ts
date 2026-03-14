@@ -7,7 +7,7 @@ export const getClients = async (req: Request, res: Response) => {
     const artistId = req.user!.userId;
     try {
         const clients = await prisma.client.findMany({
-            where: { artistId },
+            where: { artistId, isActive: true },
             orderBy: { createdAt: 'desc' },
         });
         res.json(clients);
@@ -22,7 +22,7 @@ export const getClientById = async (req: Request, res: Response) => {
     const artistId = req.user!.userId;
 
     const client = await prisma.client.findFirst({
-        where: { id, artistId },
+        where: { id, artistId, isActive: true },
         include: {
             appointments: true,
             consentForms: true,
@@ -100,12 +100,12 @@ export const deleteClient = async (req: Request, res: Response) => {
     const id = req.params.id as string;
     const artistId = req.user!.userId;
 
-    const existing = await prisma.client.findFirst({ where: { id, artistId } });
+    const existing = await prisma.client.findFirst({ where: { id, artistId, isActive: true } });
     if (!existing) {
         res.status(404).json({ error: 'Client not found' });
         return;
     }
 
-    await prisma.client.delete({ where: { id } });
-    res.status(204).send();
+    await prisma.client.update({ where: { id }, data: { isActive: false } });
+    res.status(200).json({ message: 'Client deactivated successfully' });
 };

@@ -35,6 +35,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
     const newClientsThisMonth = await prisma.client.count({
         where: {
             artistId,
+            isActive: true,
             createdAt: {
                 gte: startOfMonth,
                 lte: endOfMonth
@@ -46,6 +47,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
     const todaysAppointments = await prisma.appointment.findMany({
         where: {
             artistId,
+            client: { isActive: true },
             startTime: {
                 gte: startOfDay,
                 lte: endOfDay

@@ -5,7 +5,7 @@ import { appointmentSchema } from '../schemas/appointment.schema';
 export const getAppointments = async (req: Request, res: Response) => {
     const artistId = req.user!.userId;
     const appointments = await prisma.appointment.findMany({
-        where: { artistId },
+        where: { artistId, client: { isActive: true } },
         include: { client: true },
         orderBy: { startTime: 'asc' },
     });
@@ -20,7 +20,7 @@ export const createAppointment = async (req: Request, res: Response) => {
     }
 
     const artistId = req.user!.userId;
-    const client = await prisma.client.findFirst({ where: { id: parsed.data.clientId, artistId } });
+    const client = await prisma.client.findFirst({ where: { id: parsed.data.clientId, artistId, isActive: true } });
     if (!client) {
         res.status(404).json({ error: 'Client not found' });
         return;
