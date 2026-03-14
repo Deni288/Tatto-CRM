@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature, Trash2, Printer } from 'lucide-react';
+import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature, Trash2, Printer, MessageCircle } from 'lucide-react';
 import { Card } from '../components/tremor/Card';
 import { TabNavigation, TabNavigationLink } from '../components/tremor/TabNavigation';
 import { Button } from '../components/tremor/Button';
@@ -99,7 +99,23 @@ export const ClientDetails = () => {
                             <div className="flex flex-col sm:flex-row sm:items-center text-slate-400 gap-2 sm:gap-6 text-sm">
                                 <span>{client.email || 'No email'}</span>
                                 <span className="hidden sm:inline">•</span>
-                                <span>{client.phone || 'No phone'}</span>
+                                <span className="flex items-center gap-2">
+                                    {client.phone || 'No phone'}
+                                    {client.phone && (
+                                        <button
+                                            onClick={() => {
+                                                const cleanPhone = client.phone!.replace(/[^0-9]/g, '');
+                                                const aftercareText = 'Hvala na povjerenju! Evo uputa za njegu tetovaže: 1. Foliju drži 3 sata... 2. Peri blagim sapunom...';
+                                                window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(aftercareText)}`, '_blank');
+                                            }}
+                                            className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-colors"
+                                            title="Send aftercare instructions via WhatsApp"
+                                        >
+                                            <MessageCircle size={12} />
+                                            Aftercare
+                                        </button>
+                                    )}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -248,31 +264,41 @@ export const ClientDetails = () => {
                             {client.appointments && client.appointments.length > 0 ? (
                                 <div className="space-y-4">
                                     {client.appointments.map(apt => (
-                                        <div key={apt.id} className="bg-slate-950 p-5 rounded-xl border border-slate-800/80 hover:border-slate-700/80 transition-colors flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group">
-                                            <div className="flex-1">
-                                                <h4 className="font-semibold text-white text-lg group-hover:text-gold-500 transition-colors">{apt.title}</h4>
-                                                <div className="flex items-center text-sm text-slate-400 mt-1.5 space-x-2">
-                                                    <Calendar size={14} className="text-slate-500" />
-                                                    <span>
-                                                        {new Date(apt.startTime).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })} 
-                                                        &nbsp;—&nbsp; 
-                                                        {new Date(apt.endTime).toLocaleTimeString([], { timeStyle: 'short' })}
+                                        <div key={apt.id} className="bg-slate-950 rounded-xl border border-slate-800/80 hover:border-slate-700/80 transition-colors group overflow-hidden">
+                                            <div className="p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                                <div className="flex-1">
+                                                    <h4 className="font-semibold text-white text-lg group-hover:text-gold-500 transition-colors">{apt.title}</h4>
+                                                    <div className="flex items-center text-sm text-slate-400 mt-1.5 space-x-2">
+                                                        <Calendar size={14} className="text-slate-500" />
+                                                        <span>
+                                                            {new Date(apt.startTime).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })} 
+                                                            &nbsp;—&nbsp; 
+                                                            {new Date(apt.endTime).toLocaleTimeString([], { timeStyle: 'short' })}
+                                                        </span>
+                                                    </div>
+                                                    {apt.description && <p className="text-sm text-slate-500 mt-3 bg-slate-900/50 p-3 rounded-lg border border-slate-800/50">{apt.description}</p>}
+                                                </div>
+                                                <div className="w-full sm:w-auto flex flex-row sm:flex-col justify-between sm:justify-center items-center sm:items-end gap-3 pt-3 sm:pt-0 border-t border-slate-800 sm:border-0 mt-2 sm:mt-0">
+                                                    <div className="text-gold-400 font-semibold text-lg bg-gold-500/5 px-3 py-1 rounded-lg border border-gold-500/10">
+                                                        {apt.price ? `$${apt.price}` : '—'}
+                                                    </div>
+                                                    <span className={`text-xs px-3 py-1.5 rounded-full font-medium tracking-wide uppercase ${
+                                                        apt.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
+                                                        apt.status === 'CANCELLED' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 
+                                                        'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                                    }`}>
+                                                        {apt.status || 'SCHEDULED'}
                                                     </span>
                                                 </div>
-                                                {apt.description && <p className="text-sm text-slate-500 mt-3 bg-slate-900/50 p-3 rounded-lg border border-slate-800/50">{apt.description}</p>}
                                             </div>
-                                            <div className="w-full sm:w-auto flex flex-row sm:flex-col justify-between sm:justify-center items-center sm:items-end gap-3 pt-3 sm:pt-0 border-t border-slate-800 sm:border-0 mt-2 sm:mt-0">
-                                                <div className="text-gold-400 font-semibold text-lg bg-gold-500/5 px-3 py-1 rounded-lg border border-gold-500/10">
-                                                    {apt.price ? `$${apt.price}` : '—'}
+                                            {/* Deposit / Balance info */}
+                                            {(Number(apt.price) > 0 || Number((apt as any).deposit) > 0) && (
+                                                <div className="flex items-center gap-4 px-5 py-2.5 border-t border-slate-800/50 text-xs">
+                                                    <span className="text-slate-500">Total: <span className="text-slate-300 font-medium">€{Number(apt.price || 0).toFixed(0)}</span></span>
+                                                    <span className="text-slate-500">Deposit: <span className="text-emerald-400 font-medium">€{Number((apt as any).deposit || 0).toFixed(0)}</span></span>
+                                                    <span className="text-slate-500">Balance: <span className="text-gold-400 font-medium">€{(Number(apt.price || 0) - Number((apt as any).deposit || 0)).toFixed(0)}</span></span>
                                                 </div>
-                                                <span className={`text-xs px-3 py-1.5 rounded-full font-medium tracking-wide uppercase ${
-                                                    apt.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
-                                                    apt.status === 'CANCELLED' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 
-                                                    'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                                                }`}>
-                                                    {apt.status || 'SCHEDULED'}
-                                                </span>
-                                            </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

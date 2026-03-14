@@ -5,7 +5,8 @@ import {
     Calendar as CalendarIcon,
     LogOut,
     LayoutDashboard,
-    Bell
+    Bell,
+    Inbox
 } from 'lucide-react';
 import { cx } from '../../lib/utils';
 import { motion } from 'framer-motion';
@@ -23,6 +24,7 @@ export const AppLayout = () => {
         { name: 'Dashboard', path: '/', icon: LayoutDashboard },
         { name: 'Clients', path: '/clients', icon: Users },
         { name: 'Appointments', path: '/appointments', icon: CalendarIcon },
+        { name: 'Requests', path: '/booking-requests', icon: Inbox },
     ];
 
     return (

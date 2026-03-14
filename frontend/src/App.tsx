@@ -11,6 +11,8 @@ import { Clients } from './pages/Clients';
 import { ClientDetails } from './pages/ClientDetails';
 import { Appointments } from './pages/Appointments';
 import { ConsentForm } from './pages/ConsentForm';
+import { BookingPage } from './pages/BookingPage';
+import { BookingRequests } from './pages/BookingRequests';
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -26,12 +28,14 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/booking" element={<BookingPage />} />
 
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="clients" element={<Clients />} />
             <Route path="clients/:id" element={<ClientDetails />} />
             <Route path="appointments" element={<Appointments />} />
+            <Route path="booking-requests" element={<BookingRequests />} />
             <Route path="consent/:appointmentId" element={<ConsentForm />} />
           </Route>
 

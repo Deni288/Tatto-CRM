@@ -15,6 +15,7 @@ export interface Appointment {
     price: number | null;
     depositAmount: number | null;
     depositPaid: boolean;
+    deposit: number;
     createdAt: string;
     client?: Client; // the included client relation
 }

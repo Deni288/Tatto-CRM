@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Calendar as CalendarIcon, Clock, MoreVertical, Loader2, CheckCircle, XCircle, Trash2, Edit2, MessageCircle, User } from 'lucide-react';
+import { Plus, Calendar as CalendarIcon, Clock, MoreVertical, Loader2, CheckCircle, XCircle, Trash2, Edit2, MessageCircle, User, Heart } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Card } from '../components/tremor/Card';
 import { Input } from '../components/tremor/Input';
@@ -90,6 +90,23 @@ export const Appointments = () => {
         const text = `Bok ${clientName}, samo mali podsjetnik za tvoj termin za tetoviranje (${appt.title}) koji je zakazan za ${dateStr}. Vidimo se! 🖤`;
 
         window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
+    };
+
+    const handleWhatsAppAftercare = (appt: Appointment) => {
+        const client = appt.client;
+        if (!client?.phone) {
+            gooeyToast.error('This client has no phone number on file.');
+            return;
+        }
+
+        const cleanPhone = client.phone.replace(/[^0-9]/g, '');
+        if (!cleanPhone) {
+            gooeyToast.error('Client phone number is invalid.');
+            return;
+        }
+
+        const aftercareText = 'Hvala na povjerenju! Evo uputa za njegu tetovaže: 1. Foliju drži 3 sata... 2. Peri blagim sapunom...';
+        window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(aftercareText)}`, '_blank');
     };
 
     // Check if a day has appointments for dot indicators
@@ -283,6 +300,14 @@ export const Appointments = () => {
                                                                             WhatsApp Reminder
                                                                         </DropdownMenu.Item>
 
+                                                                        <DropdownMenu.Item 
+                                                                            onSelect={() => handleWhatsAppAftercare(appt)}
+                                                                            className="flex items-center px-3 py-2.5 text-sm text-slate-200 outline-none hover:bg-pink-500/10 hover:text-pink-400 rounded-lg cursor-pointer transition-colors"
+                                                                        >
+                                                                            <Heart size={15} className="mr-2 text-pink-500" />
+                                                                            Send Aftercare
+                                                                        </DropdownMenu.Item>
+
                                                                         <DropdownMenu.Separator className="h-px bg-slate-800 my-1" />
 
                                                                         <DropdownMenu.Item 
@@ -315,6 +340,15 @@ export const Appointments = () => {
                                                             </DropdownMenu.Root>
                                                         </div>
                                                     </div>
+
+                                                    {/* Deposit / Balance row */}
+                                                    {(Number(appt.price) > 0 || appt.deposit > 0) && (
+                                                        <div className="flex items-center gap-4 px-5 py-3 border-t border-slate-800/60 bg-slate-950/40 text-xs">
+                                                            <span className="text-slate-500">Total: <span className="text-slate-300 font-medium">€{Number(appt.price || 0).toFixed(0)}</span></span>
+                                                            <span className="text-slate-500">Deposit: <span className="text-emerald-400 font-medium">€{Number(appt.deposit || 0).toFixed(0)}</span></span>
+                                                            <span className="text-slate-500">Balance: <span className="text-gold-400 font-medium">€{(Number(appt.price || 0) - Number(appt.deposit || 0)).toFixed(0)}</span></span>
+                                                        </div>
+                                                    )}
                                                 </Card>
                                             </motion.div>
                                         );
