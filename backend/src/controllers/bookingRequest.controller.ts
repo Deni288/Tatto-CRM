@@ -67,6 +67,7 @@ export const updateBookingRequestStatus = async (req: Request, res: Response) =>
 
 // Protected — converts a booking request into a Client
 export const convertRequestToClient = async (req: Request, res: Response) => {
+    console.log(`[Controller] convertRequestToClient called for ID: ${req.params.id}`);
     const id = req.params.id as string;
     const artistId = req.user!.userId;
 

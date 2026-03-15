@@ -13,8 +13,11 @@ const router = Router();
 router.post('/', createBookingRequest);
 
 // Protected routes — require auth
+console.log('Registering route: GET /api/booking-requests/');
 router.get('/', requireAuth, getBookingRequests);
+console.log('Registering route: PUT /api/booking-requests/:id/status');
 router.put('/:id/status', requireAuth, updateBookingRequestStatus);
+console.log('Registering route: POST /api/booking-requests/:id/convert');
 router.post('/:id/convert', requireAuth, convertRequestToClient);
 
 export default router;
