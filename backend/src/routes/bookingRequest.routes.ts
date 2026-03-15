@@ -4,6 +4,7 @@ import {
     createBookingRequest,
     getBookingRequests,
     updateBookingRequestStatus,
+    convertRequestToClient,
 } from '../controllers/bookingRequest.controller';
 
 const router = Router();
@@ -14,5 +15,6 @@ router.post('/', createBookingRequest);
 // Protected routes — require auth
 router.get('/', requireAuth, getBookingRequests);
 router.put('/:id/status', requireAuth, updateBookingRequestStatus);
+router.post('/:id/convert', requireAuth, convertRequestToClient);
 
 export default router;

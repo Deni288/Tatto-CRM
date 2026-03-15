@@ -64,3 +64,44 @@ export const updateBookingRequestStatus = async (req: Request, res: Response) =>
         res.status(500).json({ error: 'Failed to update booking request status', details: error.message });
     }
 };
+
+// Protected — converts a booking request into a Client
+export const convertRequestToClient = async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const artistId = req.user!.userId;
+
+    try {
+        const bookingRequest = await prisma.bookingRequest.findUnique({ where: { id } });
+        if (!bookingRequest) {
+            res.status(404).json({ error: 'Booking request not found' });
+            return;
+        }
+
+        // Split name into firstName / lastName
+        const nameParts = bookingRequest.name.trim().split(/\s+/);
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        // Create Client from booking request data
+        const client = await prisma.client.create({
+            data: {
+                artistId,
+                firstName,
+                lastName,
+                email: bookingRequest.email,
+                phone: bookingRequest.phone,
+                tattooHistory: bookingRequest.tattooIdea,
+            },
+        });
+
+        // Mark the booking request as approved
+        await prisma.bookingRequest.update({
+            where: { id },
+            data: { status: 'APPROVED' },
+        });
+
+        res.status(201).json(client);
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to convert request to client', details: error.message });
+    }
+};

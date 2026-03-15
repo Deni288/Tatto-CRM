@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Inbox, Loader2, CheckCircle, XCircle, Mail, Phone, Calendar, ExternalLink, Sparkles } from 'lucide-react';
+import { Inbox, Loader2, CheckCircle, XCircle, Mail, Phone, Calendar, ExternalLink, Sparkles, MessageCircle, UserPlus } from 'lucide-react';
 import { Card } from '../components/tremor/Card';
 import { Button } from '../components/tremor/Button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +15,7 @@ const statusConfig: Record<string, { bg: string; text: string; dot: string; labe
 type StatusFilter = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export const BookingRequests = () => {
-    const { requests, isLoading, fetchRequests, updateRequestStatus } = useBookingRequestStore();
+    const { requests, isLoading, fetchRequests, updateRequestStatus, convertToClient } = useBookingRequestStore();
     const [filter, setFilter] = useState<StatusFilter>('ALL');
 
     useEffect(() => {
@@ -30,6 +30,23 @@ export const BookingRequests = () => {
             gooeyToast.success(`Request ${status.toLowerCase()} successfully`);
         } catch {
             gooeyToast.error('Failed to update request status');
+        }
+    };
+
+    const handleWhatsApp = (request: { name: string; phone: string }) => {
+        const message = encodeURIComponent(
+            `Bok ${request.name}, ovdje studio! Vidio sam tvoj upit za tetovažu, ideja je super. Idemo dogovoriti termin!`
+        );
+        window.open(`https://wa.me/${request.phone}?text=${message}`, '_blank');
+    };
+
+    const handleConvertToClient = async (id: string) => {
+        if (!window.confirm('Pretvori ovaj upit u službenog klijenta?')) return;
+        try {
+            await convertToClient(id);
+            gooeyToast.success('Request converted to client successfully');
+        } catch {
+            gooeyToast.error('Failed to convert request to client');
         }
     };
 
@@ -156,7 +173,21 @@ export const BookingRequests = () => {
 
                                                 {/* Actions */}
                                                 {req.status === 'PENDING' && (
-                                                    <div className="flex items-center gap-3 pt-4 border-t border-slate-800/60">
+                                                    <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-800/60">
+                                                        <Button
+                                                            onClick={() => handleWhatsApp(req)}
+                                                            className="bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/20 hover:border-green-500/40 text-sm h-9 px-4"
+                                                        >
+                                                            <MessageCircle size={15} className="mr-1.5" />
+                                                            WhatsApp
+                                                        </Button>
+                                                        <Button
+                                                            onClick={() => handleConvertToClient(req.id)}
+                                                            className="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border-indigo-500/20 hover:border-indigo-500/40 text-sm h-9 px-4"
+                                                        >
+                                                            <UserPlus size={15} className="mr-1.5" />
+                                                            Convert to Client
+                                                        </Button>
                                                         <Button
                                                             onClick={() => handleStatusChange(req.id, 'APPROVED')}
                                                             className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/20 hover:border-emerald-500/40 text-sm h-9 px-4"

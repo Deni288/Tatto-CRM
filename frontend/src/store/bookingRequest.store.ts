@@ -31,6 +31,7 @@ interface BookingRequestState {
     fetchRequests: () => Promise<void>;
     submitRequest: (data: BookingRequestFormData) => Promise<void>;
     updateRequestStatus: (id: string, status: 'APPROVED' | 'REJECTED') => Promise<void>;
+    convertToClient: (id: string) => Promise<void>;
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -69,6 +70,17 @@ export const useBookingRequestStore = create<BookingRequestState>()((set, get) =
             get().fetchRequests();
         } catch (err: any) {
             set({ error: err.response?.data?.error || 'Failed to update request status', isLoading: false });
+            throw err;
+        }
+    },
+
+    convertToClient: async (id: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.post(`/booking-requests/${id}/convert`);
+            get().fetchRequests();
+        } catch (err: any) {
+            set({ error: err.response?.data?.error || 'Failed to convert request to client', isLoading: false });
             throw err;
         }
     },

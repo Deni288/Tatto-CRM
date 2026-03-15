@@ -238,7 +238,7 @@ export const Appointments = () => {
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 gap-4">
                                                         {/* Left: Info */}
                                                         <div className="flex items-start space-x-4 flex-1 min-w-0">
-                                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/80 flex flex-col items-center justify-center text-gold-500 shrink-0">
+                                                            <div className="w-12 h-12 rounded-xl bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700/80 flex flex-col items-center justify-center text-gold-500 shrink-0">
                                                                 <Clock size={14} className="mb-0.5 opacity-60" />
                                                                 <span className="text-xs font-bold leading-none">
                                                                     {format(new Date(appt.startTime), 'HH:mm')}

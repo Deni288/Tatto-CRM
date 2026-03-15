@@ -224,7 +224,7 @@ export const ClientDetails = () => {
                                                 }}
                                             />
                                             {/* Hover overlay with delete */}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-3">
+                                            <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-3">
                                                 {img.description && (
                                                     <p className="text-white text-sm font-medium truncate mb-2">{img.description}</p>
                                                 )}
