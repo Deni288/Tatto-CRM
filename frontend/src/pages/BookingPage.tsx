@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useParams, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,8 +23,11 @@ const months = [
 ];
 
 export const BookingPage = () => {
+    const { artistId } = useParams<{ artistId: string }>();
     const { submitRequest, isLoading } = useBookingRequestStore();
     const [isSubmitted, setIsSubmitted] = useState(false);
+
+    if (!artistId) return <Navigate to="/" replace />;
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<BookingFormInput>({
         resolver: zodResolver(bookingSchema),
@@ -31,7 +35,7 @@ export const BookingPage = () => {
 
     const onSubmit = async (data: BookingFormInput) => {
         try {
-            await submitRequest(data as BookingRequestFormData);
+            await submitRequest(artistId, data as BookingRequestFormData);
             setIsSubmitted(true);
             reset();
         } catch {

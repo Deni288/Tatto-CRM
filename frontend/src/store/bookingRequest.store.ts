@@ -4,6 +4,7 @@ import { api } from '../api/axiosInstance';
 
 export interface BookingRequest {
     id: string;
+    artistId: string | null;
     name: string;
     email: string;
     phone: string;
@@ -12,7 +13,6 @@ export interface BookingRequest {
     preferredMonth: string;
     status: string;
     createdAt: string;
-    updatedAt: string;
 }
 
 export interface BookingRequestFormData {
@@ -29,7 +29,7 @@ interface BookingRequestState {
     isLoading: boolean;
     error: string | null;
     fetchRequests: () => Promise<void>;
-    submitRequest: (data: BookingRequestFormData) => Promise<void>;
+    submitRequest: (artistId: string, data: BookingRequestFormData) => Promise<void>;
     updateRequestStatus: (id: string, status: 'APPROVED' | 'REJECTED') => Promise<void>;
     convertToClient: (id: string) => Promise<void>;
 }
@@ -52,13 +52,14 @@ export const useBookingRequestStore = create<BookingRequestState>()((set, get) =
     },
 
     // Public endpoint — uses raw axios (no auth token)
-    submitRequest: async (data: BookingRequestFormData) => {
+    submitRequest: async (artistId: string, data: BookingRequestFormData) => {
         set({ isLoading: true, error: null });
         try {
-            await axios.post(`${API_URL}/booking-requests`, data);
+            await axios.post(`${API_URL}/booking-requests/${artistId}`, data);
             set({ isLoading: false });
-        } catch (err: any) {
-            set({ error: err.response?.data?.error || 'Failed to submit booking request', isLoading: false });
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Failed to submit booking request';
+            set({ error: message, isLoading: false });
             throw err;
         }
     },

@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  passwordHash String
-  name         String
-  role         Role     @default(ARTIST)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String           @id @default(uuid())
+  email           String           @unique
+  passwordHash    String
+  name            String
+  role            Role             @default(ARTIST)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
-  clients      Client[]
-  appointments Appointment[]
+  clients         Client[]
+  appointments    Appointment[]
+  bookingRequests BookingRequest[]
 }
 
 enum Role {
@@ -91,6 +92,8 @@ enum ApptStatus {
 
 model BookingRequest {
   id             String   @id @default(uuid())
+  artistId       String?
+  artist         User?    @relation(fields: [artistId], references: [id])
   name           String
   email          String
   phone          String

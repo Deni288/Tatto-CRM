@@ -9,15 +9,12 @@ import {
 
 const router = Router();
 
-// Public route — no auth required
-router.post('/', createBookingRequest);
+// Public route — no auth required, artistId identifies the artist
+router.post('/:artistId', createBookingRequest);
 
 // Protected routes — require auth
-console.log('Registering route: GET /api/booking-requests/');
 router.get('/', requireAuth, getBookingRequests);
-console.log('Registering route: PUT /api/booking-requests/:id/status');
 router.put('/:id/status', requireAuth, updateBookingRequestStatus);
-console.log('Registering route: POST /api/booking-requests/:id/convert');
 router.post('/:id/convert', requireAuth, convertRequestToClient);
 
 export default router;
