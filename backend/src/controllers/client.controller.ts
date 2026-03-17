@@ -1,33 +1,83 @@
 import { Request, Response } from 'express';
+import { z } from 'zod';
 import prisma from '../config/db';
 import { clientSchema } from '../schemas/client.schema';
 
-export const getClients = async (req: Request, res: Response) => {
-    console.log("=> [API] getClients Invoked");
+const idParamSchema = z.object({ id: z.uuid() });
+
+// Fields returned in list view — no tattooHistory/customFields (heavy, not needed for list)
+const clientListSelect = {
+    id: true,
+    firstName: true,
+    lastName: true,
+    email: true,
+    phone: true,
+    createdAt: true,
+} as const;
+
+// Fields returned in detail view — includes relations
+const clientDetailSelect = {
+    id: true,
+    firstName: true,
+    lastName: true,
+    email: true,
+    phone: true,
+    tattooHistory: true,
+    customFields: true,
+    createdAt: true,
+    appointments: {
+        select: {
+            id: true,
+            title: true,
+            status: true,
+            scheduledAt: true,
+            depositAmount: true,
+            depositPaid: true,
+            price: true,
+        },
+        orderBy: { scheduledAt: 'desc' as const },
+    },
+    consentForms: {
+        select: {
+            id: true,
+            agreedToTerms: true,
+            createdAt: true,
+        },
+    },
+    images: {
+        select: {
+            id: true,
+            imageUrl: true,
+            description: true,
+            createdAt: true,
+        },
+    },
+} as const;
+
+export const getClients = async (req: Request, res: Response): Promise<void> => {
     const artistId = req.user!.userId;
-    try {
-        const clients = await prisma.client.findMany({
-            where: { artistId, isActive: true },
-            orderBy: { createdAt: 'desc' },
-        });
-        res.json(clients);
-    } catch (err) {
-        console.error("=> [API] getClients Prisma Error:", err);
-        throw err;
-    }
+
+    const clients = await prisma.client.findMany({
+        where: { artistId, isActive: true },
+        orderBy: { createdAt: 'desc' },
+        select: clientListSelect,
+    });
+
+    res.json(clients);
 };
 
-export const getClientById = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+export const getClientById = async (req: Request, res: Response): Promise<void> => {
+    const paramsParsed = idParamSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+        res.status(400).json({ error: 'Invalid client ID' });
+        return;
+    }
+    const { id } = paramsParsed.data;
     const artistId = req.user!.userId;
 
     const client = await prisma.client.findFirst({
         where: { id, artistId, isActive: true },
-        include: {
-            appointments: true,
-            consentForms: true,
-            images: true,
-        }
+        select: clientDetailSelect,
     });
 
     if (!client) {
@@ -38,46 +88,48 @@ export const getClientById = async (req: Request, res: Response) => {
     res.json(client);
 };
 
-export const createClient = async (req: Request, res: Response) => {
-    console.log("=> [API] Incoming Create Client:", req.body);
+export const createClient = async (req: Request, res: Response): Promise<void> => {
     const parsed = clientSchema.safeParse(req.body);
     if (!parsed.success) {
-        console.error("=> [API] Zod Validation Error:", parsed.error.issues);
         res.status(400).json({ error: 'Invalid input', details: parsed.error.issues });
         return;
     }
 
-    try {
-        const artistId = req.user!.userId;
-        const client = await prisma.client.create({
-            data: {
-                ...parsed.data,
-                artistId,
-                email: parsed.data.email || null,
-                phone: parsed.data.phone || null,
-                tattooHistory: parsed.data.tattooHistory || null,
-            },
-        });
-        console.log("=> [API] Client created successfully:", client.id);
-        res.status(201).json(client);
-    } catch (err) {
-        console.error("=> [API] Prisma Error:", err);
-        throw err;
-    }
-};
-
-export const updateClient = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
     const artistId = req.user!.userId;
 
-    const parsed = clientSchema.safeParse(req.body);
-    if (!parsed.success) {
-        res.status(400).json({ error: 'Invalid input', details: parsed.error.issues });
+    const client = await prisma.client.create({
+        data: {
+            ...parsed.data,
+            artistId,
+            email: parsed.data.email || null,
+            phone: parsed.data.phone || null,
+            tattooHistory: parsed.data.tattooHistory || null,
+        },
+        select: clientListSelect,
+    });
+
+    res.status(201).json(client);
+};
+
+export const updateClient = async (req: Request, res: Response): Promise<void> => {
+    const paramsParsed = idParamSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+        res.status(400).json({ error: 'Invalid client ID' });
+        return;
+    }
+    const { id } = paramsParsed.data;
+    const artistId = req.user!.userId;
+
+    const bodyParsed = clientSchema.safeParse(req.body);
+    if (!bodyParsed.success) {
+        res.status(400).json({ error: 'Invalid input', details: bodyParsed.error.issues });
         return;
     }
 
-    // Verify ownership
-    const existing = await prisma.client.findFirst({ where: { id, artistId } });
+    const existing = await prisma.client.findFirst({
+        where: { id, artistId },
+        select: { id: true },
+    });
     if (!existing) {
         res.status(404).json({ error: 'Client not found' });
         return;
@@ -86,29 +138,39 @@ export const updateClient = async (req: Request, res: Response) => {
     const client = await prisma.client.update({
         where: { id },
         data: {
-            ...parsed.data,
-            email: parsed.data.email || null,
-            phone: parsed.data.phone || null,
-            tattooHistory: parsed.data.tattooHistory || null,
+            ...bodyParsed.data,
+            email: bodyParsed.data.email || null,
+            phone: bodyParsed.data.phone || null,
+            tattooHistory: bodyParsed.data.tattooHistory || null,
         },
+        select: clientDetailSelect,
     });
 
     res.json(client);
 };
 
-export const deleteClient = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+export const deleteClient = async (req: Request, res: Response): Promise<void> => {
+    const paramsParsed = idParamSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+        res.status(400).json({ error: 'Invalid client ID' });
+        return;
+    }
+    const { id } = paramsParsed.data;
     const artistId = req.user!.userId;
 
-    // 👇 OVO JE NAŠA ZAMKA 👇
-    console.log("🚨 ALARM: SOFT DELETE FUNKCIJA JE POKRENUTA ZA KLIJENTA:", id);
-
-    const existing = await prisma.client.findFirst({ where: { id, artistId, isActive: true } });
+    const existing = await prisma.client.findFirst({
+        where: { id, artistId, isActive: true },
+        select: { id: true },
+    });
     if (!existing) {
         res.status(404).json({ error: 'Client not found' });
         return;
     }
 
-    await prisma.client.update({ where: { id }, data: { isActive: false } });
+    await prisma.client.update({
+        where: { id },
+        data: { isActive: false },
+    });
+
     res.status(200).json({ message: 'Client deactivated successfully' });
 };
