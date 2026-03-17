@@ -1,19 +1,30 @@
 import { Card } from '../components/tremor/Card';
 import { Button } from '../components/tremor/Button';
 import { Badge } from '../components/tremor/Badge';
-import { Plus, Calendar, Clock, Users, DollarSign, ChevronRight } from 'lucide-react';
+import { Plus, Calendar, Clock, Users, DollarSign, ChevronRight, Link, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 
 import { useClientStore } from '../store/client.store';
 import { useDashboardStore } from '../store/dashboard.store';
-import { useEffect } from 'react';
+import { useAuthStore } from '../store/auth.store';
+import { useEffect, useState } from 'react';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
     const { fetchClients } = useClientStore();
     const { stats: dashboardStats, isLoading, fetchDashboardStats } = useDashboardStore();
+    const user = useAuthStore((state) => state.user);
+    const [linkCopied, setLinkCopied] = useState(false);
+
+    const handleCopyBookingLink = async (): Promise<void> => {
+        if (!user) return;
+        const link = `${window.location.origin}/book/${user.id}`;
+        await navigator.clipboard.writeText(link);
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+    };
 
     useEffect(() => {
         fetchClients();
@@ -55,6 +66,10 @@ export const Dashboard = () => {
                 </div>
                 {/* Desktop Buttons - Hidden on Mobile, moved to Quick Actions */}
                 <div className="hidden sm:flex gap-3">
+                    <Button onClick={handleCopyBookingLink} className="bg-slate-800 hover:bg-slate-700 text-white border-transparent shadow-lg hover:shadow-xl transition-all h-10">
+                        {linkCopied ? <Check size={18} className="mr-2 text-emerald-400" /> : <Link size={18} className="mr-2" />}
+                        {linkCopied ? 'Copied!' : 'Booking Link'}
+                    </Button>
                     <Button onClick={() => navigate('/appointments')} className="bg-slate-800 hover:bg-slate-700 text-white border-transparent shadow-lg hover:shadow-xl transition-all h-10">
                         <Calendar size={18} className="mr-2 hidden lg:block" />
                         View Calendar
