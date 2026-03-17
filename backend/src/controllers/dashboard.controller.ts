@@ -1,74 +1,77 @@
 import { Request, Response } from 'express';
 import prisma from '../config/db';
 
-export const getDashboardStats = async (req: Request, res: Response) => {
-    const artistId = req.user?.userId;
-    if (!artistId) {
-        res.status(401).json({ error: 'Unauthorized' });
-        return;
-    }
-
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+export const getDashboardStats = async (req: Request, res: Response): Promise<void> => {
+    const artistId = req.user!.userId;
 
     const now = new Date();
+
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
 
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
+    // Sve 4 query se izvršavaju paralelno — ne čekaju jedna drugu
+    const [revenueResult, upcomingAppointmentsCount, newClientsThisMonth, todaysAppointments] =
+        await Promise.all([
+            // SUM u bazi — ne dohvaćamo objekte samo da zbrajamo u JS-u
+            prisma.appointment.aggregate({
+                where: {
+                    artistId,
+                    startTime: { gte: startOfDay, lte: endOfDay },
+                },
+                _sum: { price: true },
+            }),
 
-    // 2. upcomingAppointmentsCount: Broj termina sa statusom SCHEDULED čiji je startTime u budućnosti
-    const upcomingAppointmentsCount = await prisma.appointment.count({
-        where: {
-            artistId,
-            status: 'SCHEDULED', // Adjust based on your schema default status
-            startTime: {
-                gt: now
-            }
-        }
-    });
+            prisma.appointment.count({
+                where: {
+                    artistId,
+                    status: 'SCHEDULED',
+                    startTime: { gt: now },
+                },
+            }),
 
-    // 3. newClientsThisMonth: Broj klijenata čiji je createdAt u tekućem mjesecu
-    const newClientsThisMonth = await prisma.client.count({
-        where: {
-            artistId,
-            isActive: true,
-            createdAt: {
-                gte: startOfMonth,
-                lte: endOfMonth
-            }
-        }
-    });
+            prisma.client.count({
+                where: {
+                    artistId,
+                    isActive: true,
+                    createdAt: { gte: startOfMonth, lte: endOfMonth },
+                },
+            }),
 
-    // 4. todaysAppointments: Dohvati listu termina za današnji dan, include client
-    const todaysAppointments = await prisma.appointment.findMany({
-        where: {
-            artistId,
-            client: { isActive: true },
-            startTime: {
-                gte: startOfDay,
-                lte: endOfDay
-            }
-        },
-        include: {
-            client: true
-        },
-        orderBy: {
-            startTime: 'asc'
-        }
-    });
+            // select — samo polja koja dashboard prikazuje
+            prisma.appointment.findMany({
+                where: {
+                    artistId,
+                    client: { isActive: true },
+                    startTime: { gte: startOfDay, lte: endOfDay },
+                },
+                orderBy: { startTime: 'asc' },
+                select: {
+                    id: true,
+                    title: true,
+                    status: true,
+                    startTime: true,
+                    client: {
+                        select: {
+                            firstName: true,
+                            lastName: true,
+                        },
+                    },
+                },
+            }),
+        ]);
 
-    // 1. todaysRevenue: Zbroj polja price (ili depositAmount) za sve termine danas u memoriji
-    const todaysRevenue = todaysAppointments.reduce((acc, appt) => 
-        acc + Number(appt.price || 0) + Number(appt.depositAmount || 0), 0);
+    const todaysRevenue = Number(revenueResult._sum.price ?? 0);
 
     res.json({
         todaysRevenue,
         upcomingAppointmentsCount,
         newClientsThisMonth,
-        todaysAppointments
+        todaysAppointments,
     });
 };
