@@ -25,8 +25,15 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
 
     const token = authHeader.split(' ')[1];
 
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+        console.error('=> [Auth] FATAL: JWT_SECRET is not set in environment variables!');
+        res.status(500).json({ error: 'Server configuration error' });
+        return;
+    }
+
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as AuthPayload;
+        const decoded = jwt.verify(token, jwtSecret) as AuthPayload;
         req.user = decoded;
         next();
     } catch (err: any) {
