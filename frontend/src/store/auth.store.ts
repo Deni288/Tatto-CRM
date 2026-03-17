@@ -15,6 +15,7 @@ interface AuthState {
     login: (user: User, token: string) => void;
     logout: () => void;
     checkAuth: () => void;
+    updateUser: (updates: Partial<Pick<User, 'name'>>) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -35,7 +36,11 @@ export const useAuthStore = create<AuthState>()(
             checkAuth: () => {
                 // With Zustand persist middleware, state is automatically hydrated from localStorage.
                 // We keep checkAuth for backwards compatibility with App.tsx if needed
-            }
+            },
+
+            updateUser: (updates) => set((state) => ({
+                user: state.user ? { ...state.user, ...updates } : null,
+            })),
         }),
         {
             name: 'auth-storage',

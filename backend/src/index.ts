@@ -8,6 +8,7 @@ import appointmentRoutes from './routes/appointment.routes';
 import consentRoutes from './routes/consent.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import bookingRequestRoutes from './routes/bookingRequest.routes';
+import userRoutes from './routes/user.routes';
 dotenv.config();
 
 const app = express();
@@ -36,6 +37,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/consents', consentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/booking-requests', bookingRequestRoutes);
+app.use('/api/users', userRoutes);
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });

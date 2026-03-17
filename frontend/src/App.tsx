@@ -18,6 +18,7 @@ import { Appointments } from './pages/Appointments';
 import { ConsentForm } from './pages/ConsentForm';
 import { BookingPage } from './pages/BookingPage';
 import { BookingRequests } from './pages/BookingRequests';
+import { Profile } from './pages/Profile';
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -43,6 +44,7 @@ function App() {
               <Route path="appointments" element={<Appointments />} />
               <Route path="booking-requests" element={<BookingRequests />} />
               <Route path="consent/:appointmentId" element={<ConsentForm />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
 

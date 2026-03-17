@@ -40,15 +40,15 @@ export const AppLayout = () => {
                     </div>
 
                     {/* User Info */}
-                    <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-800/50">
-                        <div className="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center font-bold text-gold-500 shadow-inner">
+                    <Link to="/profile" className="flex items-center gap-3 px-6 py-6 border-b border-slate-800/50 hover:bg-slate-800/40 transition-colors">
+                        <div className="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center font-bold text-gold-500 shadow-inner shrink-0">
                             {user?.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex flex-col overflow-hidden">
                             <span className="text-xs text-slate-400 font-medium tracking-wide uppercase">Artist</span>
                             <span className="text-sm font-semibold text-white truncate">{user?.name}</span>
                         </div>
-                    </div>
+                    </Link>
 
                     {/* Global Search */}
                     <div className="px-4 py-3 border-b border-slate-800/50">
@@ -118,9 +118,9 @@ export const AppLayout = () => {
                             <Bell size={20} />
                             <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 border-2 border-slate-900 rounded-full"></span>
                         </button>
-                        <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-sm font-bold text-gold-500">
+                        <Link to="/profile" className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-sm font-bold text-gold-500 hover:border-gold-500/50 transition-colors">
                             {user?.name.charAt(0).toUpperCase()}
-                        </div>
+                        </Link>
                     </div>
                 </header>
 
