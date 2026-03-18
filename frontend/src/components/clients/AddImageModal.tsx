@@ -1,14 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Loader2, ImagePlus } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { gallerySchema, type GalleryFormData } from '@tattoocrm/shared';
-import { Input } from '../tremor/Input';
+import { X, Loader2, ImagePlus, Upload } from 'lucide-react';
 import { Label } from '../tremor/Label';
 import { Button } from '../tremor/Button';
 import { useGalleryStore } from '../../store/gallery.store';
+import { api } from '../../api/axiosInstance';
 import { gooeyToast } from 'goey-toast';
+import axios from 'axios';
 
 interface AddImageModalProps {
     open: boolean;
@@ -16,49 +14,89 @@ interface AddImageModalProps {
     clientId: string;
 }
 
+interface UploadSignature {
+    signature: string;
+    timestamp: number;
+    cloudName: string;
+    apiKey: string;
+    folder: string;
+}
+
 export const AddImageModal = ({ open, onOpenChange, clientId }: AddImageModalProps) => {
     const { addImage } = useGalleryStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [previewUrl, setPreviewUrl] = useState('');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [description, setDescription] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<GalleryFormData>({
-        resolver: zodResolver(gallerySchema),
-        defaultValues: { imageUrl: '', description: '' },
-    });
+    const handleClose = (): void => {
+        setPreviewUrl('');
+        setSelectedFile(null);
+        setDescription('');
+        onOpenChange(false);
+    };
 
-    const watchedUrl = watch('imageUrl');
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setSelectedFile(file);
+        setPreviewUrl(URL.createObjectURL(file));
+    };
 
-    const onSubmit = async (data: GalleryFormData) => {
+    const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+        e.preventDefault();
+        if (!selectedFile) {
+            gooeyToast.error('Please select an image');
+            return;
+        }
+
         setIsSubmitting(true);
         try {
+            // 1. Get signed upload params from our backend
+            const { data: params } = await api.get<UploadSignature>('/upload/signature');
+
+            // 2. Upload directly to Cloudinary (bypasses our server)
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('api_key', params.apiKey);
+            formData.append('timestamp', String(params.timestamp));
+            formData.append('signature', params.signature);
+            formData.append('folder', params.folder);
+
+            const { data: cloudinaryData } = await axios.post<{
+                secure_url: string;
+                public_id: string;
+            }>(
+                `https://api.cloudinary.com/v1_1/${params.cloudName}/image/upload`,
+                formData
+            );
+
+            // 3. Save URL + publicId to our backend
             await addImage(clientId, {
-                imageUrl: data.imageUrl,
-                description: data.description || null,
+                imageUrl: cloudinaryData.secure_url,
+                description: description || undefined,
+                cloudinaryPublicId: cloudinaryData.public_id,
             });
+
             gooeyToast.success('Image added to gallery!');
-            reset();
-            setPreviewUrl('');
-            onOpenChange(false);
-        } catch (error: any) {
-            console.error('Gallery save error:', error);
-            gooeyToast.error(error?.response?.data?.error || 'Failed to add image');
+            handleClose();
+        } catch {
+            gooeyToast.error('Failed to upload image. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <Dialog.Root open={open} onOpenChange={(val) => {
-            if (!val) { reset(); setPreviewUrl(''); }
-            onOpenChange(val);
-        }}>
+        <Dialog.Root open={open} onOpenChange={(val) => { if (!val) handleClose(); }}>
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 animate-in fade-in" />
                 <Dialog.Content className="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] bg-slate-900 border border-slate-800 rounded-xl shadow-2xl animate-in fade-in zoom-in-95 duration-200">
                     <div className="flex items-center justify-between p-6 border-b border-slate-800/80">
                         <Dialog.Title className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
                             <ImagePlus size={22} className="text-gold-500" />
-                            Add Reference Image
+                            Add Image
                         </Dialog.Title>
                         <Dialog.Close asChild>
                             <button className="text-slate-500 hover:text-white transition-colors rounded-lg p-1 hover:bg-slate-800">
@@ -67,62 +105,69 @@ export const AddImageModal = ({ open, onOpenChange, clientId }: AddImageModalPro
                         </Dialog.Close>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-                        
+                    <form onSubmit={handleSubmit} className="p-6 space-y-5">
+
+                        {/* File picker */}
                         <div className="space-y-2">
-                            <Label htmlFor="imageUrl" className="text-slate-300">Image URL *</Label>
-                            <Input
-                                id="imageUrl"
-                                type="text"
-                                placeholder="https://example.com/image.jpg"
-                                {...register('imageUrl')}
-                                className={errors.imageUrl ? "border-red-500" : ""}
-                                onBlur={(e: React.FocusEvent<HTMLInputElement>) => setPreviewUrl(e.target.value)}
+                            <Label className="text-slate-300">Image *</Label>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="hidden"
                             />
-                            {errors.imageUrl && <p className="text-red-400 text-xs">{errors.imageUrl.message}</p>}
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-full border-2 border-dashed border-slate-700 hover:border-gold-500/50 rounded-xl p-6 flex flex-col items-center gap-2 text-slate-400 hover:text-slate-300 transition-colors cursor-pointer"
+                            >
+                                <Upload size={24} className="text-gold-500/70" />
+                                <span className="text-sm font-medium">
+                                    {selectedFile ? selectedFile.name : 'Click to select image'}
+                                </span>
+                                <span className="text-xs text-slate-600">JPG, PNG, WEBP up to 10MB</span>
+                            </button>
                         </div>
 
-                        {/* Live Preview */}
-                        {(previewUrl || watchedUrl) && (
+                        {/* Preview */}
+                        {previewUrl && (
                             <div className="rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
                                 <img
-                                    src={previewUrl || watchedUrl}
+                                    src={previewUrl}
                                     alt="Preview"
                                     className="w-full h-48 object-cover"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).style.display = 'none';
-                                    }}
-                                    onLoad={(e) => {
-                                        (e.target as HTMLImageElement).style.display = 'block';
-                                    }}
                                 />
                             </div>
                         )}
 
+                        {/* Description */}
                         <div className="space-y-2">
-                            <Label htmlFor="description" className="text-slate-300">Description (Optional)</Label>
-                            <Input
-                                id="description"
+                            <Label className="text-slate-300">Description (Optional)</Label>
+                            <input
+                                type="text"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 placeholder="e.g. Sleeve sketch, back piece reference..."
-                                {...register('description')}
+                                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors"
                             />
                         </div>
 
                         <div className="pt-4 flex justify-end gap-3 border-t border-slate-800/80">
-                            <Button 
-                                type="button" 
-                                variant="secondary" 
-                                onClick={() => onOpenChange(false)}
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={handleClose}
                                 className="bg-slate-800 hover:bg-slate-700 text-white border-none"
                             >
                                 Cancel
                             </Button>
-                            <Button 
-                                type="submit" 
-                                disabled={isSubmitting}
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting || !selectedFile}
                                 className="bg-gold-500 hover:bg-gold-400 text-slate-900 font-semibold border-none min-w-[120px] flex justify-center"
                             >
-                                {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : 'Add Image'}
+                                {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : 'Upload'}
                             </Button>
                         </div>
                     </form>

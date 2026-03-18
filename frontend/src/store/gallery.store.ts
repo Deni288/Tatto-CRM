@@ -12,6 +12,7 @@ export interface GalleryImage {
 export interface GalleryImageData {
     imageUrl: string;
     description?: string | null;
+    cloudinaryPublicId?: string;
 }
 
 interface GalleryState {

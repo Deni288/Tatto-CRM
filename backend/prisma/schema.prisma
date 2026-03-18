@@ -118,10 +118,11 @@ model ConsentForm {
 }
 
 model ClientGallery {
-  id          String   @id @default(uuid())
-  clientId    String
-  client      Client   @relation(fields: [clientId], references: [id])
-  imageUrl    String
-  description String?
-  createdAt   DateTime @default(now())
+  id                 String   @id @default(uuid())
+  clientId           String
+  client             Client   @relation(fields: [clientId], references: [id])
+  imageUrl           String
+  description        String?
+  cloudinaryPublicId String?
+  createdAt          DateTime @default(now())
 }

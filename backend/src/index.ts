@@ -13,6 +13,7 @@ import dashboardRoutes from './routes/dashboard.routes';
 import bookingRequestRoutes from './routes/bookingRequest.routes';
 import userRoutes from './routes/user.routes';
 import adminRoutes from './routes/admin.routes';
+import uploadRoutes from './routes/upload.routes';
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -43,6 +44,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/booking-requests', bookingRequestRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/upload', uploadRoutes);
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
