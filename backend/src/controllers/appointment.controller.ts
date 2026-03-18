@@ -5,8 +5,25 @@ import { appointmentSchema } from '../schemas/appointment.schema';
 export const getAppointments = async (req: Request, res: Response) => {
     const artistId = req.user!.userId;
     const appointments = await prisma.appointment.findMany({
-        where: { artistId, client: { isActive: true } },
-        include: { client: true },
+        where: { artistId, isActive: true, client: { isActive: true } },
+        select: {
+            id: true,
+            clientId: true,
+            artistId: true,
+            title: true,
+            description: true,
+            startTime: true,
+            endTime: true,
+            status: true,
+            price: true,
+            depositAmount: true,
+            depositPaid: true,
+            deposit: true,
+            createdAt: true,
+            client: {
+                select: { id: true, firstName: true, lastName: true },
+            },
+        },
         orderBy: { startTime: 'asc' },
     });
     res.json(appointments);
@@ -107,6 +124,10 @@ export const deleteAppointment = async (req: Request, res: Response) => {
         return;
     }
 
-    await prisma.appointment.delete({ where: { id } });
+    await prisma.appointment.update({
+        where: { id },
+        data: { isActive: false },
+        select: { id: true },
+    });
     res.status(204).send();
 };

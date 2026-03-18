@@ -77,8 +77,8 @@ model Appointment {
   depositPaid     Boolean    @default(false)
   deposit         Float      @default(0)
   stripePaymentId String?
-
-  googleEventId String?
+  googleEventId   String?
+  isActive        Boolean    @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
