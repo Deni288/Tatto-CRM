@@ -48,7 +48,7 @@ const clientDetailSelect = {
         select: {
             id: true,
             imageUrl: true,
-            description: true,
+            type: true,
             createdAt: true,
         },
     },
