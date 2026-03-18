@@ -9,6 +9,11 @@ const PrivateRoute = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
+
+const AdminRoute = () => {
+  const user = useAuthStore((state) => state.user);
+  return user?.role === 'ADMIN' ? <Outlet /> : <Navigate to="/" replace />;
+};
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
@@ -19,6 +24,7 @@ import { ConsentForm } from './pages/ConsentForm';
 import { BookingPage } from './pages/BookingPage';
 import { BookingRequests } from './pages/BookingRequests';
 import { Profile } from './pages/Profile';
+import { Admin } from './pages/Admin';
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -45,6 +51,9 @@ function App() {
               <Route path="booking-requests" element={<BookingRequests />} />
               <Route path="consent/:appointmentId" element={<ConsentForm />} />
               <Route path="profile" element={<Profile />} />
+              <Route element={<AdminRoute />}>
+                <Route path="admin" element={<Admin />} />
+              </Route>
             </Route>
           </Route>
 

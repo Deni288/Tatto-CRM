@@ -6,7 +6,8 @@ import {
     LogOut,
     LayoutDashboard,
     Bell,
-    Inbox
+    Inbox,
+    ShieldCheck
 } from 'lucide-react';
 import { cx } from '../../lib/utils';
 import { motion } from 'framer-motion';
@@ -25,6 +26,7 @@ export const AppLayout = () => {
         { name: 'Clients', path: '/clients', icon: Users },
         { name: 'Appointments', path: '/appointments', icon: CalendarIcon },
         { name: 'Requests', path: '/booking-requests', icon: Inbox },
+        ...(user?.role === 'ADMIN' ? [{ name: 'Admin', path: '/admin', icon: ShieldCheck }] : []),
     ];
 
     return (
@@ -45,7 +47,7 @@ export const AppLayout = () => {
                             {user?.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex flex-col overflow-hidden">
-                            <span className="text-xs text-slate-400 font-medium tracking-wide uppercase">Artist</span>
+                            <span className="text-xs text-slate-400 font-medium tracking-wide uppercase">{user?.role === 'ADMIN' ? 'Admin' : 'Artist'}</span>
                             <span className="text-sm font-semibold text-white truncate">{user?.name}</span>
                         </div>
                     </Link>
