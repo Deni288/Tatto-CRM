@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { env } from '../config/env';
 
 interface AuthPayload {
     userId: string;
@@ -23,17 +24,10 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
 
     const token = authHeader.split(' ')[1];
 
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-        console.error('[Auth] FATAL: JWT_SECRET is not set in environment variables!');
-        res.status(500).json({ error: 'Server configuration error' });
-        return;
-    }
-
     // try/catch je opravdan — jwt.verify je sinhroni poziv koji baca grešku,
     // Express 5 ne hvata sinkrone greške automatski
     try {
-        const decoded = jwt.verify(token, jwtSecret) as AuthPayload;
+        const decoded = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
         req.user = decoded;
         next();
     } catch (err: unknown) {

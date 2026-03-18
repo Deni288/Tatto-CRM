@@ -2,6 +2,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+dotenv.config();
+import './config/env'; // Validate required env vars at startup
 import authRoutes from './routes/auth.routes';
 import clientRoutes from './routes/client.routes';
 import appointmentRoutes from './routes/appointment.routes';
@@ -10,8 +12,6 @@ import dashboardRoutes from './routes/dashboard.routes';
 import bookingRequestRoutes from './routes/bookingRequest.routes';
 import userRoutes from './routes/user.routes';
 import adminRoutes from './routes/admin.routes';
-dotenv.config();
-
 const app = express();
 const port = process.env.PORT || 5000;
 
