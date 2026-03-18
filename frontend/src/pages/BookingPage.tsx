@@ -8,10 +8,10 @@ import { useBookingRequestStore, type BookingRequestFormData } from '../store/bo
 
 const bookingSchema = z.object({
     name: z.string().min(1, 'Name is required'),
-    email: z.string().email('Invalid email address'),
+    email: z.string().email({ message: 'Invalid email address' }),
     phone: z.string().min(1, 'Phone number is required'),
     tattooIdea: z.string().min(1, 'Please describe your tattoo idea'),
-    referenceLink: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+    referenceLink: z.string().url({ message: 'Must be a valid URL' }).optional().or(z.literal('')),
     preferredMonth: z.string().min(1, 'Please select a preferred month'),
 });
 

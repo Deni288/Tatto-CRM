@@ -12,7 +12,7 @@ import { useAppointmentStore, type Appointment } from '../../store/appointment.s
 import { gooeyToast } from 'goey-toast';
 
 const appointmentSchema = z.object({
-    clientId: z.string().uuid('Please select a client'),
+    clientId: z.string().uuid({ message: 'Please select a client' }),
     title: z.string().min(1, 'Title is required'),
     description: z.string().optional(),
     startTime: z.string().min(1, 'Start time is required'),

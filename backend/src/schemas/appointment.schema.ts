@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const appointmentSchema = z.object({
-    clientId: z.string().uuid('Invalid client ID format'),
+    clientId: z.string().uuid({ message: 'Invalid client ID format' }),
     title: z.string().min(1, 'Title is required'),
     description: z.string().optional(),
     startTime: z.string().datetime('Start time must be a valid ISO date'),

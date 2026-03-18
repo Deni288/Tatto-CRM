@@ -15,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 
 const registerSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
-    email: z.string().email('Invalid email address'),
+    email: z.string().email({ message: 'Invalid email address' }),
     password: z.string().min(6, 'Password must be at least 6 characters')
 });
 
@@ -35,10 +35,12 @@ export const Register = () => {
         try {
             const response = await api.post('/auth/register', data);
             login(response.data.user, response.data.token);
-            gooeyToast.success('Account created successfully!');
-            navigate('/');
-        } catch (error: any) {
-            gooeyToast.error(error.response?.data?.error || 'Failed to register');
+            gooeyToast.success('Account created! Copy your booking link and share it with clients.');
+            navigate('/profile');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Failed to register';
+            const apiError = (err as { response?: { data?: { error?: string } } }).response?.data?.error;
+            gooeyToast.error(apiError ?? message);
         } finally {
             setIsLoading(false);
         }
