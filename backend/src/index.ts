@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 import './config/env'; // Validate required env vars at startup
@@ -24,6 +25,7 @@ app.use(cors({
   ],
   credentials: true
 }));
+app.use(cookieParser());
 app.use(express.json());
 
 // Request logger

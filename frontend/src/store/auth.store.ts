@@ -14,6 +14,7 @@ interface AuthState {
     isAuthenticated: boolean;
     login: (user: User, token: string) => void;
     logout: () => void;
+    setToken: (token: string) => void;
     checkAuth: () => void;
     updateUser: (updates: Partial<Pick<User, 'name'>>) => void;
 }
@@ -30,7 +31,16 @@ export const useAuthStore = create<AuthState>()(
             },
 
             logout: () => {
+                // Fire-and-forget: clear the httpOnly cookie on server
+                fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include',
+                }).catch(() => {});
                 set({ user: null, token: null, isAuthenticated: false });
+            },
+
+            setToken: (token) => {
+                set({ token });
             },
 
             checkAuth: () => {

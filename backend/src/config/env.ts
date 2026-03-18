@@ -8,6 +8,7 @@ const requireEnv = (key: string): string => {
 
 export const env = {
     JWT_SECRET: requireEnv('JWT_SECRET'),
+    REFRESH_TOKEN_SECRET: requireEnv('REFRESH_TOKEN_SECRET'),
     DATABASE_URL: requireEnv('DATABASE_URL'),
     RESEND_API_KEY: requireEnv('RESEND_API_KEY'),
     PORT: process.env.PORT ?? '5000',
