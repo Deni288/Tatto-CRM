@@ -15,12 +15,19 @@ export interface Client {
     appointments?: Appointment[];
 }
 
+interface Pagination {
+    page: number;
+    totalPages: number;
+    total: number;
+}
+
 interface ClientState {
     clients: Client[];
     selectedClient: Client | null;
     isLoading: boolean;
     error: string | null;
-    fetchClients: () => Promise<void>;
+    pagination: Pagination;
+    fetchClients: (page?: number) => Promise<void>;
     fetchClientById: (id: string) => Promise<void>;
     addClient: (data: ClientFormData) => Promise<void>;
     updateClient: (id: string, data: ClientFormData) => Promise<void>;
@@ -33,17 +40,23 @@ const getErrorMessage = (err: unknown, fallback: string): string => {
     return apiErr.response?.data?.error ?? fallback;
 };
 
+const LIMIT = 20;
+
 export const useClientStore = create<ClientState>((set, get) => ({
     clients: [],
     selectedClient: null,
     isLoading: false,
     error: null,
+    pagination: { page: 1, totalPages: 1, total: 0 },
 
-    fetchClients: async () => {
+    fetchClients: async (page = 1) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await api.get<Client[]>('/clients');
-            set({ clients: response.data, isLoading: false });
+            const response = await api.get<{ data: Client[]; total: number; page: number; totalPages: number }>(
+                `/clients?page=${page}&limit=${LIMIT}`
+            );
+            const { data, total, totalPages } = response.data;
+            set({ clients: data, pagination: { page, total, totalPages }, isLoading: false });
         } catch (err: unknown) {
             set({ error: getErrorMessage(err, 'Failed to fetch clients'), isLoading: false });
         }
@@ -61,8 +74,8 @@ export const useClientStore = create<ClientState>((set, get) => ({
 
     addClient: async (data: ClientFormData) => {
         try {
-            const response = await api.post<Client>('/clients', data);
-            set({ clients: [response.data, ...get().clients] });
+            await api.post<Client>('/clients', data);
+            await get().fetchClients(1); // refresh first page — new client appears at top
         } catch (err: unknown) {
             set({ error: getErrorMessage(err, 'Failed to add client') });
             throw err;
@@ -93,6 +106,7 @@ export const useClientStore = create<ClientState>((set, get) => ({
         set({ clients: prev.filter((c) => c.id !== id), selectedClient: null });
         try {
             await api.delete(`/clients/${id}`);
+            await get().fetchClients(get().pagination.page);
         } catch (err: unknown) {
             set({ clients: prev, error: getErrorMessage(err, 'Failed to delete client') });
             throw err;

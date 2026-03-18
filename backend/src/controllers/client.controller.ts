@@ -5,6 +5,11 @@ import { clientSchema } from '../schemas/client.schema';
 
 const idParamSchema = z.object({ id: z.uuid() });
 
+const paginationSchema = z.object({
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+
 // Fields returned in list view — no tattooHistory/customFields (heavy, not needed for list)
 const clientListSelect = {
     id: true,
@@ -57,13 +62,33 @@ const clientDetailSelect = {
 export const getClients = async (req: Request, res: Response): Promise<void> => {
     const artistId = req.user!.userId;
 
-    const clients = await prisma.client.findMany({
-        where: { artistId, isActive: true },
-        orderBy: { createdAt: 'desc' },
-        select: clientListSelect,
-    });
+    const parsed = paginationSchema.safeParse(req.query);
+    if (!parsed.success) {
+        res.status(400).json({ error: 'Invalid pagination params' });
+        return;
+    }
+    const { page, limit } = parsed.data;
+    const skip = (page - 1) * limit;
 
-    res.json(clients);
+    const where = { artistId, isActive: true };
+
+    const [clients, total] = await Promise.all([
+        prisma.client.findMany({
+            where,
+            orderBy: { createdAt: 'desc' },
+            select: clientListSelect,
+            skip,
+            take: limit,
+        }),
+        prisma.client.count({ where }),
+    ]);
+
+    res.json({
+        data: clients,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+    });
 };
 
 export const getClientById = async (req: Request, res: Response): Promise<void> => {

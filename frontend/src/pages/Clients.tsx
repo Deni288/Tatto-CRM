@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, ChevronRight, Loader2 } from 'lucide-react';
+import { Plus, ChevronRight, Loader2, ChevronLeft } from 'lucide-react';
 import { Card } from '../components/tremor/Card';
 import { Input } from '../components/tremor/Input';
 import { Button } from '../components/tremor/Button';
@@ -13,10 +13,11 @@ export const Clients = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
     
-    const { clients, isLoading, fetchClients } = useClientStore();
+    const { clients, isLoading, fetchClients, pagination } = useClientStore();
+    const { page, totalPages, total } = pagination;
 
     useEffect(() => {
-        fetchClients();
+        fetchClients(1);
     }, [fetchClients]);
 
     const filtered = clients.filter(c =>
@@ -99,6 +100,33 @@ export const Clients = () => {
                     </div>
                 )}
             </Card>
+
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between px-2">
+                    <p className="text-sm text-slate-400">
+                        Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total} clients
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => fetchClients(page - 1)}
+                            disabled={page <= 1 || isLoading}
+                            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        >
+                            <ChevronLeft size={18} />
+                        </button>
+                        <span className="text-sm text-slate-300 font-medium px-2">
+                            {page} / {totalPages}
+                        </span>
+                        <button
+                            onClick={() => fetchClients(page + 1)}
+                            disabled={page >= totalPages || isLoading}
+                            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        >
+                            <ChevronRight size={18} />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <NewClientModal open={isModalOpen} onOpenChange={setIsModalOpen} />
         </div>
