@@ -1,28 +1,12 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { UpdateProfileSchema, ChangePasswordSchema, type UpdateProfileInput, type ChangePasswordInput } from '@tattoocrm/shared';
 import { Loader2, Link, Check, KeyRound, User } from 'lucide-react';
 import { gooeyToast } from 'goey-toast';
 import { Card } from '../components/tremor/Card';
 import { useAuthStore } from '../store/auth.store';
 import { api } from '../api/axiosInstance';
-
-const updateNameSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters').max(100),
-});
-
-const changePasswordSchema = z.object({
-    currentPassword: z.string().min(1, 'Current password is required'),
-    newPassword: z.string().min(6, 'New password must be at least 6 characters'),
-    confirmPassword: z.string().min(1, 'Please confirm your password'),
-}).refine((d) => d.newPassword === d.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-});
-
-type UpdateNameInput = z.infer<typeof updateNameSchema>;
-type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 
 const inputClass = (hasError: boolean): string =>
     `w-full bg-slate-950 border ${hasError ? 'border-red-500' : 'border-slate-800'} rounded-lg px-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors`;
@@ -44,12 +28,12 @@ export const Profile = () => {
         register: registerName,
         handleSubmit: handleNameSubmit,
         formState: { errors: nameErrors, isSubmitting: isNameSubmitting },
-    } = useForm<UpdateNameInput>({
-        resolver: zodResolver(updateNameSchema),
+    } = useForm<UpdateProfileInput>({
+        resolver: zodResolver(UpdateProfileSchema),
         defaultValues: { name: user?.name ?? '' },
     });
 
-    const onUpdateName = async (data: UpdateNameInput): Promise<void> => {
+    const onUpdateName = async (data: UpdateProfileInput): Promise<void> => {
         try {
             const res = await api.patch('/users/me', data);
             updateUser({ name: res.data.name });
@@ -66,7 +50,7 @@ export const Profile = () => {
         formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
         reset: resetPassword,
     } = useForm<ChangePasswordInput>({
-        resolver: zodResolver(changePasswordSchema),
+        resolver: zodResolver(ChangePasswordSchema),
     });
 
     const onChangePassword = async (data: ChangePasswordInput): Promise<void> => {

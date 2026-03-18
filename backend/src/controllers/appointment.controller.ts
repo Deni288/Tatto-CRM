@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../config/db';
-import { appointmentSchema } from '../schemas/appointment.schema';
+import { appointmentSchema } from '@tattoocrm/shared';
 
 export const getAppointments = async (req: Request, res: Response) => {
     const artistId = req.user!.userId;

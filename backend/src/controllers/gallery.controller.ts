@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../config/db';
-import { gallerySchema } from '../schemas/gallery.schema';
+import { gallerySchema } from '@tattoocrm/shared';
 
 export const getClientGallery = async (req: Request, res: Response) => {
     try {

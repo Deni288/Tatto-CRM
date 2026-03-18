@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import prisma from '../config/db';
-import { UpdateProfileSchema, ChangePasswordSchema } from '../schemas/user.schema';
+import { UpdateProfileSchema, ChangePasswordSchema } from '@tattoocrm/shared';
 
 const userSelect = {
     id: true,

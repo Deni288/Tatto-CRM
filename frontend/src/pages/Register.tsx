@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { gooeyToast } from 'goey-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { RegisterSchema, type RegisterInput } from '@tattoocrm/shared';
 import { Card } from '../components/tremor/Card';
 import { Input } from '../components/tremor/Input';
 import { Label } from '../components/tremor/Label';
@@ -13,24 +13,16 @@ import { Button } from '../components/tremor/Button';
 import { api } from '../api/axiosInstance';
 import { Loader2 } from 'lucide-react';
 
-const registerSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
-    email: z.string().email({ message: 'Invalid email address' }),
-    password: z.string().min(6, 'Password must be at least 6 characters')
-});
-
-type RegisterFormData = z.infer<typeof registerSchema>;
-
 export const Register = () => {
     const { login } = useAuthStore();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
-    const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
-        resolver: zodResolver(registerSchema)
+    const { register, handleSubmit, formState: { errors } } = useForm<RegisterInput>({
+        resolver: zodResolver(RegisterSchema)
     });
 
-    const onSubmit = async (data: RegisterFormData) => {
+    const onSubmit = async (data: RegisterInput) => {
         setIsLoading(true);
         try {
             const response = await api.post('/auth/register', data);

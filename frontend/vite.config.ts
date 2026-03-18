@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       "@/components": path.resolve(__dirname, "./src/components/tremor"),
       "@": path.resolve(__dirname, "./src"),
+      "@tattoocrm/shared": path.resolve(__dirname, "../packages/shared/src"),
     },
   },
 })

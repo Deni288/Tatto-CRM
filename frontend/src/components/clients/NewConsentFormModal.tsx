@@ -3,23 +3,12 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { X, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { consentFormSchema, type ConsentFormData } from '@tattoocrm/shared';
 import { Input } from '../tremor/Input';
 import { Label } from '../tremor/Label';
 import { Button } from '../tremor/Button';
 import { useConsentStore } from '../../store/consent.store';
 import { gooeyToast } from 'goey-toast';
-
-const consentSchema = z.object({
-    medicalConditions: z.string().optional(),
-    allergies: z.string().optional(),
-    agreedToTerms: z.boolean().refine(val => val === true, {
-        message: "You must agree to the terms and conditions."
-    }),
-    signatureName: z.string().min(1, "Signature name is required"),
-});
-
-type ConsentFormInput = z.infer<typeof consentSchema>;
 
 interface NewConsentFormModalProps {
     open: boolean;
@@ -31,8 +20,8 @@ export const NewConsentFormModal = ({ open, onOpenChange, clientId }: NewConsent
     const { createConsent } = useConsentStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<ConsentFormInput>({
-        resolver: zodResolver(consentSchema),
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<ConsentFormData>({
+        resolver: zodResolver(consentFormSchema),
         defaultValues: {
             medicalConditions: '',
             allergies: '',
@@ -40,7 +29,7 @@ export const NewConsentFormModal = ({ open, onOpenChange, clientId }: NewConsent
         }
     });
 
-    const onSubmit = async (data: ConsentFormInput) => {
+    const onSubmit = async (data: ConsentFormData) => {
         setIsSubmitting(true);
         try {
             await createConsent(clientId, {

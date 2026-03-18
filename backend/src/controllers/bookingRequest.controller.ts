@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import prisma from '../config/db';
-import { bookingRequestSchema, bookingRequestStatusSchema } from '../schemas/bookingRequest.schema';
+import { bookingRequestSchema, bookingRequestStatusSchema } from '@tattoocrm/shared';
 import { sendBookingConfirmation, sendNewBookingAlert } from '../services/email.service';
 
 const idParamSchema = z.object({ id: z.uuid() });

@@ -2,20 +2,9 @@ import { useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { bookingRequestSchema, type BookingRequestFormData } from '@tattoocrm/shared';
 import { Loader2, CheckCircle, Sparkles } from 'lucide-react';
-import { useBookingRequestStore, type BookingRequestFormData } from '../store/bookingRequest.store';
-
-const bookingSchema = z.object({
-    name: z.string().min(1, 'Name is required'),
-    email: z.string().email({ message: 'Invalid email address' }),
-    phone: z.string().min(1, 'Phone number is required'),
-    tattooIdea: z.string().min(1, 'Please describe your tattoo idea'),
-    referenceLink: z.string().url({ message: 'Must be a valid URL' }).optional().or(z.literal('')),
-    preferredMonth: z.string().min(1, 'Please select a preferred month'),
-});
-
-type BookingFormInput = z.input<typeof bookingSchema>;
+import { useBookingRequestStore } from '../store/bookingRequest.store';
 
 const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -29,13 +18,13 @@ export const BookingPage = () => {
 
     if (!artistId) return <Navigate to="/" replace />;
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<BookingFormInput>({
-        resolver: zodResolver(bookingSchema),
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<BookingRequestFormData>({
+        resolver: zodResolver(bookingRequestSchema),
     });
 
-    const onSubmit = async (data: BookingFormInput) => {
+    const onSubmit = async (data: BookingRequestFormData) => {
         try {
-            await submitRequest(artistId, data as BookingRequestFormData);
+            await submitRequest(artistId, data);
             setIsSubmitted(true);
             reset();
         } catch {

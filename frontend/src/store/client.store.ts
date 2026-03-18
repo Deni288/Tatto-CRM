@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../api/axiosInstance';
-import type { ClientFormData } from '../schemas/client.schema';
+import type { ClientFormData } from '@tattoocrm/shared';
 import type { Appointment } from './appointment.store';
 
 export interface Client {

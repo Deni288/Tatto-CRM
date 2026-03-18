@@ -3,19 +3,12 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { X, Loader2, ImagePlus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { gallerySchema, type GalleryFormData } from '@tattoocrm/shared';
 import { Input } from '../tremor/Input';
 import { Label } from '../tremor/Label';
 import { Button } from '../tremor/Button';
 import { useGalleryStore } from '../../store/gallery.store';
 import { gooeyToast } from 'goey-toast';
-
-const gallerySchema = z.object({
-    imageUrl: z.string().min(1, "Image URL is required"),
-    description: z.string().optional(),
-});
-
-type GalleryFormInput = z.infer<typeof gallerySchema>;
 
 interface AddImageModalProps {
     open: boolean;
@@ -28,14 +21,14 @@ export const AddImageModal = ({ open, onOpenChange, clientId }: AddImageModalPro
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [previewUrl, setPreviewUrl] = useState('');
 
-    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<GalleryFormInput>({
+    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<GalleryFormData>({
         resolver: zodResolver(gallerySchema),
         defaultValues: { imageUrl: '', description: '' },
     });
 
     const watchedUrl = watch('imageUrl');
 
-    const onSubmit = async (data: GalleryFormInput) => {
+    const onSubmit = async (data: GalleryFormData) => {
         setIsSubmitting(true);
         try {
             await addImage(clientId, {

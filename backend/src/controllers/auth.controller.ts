@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../config/db';
 import { env } from '../config/env';
-import { RegisterSchema, LoginSchema } from '../schemas/authSchema';
+import { RegisterSchema, LoginSchema } from '@tattoocrm/shared';
 
 interface TokenPayload {
     userId: string;

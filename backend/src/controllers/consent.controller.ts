@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../config/db';
-import { consentFormSchema } from '../schemas/consentForm.schema';
+import { consentFormSchema } from '@tattoocrm/shared';
 
 export const getClientConsentForms = async (req: Request, res: Response) => {
     try {

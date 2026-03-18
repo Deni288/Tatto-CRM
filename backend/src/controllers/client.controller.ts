@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import prisma from '../config/db';
-import { clientSchema } from '../schemas/client.schema';
+import { clientSchema } from '@tattoocrm/shared';
 
 const idParamSchema = z.object({ id: z.uuid() });
 

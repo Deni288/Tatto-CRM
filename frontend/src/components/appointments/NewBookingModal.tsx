@@ -3,26 +3,13 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { X, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { appointmentSchema, type AppointmentFormInput } from '@tattoocrm/shared';
 import { Input } from '../tremor/Input';
 import { Label } from '../tremor/Label';
 import { Button } from '../tremor/Button';
 import { useClientStore } from '../../store/client.store';
 import { useAppointmentStore } from '../../store/appointment.store';
 import { gooeyToast } from 'goey-toast';
-
-const appointmentSchema = z.object({
-    clientId: z.string().uuid({ message: 'Please select a client' }),
-    title: z.string().min(1, 'Title is required'),
-    description: z.string().optional(),
-    startTime: z.string().min(1, 'Start time is required'),
-    endTime: z.string().min(1, 'End time is required'),
-    price: z.coerce.number().min(0).nullable().optional().default(0),
-    depositAmount: z.coerce.number().min(0).nullable().optional().default(0),
-});
-
-type AppointmentFormInput = z.input<typeof appointmentSchema>;
-type AppointmentFormData = z.infer<typeof appointmentSchema>;
 
 interface NewBookingModalProps {
     open: boolean;
@@ -42,7 +29,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
         if (open) fetchClients();
     }, [open, fetchClients]);
 
-    const onSubmit = async (data: AppointmentFormData) => {
+    const onSubmit = async (data: AppointmentFormInput) => {
         setIsSubmitting(true);
         try {
             // Reformat datetime-local strings to actual ISO strings for Prisma

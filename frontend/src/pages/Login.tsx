@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { gooeyToast } from 'goey-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { LoginSchema, type LoginInput } from '@tattoocrm/shared';
 import { Card } from '../components/tremor/Card';
 import { Input } from '../components/tremor/Input';
 import { Label } from '../components/tremor/Label';
@@ -13,23 +13,16 @@ import { Button } from '../components/tremor/Button';
 import { api } from '../api/axiosInstance';
 import { Loader2 } from 'lucide-react';
 
-const loginSchema = z.object({
-    email: z.string().email({ message: 'Invalid email address' }),
-    password: z.string().min(1, 'Password is required')
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-
 export const Login = () => {
     const { login } = useAuthStore();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
-    const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
-        resolver: zodResolver(loginSchema)
+    const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
+        resolver: zodResolver(LoginSchema)
     });
 
-    const onSubmit = async (data: LoginFormData) => {
+    const onSubmit = async (data: LoginInput) => {
         setIsLoading(true);
         try {
             const response = await api.post('/auth/login', data);
