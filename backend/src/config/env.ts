@@ -9,6 +9,7 @@ const requireEnv = (key: string): string => {
 export const env = {
     JWT_SECRET: requireEnv('JWT_SECRET'),
     DATABASE_URL: requireEnv('DATABASE_URL'),
+    RESEND_API_KEY: requireEnv('RESEND_API_KEY'),
     PORT: process.env.PORT ?? '5000',
     NODE_ENV: process.env.NODE_ENV ?? 'development',
 } as const;

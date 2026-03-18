@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import prisma from '../config/db';
 import { bookingRequestSchema, bookingRequestStatusSchema } from '../schemas/bookingRequest.schema';
+import { sendBookingConfirmation, sendNewBookingAlert } from '../services/email.service';
 
 const idParamSchema = z.object({ id: z.uuid() });
 const artistIdParamSchema = z.object({ artistId: z.uuid() });
@@ -17,7 +18,7 @@ export const createBookingRequest = async (req: Request, res: Response): Promise
 
     const artist = await prisma.user.findUnique({
         where: { id: artistId },
-        select: { id: true },
+        select: { id: true, name: true, email: true },
     });
     if (!artist) {
         res.status(404).json({ error: 'Artist not found' });
@@ -42,6 +43,29 @@ export const createBookingRequest = async (req: Request, res: Response): Promise
             status: true,
             createdAt: true,
         },
+    });
+
+    // Fire-and-forget emails — ne blokiramo response ako email fail
+    const { name, email, tattooIdea, preferredMonth } = bodyParsed.data;
+    void Promise.all([
+        sendBookingConfirmation({
+            to: email,
+            clientName: name,
+            artistName: artist.name,
+            tattooIdea,
+            preferredMonth,
+        }),
+        sendNewBookingAlert({
+            to: artist.email,
+            artistName: artist.name,
+            clientName: name,
+            clientEmail: email,
+            clientPhone: bodyParsed.data.phone,
+            tattooIdea,
+            preferredMonth,
+        }),
+    ]).catch((err: unknown) => {
+        console.error('[Email] Failed to send booking emails:', err instanceof Error ? err.message : err);
     });
 
     res.status(201).json(bookingRequest);
