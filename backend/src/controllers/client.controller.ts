@@ -30,12 +30,12 @@ const clientDetailSelect = {
             id: true,
             title: true,
             status: true,
-            scheduledAt: true,
+            startTime: true,
             depositAmount: true,
             depositPaid: true,
             price: true,
         },
-        orderBy: { scheduledAt: 'desc' as const },
+        orderBy: { startTime: 'desc' as const },
     },
     consentForms: {
         select: {
