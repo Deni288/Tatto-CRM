@@ -17,7 +17,7 @@ export interface Appointment {
     depositPaid: boolean;
     deposit: number;
     createdAt: string;
-    client?: Client; // the included client relation
+    client?: Client;
 }
 
 export interface AppointmentFormData {
@@ -41,6 +41,12 @@ interface AppointmentState {
     deleteAppointment: (id: string) => Promise<void>;
 }
 
+const getErrorMessage = (err: unknown, fallback: string): string => {
+    if (err instanceof Error) return err.message;
+    const apiErr = err as { response?: { data?: { error?: string } } };
+    return apiErr.response?.data?.error ?? fallback;
+};
+
 export const useAppointmentStore = create<AppointmentState>()((set, get) => ({
     appointments: [],
     isLoading: false,
@@ -49,61 +55,70 @@ export const useAppointmentStore = create<AppointmentState>()((set, get) => ({
     fetchAppointments: async () => {
         set({ isLoading: true, error: null });
         try {
-            const response = await api.get('/appointments');
+            const response = await api.get<Appointment[]>('/appointments');
             set({ appointments: response.data, isLoading: false });
-        } catch (err: any) {
-            set({ error: err.response?.data?.error || 'Failed to fetch appointments', isLoading: false });
+        } catch (err: unknown) {
+            set({ error: getErrorMessage(err, 'Failed to fetch appointments'), isLoading: false });
         }
     },
 
     addAppointment: async (data: AppointmentFormData) => {
-        set({ isLoading: true, error: null });
         try {
-            await api.post('/appointments', data);
-            
-            // Refresh list and dashboard stats
-            get().fetchAppointments();
+            const response = await api.post<Appointment>('/appointments', data);
+            set({ appointments: [response.data, ...get().appointments] });
             useDashboardStore.getState().fetchDashboardStats();
-            
-        } catch (err: any) {
-            set({ error: err.response?.data?.error || 'Failed to add appointment', isLoading: false });
+        } catch (err: unknown) {
+            set({ error: getErrorMessage(err, 'Failed to add appointment') });
             throw err;
         }
     },
 
     updateAppointment: async (id: string, data: Partial<AppointmentFormData>) => {
-        set({ isLoading: true, error: null });
+        const prev = get().appointments;
+        set({
+            appointments: prev.map((a) =>
+                a.id === id ? { ...a, ...data } : a
+            ),
+        });
         try {
-            await api.put(`/appointments/${id}`, data);
-            get().fetchAppointments();
+            const response = await api.put<Appointment>(`/appointments/${id}`, data);
+            set({
+                appointments: get().appointments.map((a) =>
+                    a.id === id ? response.data : a
+                ),
+            });
             useDashboardStore.getState().fetchDashboardStats();
-        } catch (err: any) {
-            set({ error: err.response?.data?.error || 'Failed to update appointment', isLoading: false });
+        } catch (err: unknown) {
+            set({ appointments: prev, error: getErrorMessage(err, 'Failed to update appointment') });
             throw err;
         }
     },
 
     updateStatus: async (id: string, status: string) => {
-        set({ isLoading: true, error: null });
+        const prev = get().appointments;
+        set({
+            appointments: prev.map((a) =>
+                a.id === id ? { ...a, status } : a
+            ),
+        });
         try {
             await api.patch(`/appointments/${id}/status`, { status });
-            get().fetchAppointments();
             useDashboardStore.getState().fetchDashboardStats();
-        } catch (err: any) {
-            set({ error: err.response?.data?.error || 'Failed to update appointment status', isLoading: false });
+        } catch (err: unknown) {
+            set({ appointments: prev, error: getErrorMessage(err, 'Failed to update appointment status') });
             throw err;
         }
     },
 
     deleteAppointment: async (id: string) => {
-        set({ isLoading: true, error: null });
+        const prev = get().appointments;
+        set({ appointments: prev.filter((a) => a.id !== id) });
         try {
             await api.delete(`/appointments/${id}`);
-            get().fetchAppointments();
             useDashboardStore.getState().fetchDashboardStats();
-        } catch (err: any) {
-            set({ error: err.response?.data?.error || 'Failed to delete appointment', isLoading: false });
+        } catch (err: unknown) {
+            set({ appointments: prev, error: getErrorMessage(err, 'Failed to delete appointment') });
             throw err;
         }
-    }
+    },
 }));
