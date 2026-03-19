@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { api } from '../api/axiosInstance';
+import type { ConsentFormData } from '@tattoocrm/shared';
 import type { Client } from './client.store';
+
+export type { ConsentFormData };
 
 export interface ConsentForm {
     id: string;
@@ -9,15 +12,9 @@ export interface ConsentForm {
     allergies: string | null;
     agreedToTerms: boolean;
     signatureName: string;
+    signatureImage?: string | null;
     createdAt: string;
     client?: Client;
-}
-
-export interface ConsentFormData {
-    medicalConditions?: string | null;
-    allergies?: string | null;
-    agreedToTerms: boolean;
-    signatureName: string;
 }
 
 interface ConsentState {

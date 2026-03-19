@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tattoocrm/shared": "*",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -29,6 +28,8 @@
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-table": "^8.21.3",
+    "@tattoocrm/shared": "*",
+    "@types/react-signature-canvas": "^1.0.7",
     "axios": "^1.13.6",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -41,6 +42,7 @@
     "react-hook-form": "^7.71.2",
     "react-is": "^19.2.4",
     "react-router-dom": "^7.13.1",
+    "react-signature-canvas": "^1.1.0-alpha.2",
     "react-to-print": "^3.3.0",
     "recharts": "^3.8.0",
     "sonner": "^2.0.7",

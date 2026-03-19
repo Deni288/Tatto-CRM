@@ -6,6 +6,7 @@ interface ConsentFormData {
     allergies: string | null;
     agreedToTerms: boolean;
     signatureName: string;
+    signatureImage?: string | null;
     createdAt: string;
 }
 
@@ -103,8 +104,19 @@ export const PrintableConsentForm = forwardRef<HTMLDivElement, PrintableConsentF
                     {/* Signature */}
                     <div style={{ borderTop: '2px solid #333', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                         <div>
-                            <p style={{ fontSize: '11px', textTransform: 'uppercase', color: '#888', margin: '0 0 8px 0', letterSpacing: '1px' }}>Digital Signature</p>
-                            <p style={{ fontFamily: "'Satisfy', 'Segoe Script', cursive", fontSize: '32px', margin: 0, color: '#1a1a1a' }}>
+                            <p style={{ fontSize: '11px', textTransform: 'uppercase', color: '#888', margin: '0 0 8px 0', letterSpacing: '1px' }}>Signature</p>
+                            {form.signatureImage ? (
+                                <img
+                                    src={form.signatureImage}
+                                    alt="Client signature"
+                                    style={{ height: '60px', maxWidth: '260px', objectFit: 'contain' }}
+                                />
+                            ) : (
+                                <p style={{ fontFamily: "'Satisfy', 'Segoe Script', cursive", fontSize: '32px', margin: 0, color: '#1a1a1a' }}>
+                                    {form.signatureName}
+                                </p>
+                            )}
+                            <p style={{ fontSize: '12px', color: '#555', margin: '6px 0 0 0', borderTop: '1px solid #333', paddingTop: '4px' }}>
                                 {form.signatureName}
                             </p>
                         </div>

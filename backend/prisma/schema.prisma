@@ -114,6 +114,7 @@ model ConsentForm {
   allergies         String?  @db.Text
   agreedToTerms     Boolean  @default(true)
   signatureName     String
+  signatureImage    String?  @db.Text
   createdAt         DateTime @default(now())
 }
 
