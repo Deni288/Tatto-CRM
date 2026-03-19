@@ -5,6 +5,10 @@ import { Plus, Calendar, Clock, Users, DollarSign, ChevronRight, Link, Check } f
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import {
+    BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+    PieChart, Pie, Cell, Legend,
+} from 'recharts';
 
 import { useClientStore } from '../store/client.store';
 import { useDashboardStore } from '../store/dashboard.store';
@@ -106,6 +110,72 @@ export const Dashboard = () => {
                         </motion.div>
                     ))}
                 </div>
+
+                {/* Charts Row */}
+                {dashboardStats && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Monthly Revenue Bar Chart */}
+                        <motion.div variants={itemVariants} className="lg:col-span-2">
+                            <Card className="p-4 md:p-6 bg-slate-900/50 backdrop-blur-md border border-slate-800 shadow-xl">
+                                <h2 className="text-base md:text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                    <DollarSign size={18} className="text-gold-500" />
+                                    Revenue — Last 6 Months
+                                </h2>
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <BarChart data={dashboardStats.monthlyRevenue} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                                        <XAxis dataKey="month" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                        <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', color: '#fff' }}
+                                            formatter={(value) => [`$${Number(value ?? 0).toFixed(2)}`, 'Revenue']}
+                                        />
+                                        <Bar dataKey="revenue" fill="#d4af37" radius={[4, 4, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </Card>
+                        </motion.div>
+
+                        {/* Appointments by Status Donut Chart */}
+                        <motion.div variants={itemVariants}>
+                            <Card className="p-4 md:p-6 bg-slate-900/50 backdrop-blur-md border border-slate-800 shadow-xl h-full">
+                                <h2 className="text-base md:text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                    <Calendar size={18} className="text-gold-500" />
+                                    By Status
+                                </h2>
+                                {dashboardStats.appointmentsByStatus.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={200}>
+                                        <PieChart>
+                                            <Pie
+                                                data={dashboardStats.appointmentsByStatus}
+                                                dataKey="count"
+                                                nameKey="status"
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={55}
+                                                outerRadius={80}
+                                            >
+                                                {dashboardStats.appointmentsByStatus.map((entry, i) => (
+                                                    // eslint-disable-next-line @typescript-eslint/no-deprecated
+                                                    <Cell key={i} fill={entry.color} />
+                                                ))}
+                                            </Pie>
+                                            <Legend
+                                                formatter={(value) => <span style={{ color: '#94a3b8', fontSize: 12 }}>{value}</span>}
+                                            />
+                                            <Tooltip
+                                                contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', color: '#fff' }}
+                                            />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <div className="flex items-center justify-center h-[200px] text-slate-500 text-sm">
+                                        No appointment data yet.
+                                    </div>
+                                )}
+                            </Card>
+                        </motion.div>
+                    </div>
+                )}
 
                 {/* Main Content Area */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

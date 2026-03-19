@@ -2,11 +2,24 @@ import { create } from 'zustand';
 import { api } from '../api/axiosInstance';
 import type { Appointment } from './appointment.store';
 
+interface MonthlyRevenue {
+    month: string;
+    revenue: number;
+}
+
+interface AppointmentByStatus {
+    status: string;
+    count: number;
+    color: string;
+}
+
 interface DashboardStats {
     todaysRevenue: number;
     upcomingAppointmentsCount: number;
     newClientsThisMonth: number;
     todaysAppointments: Appointment[];
+    monthlyRevenue: MonthlyRevenue[];
+    appointmentsByStatus: AppointmentByStatus[];
 }
 
 interface DashboardState {
@@ -24,10 +37,11 @@ export const useDashboardStore = create<DashboardState>()((set) => ({
     fetchDashboardStats: async () => {
         set({ isLoading: true, error: null });
         try {
-            const response = await api.get('/dashboard/stats');
+            const response = await api.get<DashboardStats>('/dashboard/stats');
             set({ stats: response.data, isLoading: false });
-        } catch (err: any) {
-            set({ error: err.response?.data?.error || 'Failed to fetch dashboard stats', isLoading: false });
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Failed to fetch dashboard stats';
+            set({ error: message, isLoading: false });
         }
-    }
+    },
 }));
