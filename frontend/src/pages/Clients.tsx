@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, ChevronRight, Loader2, ChevronLeft } from 'lucide-react';
+import { Plus, ChevronRight, Loader2, ChevronLeft, Pencil } from 'lucide-react';
 import { Card } from '../components/tremor/Card';
 import { Input } from '../components/tremor/Input';
 import { Button } from '../components/tremor/Button';
-import { useClientStore } from '../store/client.store';
+import { useClientStore, type Client } from '../store/client.store';
 import { NewClientModal } from '../components/clients/NewClientModal';
+import { EditClientModal } from '../components/clients/EditClientModal';
 
 export const Clients = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingClient, setEditingClient] = useState<Client | null>(null);
     const navigate = useNavigate();
     
     const { clients, isLoading, fetchClients, pagination } = useClientStore();
@@ -77,7 +79,17 @@ export const Clients = () => {
                                         <p className="text-sm text-slate-400 mt-0.5">{client.phone || client.email || 'No contact info'}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center text-sm text-slate-500 space-x-4">
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setEditingClient(client);
+                                        }}
+                                        className="p-2 rounded-lg text-slate-500 hover:text-gold-500 hover:bg-slate-800 transition-colors opacity-0 group-hover:opacity-100"
+                                        title="Edit client"
+                                    >
+                                        <Pencil size={15} />
+                                    </button>
                                     <ChevronRight size={20} className="text-slate-600 group-hover:text-gold-500 transition-colors" />
                                 </div>
                             </motion.li>
@@ -129,6 +141,13 @@ export const Clients = () => {
             )}
 
             <NewClientModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+            {editingClient && (
+                <EditClientModal
+                    client={editingClient}
+                    open={!!editingClient}
+                    onOpenChange={(open) => { if (!open) setEditingClient(null); }}
+                />
+            )}
         </div>
     );
 };
