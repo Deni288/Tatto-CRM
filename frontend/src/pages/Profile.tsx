@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UpdateProfileSchema, ChangePasswordSchema, type UpdateProfileInput, type ChangePasswordInput } from '@tattoocrm/shared';
@@ -38,8 +39,11 @@ export const Profile = () => {
             const res = await api.patch('/users/me', data);
             updateUser({ name: res.data.name });
             gooeyToast.success('Name updated successfully');
-        } catch {
-            gooeyToast.error('Failed to update name');
+        } catch (err: unknown) {
+            const message = axios.isAxiosError(err)
+                ? (err.response?.data?.error ?? err.message)
+                : 'Failed to update name';
+            gooeyToast.error(message);
         }
     };
 
@@ -58,8 +62,11 @@ export const Profile = () => {
             await api.patch('/users/me/password', data);
             gooeyToast.success('Password changed successfully');
             resetPassword();
-        } catch {
-            gooeyToast.error('Current password is incorrect');
+        } catch (err: unknown) {
+            const message = axios.isAxiosError(err)
+                ? (err.response?.data?.error ?? err.message)
+                : 'Failed to change password';
+            gooeyToast.error(message);
         }
     };
 
