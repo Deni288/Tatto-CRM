@@ -4,11 +4,15 @@ import prisma from '../config/db';
 import { env } from '../config/env';
 
 const SubscribeSchema = z.object({
-    endpoint: z.string().url(),
+    endpoint: z.string().url().max(2048),
     keys: z.object({
         p256dh: z.string().min(1),
         auth: z.string().min(1),
     }),
+});
+
+const UnsubscribeSchema = z.object({
+    endpoint: z.string().url().max(2048),
 });
 
 export const getVapidPublicKey = (_req: Request, res: Response): void => {
@@ -46,14 +50,14 @@ export const unsubscribe = async (req: Request, res: Response): Promise<void> =>
         return;
     }
 
-    const { endpoint } = req.body as { endpoint: unknown };
-    if (typeof endpoint !== 'string') {
-        res.status(400).json({ error: 'endpoint is required' });
+    const parsed = UnsubscribeSchema.safeParse(req.body);
+    if (!parsed.success) {
+        res.status(400).json({ error: 'Invalid endpoint', details: parsed.error.issues });
         return;
     }
 
     await prisma.pushSubscription.deleteMany({
-        where: { endpoint, userId },
+        where: { endpoint: parsed.data.endpoint, userId },
     });
 
     res.json({ message: 'Unsubscribed' });

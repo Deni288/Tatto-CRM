@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { z } from 'zod';
 import prisma from '../config/db';
 import { env } from '../config/env';
 import { createCheckoutSession, createPortalSession, isUserActive } from '../services/billing.service';
@@ -45,13 +46,13 @@ export const createCheckout = async (req: Request, res: Response): Promise<void>
         return;
     }
 
-    const { plan } = req.body as { plan: unknown };
-    if (plan !== 'monthly' && plan !== 'yearly') {
+    const parsed = z.object({ plan: z.enum(['monthly', 'yearly']) }).safeParse(req.body);
+    if (!parsed.success) {
         res.status(400).json({ error: 'Invalid plan. Use "monthly" or "yearly"' });
         return;
     }
 
-    const priceId = plan === 'monthly' ? env.STRIPE_MONTHLY_PRICE_ID : env.STRIPE_YEARLY_PRICE_ID;
+    const priceId = parsed.data.plan === 'monthly' ? env.STRIPE_MONTHLY_PRICE_ID : env.STRIPE_YEARLY_PRICE_ID;
 
     const user = await prisma.user.findUnique({
         where: { id: userId },

@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import type Stripe from 'stripe';
+import { z } from 'zod';
 import { stripe } from '../services/billing.service';
 import { env } from '../config/env';
 import prisma from '../config/db';
@@ -66,10 +67,12 @@ const getInvoiceSubscriptionId = (invoice: Stripe.Invoice): string | null => {
     return typeof sub === 'string' ? sub : sub.id;
 };
 
-const handleCheckoutCompleted = async (session: Stripe.Checkout.Session): Promise<void> => {
-    const userId = session.metadata?.userId;
-    if (!userId || !session.customer || !session.subscription) return;
+const metadataSchema = z.object({ userId: z.string().uuid() });
 
+const handleCheckoutCompleted = async (session: Stripe.Checkout.Session): Promise<void> => {
+    const meta = metadataSchema.safeParse(session.metadata);
+    if (!meta.success || !session.customer || !session.subscription) return;
+    const { userId } = meta.data;
     const customerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
     const subscriptionId = typeof session.subscription === 'string'
         ? session.subscription

@@ -1,5 +1,5 @@
 import 'dotenv/config'; // Mora biti prvi import — učitava .env prije svega
-import './config/env'; // Validacija env varijabli pri startu
+import { env } from './config/env'; // Validacija env varijabli pri startu
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -37,11 +37,13 @@ app.use('/api/webhook', webhookRoutes);
 
 app.use(express.json());
 
-// Request logger
-app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
-});
+// Request logger — samo u developmentu, koristi req.path (ne URL) da ne curie query string s tokenima
+if (env.NODE_ENV === 'development') {
+    app.use((req, _res, next) => {
+        console.warn(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+        next();
+    });
+}
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -62,9 +64,13 @@ app.get('/health', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.error('Unhandled Error:', err);
-    res.status(500).json({ error: 'Internal server error', message: err.message });
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Unhandled Error:', message);
+    res.status(500).json({
+        error: 'Internal server error',
+        ...(env.NODE_ENV === 'development' && { message }),
+    });
 });
 
 app.listen(port, () => {

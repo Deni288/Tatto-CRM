@@ -60,6 +60,8 @@ model Client {
   consentForms ConsentForm[]
   images       ClientImage[]
   gallery      ClientGallery[]
+
+  @@index([artistId])
 }
 
 model ClientImage {
@@ -97,6 +99,8 @@ model Appointment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([artistId])
 }
 
 enum ApptStatus {
@@ -119,6 +123,8 @@ model BookingRequest {
   status         String   @default("PENDING")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@index([artistId])
 }
 
 model ConsentForm {
