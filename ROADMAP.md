@@ -36,6 +36,7 @@
 ### Email (Resend)
 - Klijentu: potvrda booking requesta
 - Artistu: alert o novom booking requestu
+- **Klijentu: potvrda zakazanog termina** — automatski email s datumom, vremenom i linkom na klijentski portal
 - Fire-and-forget — ne blokira API response
 
 ### Arhitektura

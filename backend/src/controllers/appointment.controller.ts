@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import prisma from '../config/db';
 import { appointmentSchema } from '@tattoocrm/shared';
+import { env } from '../config/env';
+import { sendAppointmentConfirmation } from '../services/email.service';
 
 export const getAppointments = async (req: Request, res: Response) => {
     const artistId = req.user!.userId;
@@ -37,7 +39,18 @@ export const createAppointment = async (req: Request, res: Response) => {
     }
 
     const artistId = req.user!.userId;
-    const client = await prisma.client.findFirst({ where: { id: parsed.data.clientId, artistId, isActive: true } });
+
+    const [client, artist] = await Promise.all([
+        prisma.client.findFirst({
+            where: { id: parsed.data.clientId, artistId, isActive: true },
+            select: { id: true, firstName: true, lastName: true, email: true, portalToken: true },
+        }),
+        prisma.user.findUnique({
+            where: { id: artistId },
+            select: { name: true },
+        }),
+    ]);
+
     if (!client) {
         res.status(404).json({ error: 'Client not found' });
         return;
@@ -52,6 +65,18 @@ export const createAppointment = async (req: Request, res: Response) => {
             artistId,
         },
     });
+
+    if (client.email && client.portalToken) {
+        void sendAppointmentConfirmation({
+            to: client.email,
+            clientName: `${client.firstName} ${client.lastName}`,
+            artistName: artist?.name ?? 'Vaš artist',
+            title: parsed.data.title,
+            startTime: new Date(parsed.data.startTime),
+            endTime: new Date(parsed.data.endTime),
+            portalUrl: `${env.FRONTEND_URL}/portal/${client.portalToken}`,
+        });
+    }
 
     res.status(201).json(appointment);
 };
@@ -109,8 +134,9 @@ export const updateAppointmentStatus = async (req: Request, res: Response) => {
         }
 
         res.json({ success: true, count: result.count });
-    } catch (error: any) {
-        res.status(500).json({ error: 'Failed to update status', details: error.message });
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        res.status(500).json({ error: 'Failed to update status', details: message });
     }
 };
 
