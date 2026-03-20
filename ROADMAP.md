@@ -2,7 +2,7 @@
 
 **Stack:** React 19 (Vite) + Express 5 + PostgreSQL (Prisma) + JWT + Zod + Zustand + Tailwind v4
 **Deploy:** Render (backend) + Vercel (frontend) + Neon (PostgreSQL)
-**Zadnji update:** 2026-03-19
+**Zadnji update:** 2026-03-20
 
 ---
 
@@ -58,13 +58,12 @@ Sve ovo je već napravljeno — aplikacija je production-ready za prvog klijenta
 **Dashboard grafovi — Tremor Charts (revenue bar + donut)** ✅
 **Consent form — Canvas signature pad** ✅
 
-### 🟢 Niski prioritet (nice to have)
+### 🟢 Niski prioritet — ✅ SVE ZAVRŠENO (2026-03-20)
 
-**Stripe billing**
-- Trial period (30 dana besplatno)
-- Stripe Checkout za mjesečnu/godišnju pretplatu
-- Webhook za aktivaciju/deaktivaciju artista
-- Admin vidi billing status svakog artista
+**Stripe billing** ✅
+**Push notifikacije — novi booking request** ✅
+**Klijentski portal — token-based, read-only** ✅
+**CSV export — klijenti i termini** ✅
 
 **Push notifikacije**
 - Browser push notifikacije za novi booking request
@@ -112,7 +111,7 @@ Sve ovo je već napravljeno — aplikacija je production-ready za prvog klijenta
 
 ## Redoslijed za sljedeće sesije
 
-1. **Stripe billing** — Monetizacija (sljedeće)
-2. **Push notifikacije** — Web Push API + service worker
-3. **Klijentski portal** — Magic link, klijent vidi termine i galeriju
-4. **CSV export** — Backup klijenata i termina
+1. **Deploy na produkciju** — Render + Vercel + Stripe webhook produkcijski URL
+2. **Automatizirani podsjetnici** — Email klijentu 24h prije termina (cron job)
+3. **Višejezičnost** — Booking forma na jeziku artista
+4. **Analytics** — Posjeti booking linka, conversion rate
