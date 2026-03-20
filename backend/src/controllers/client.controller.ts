@@ -29,6 +29,7 @@ const clientDetailSelect = {
     phone: true,
     tattooHistory: true,
     customFields: true,
+    portalToken: true,
     createdAt: true,
     appointments: {
         select: {

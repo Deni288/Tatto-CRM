@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature, Trash2, Printer, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature, Trash2, Printer, MessageCircle, Link, Check } from 'lucide-react';
 import { Card } from '../components/tremor/Card';
 import { TabNavigation, TabNavigationLink } from '../components/tremor/TabNavigation';
 import { Button } from '../components/tremor/Button';
@@ -17,6 +17,7 @@ export const ClientDetails = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<'info' | 'gallery' | 'appointments' | 'consents'>('info');
     const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
+    const [portalLinkCopied, setPortalLinkCopied] = useState(false);
     const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
     const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -121,6 +122,22 @@ export const ClientDetails = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
+                        {client.portalToken && (
+                            <Button
+                                variant="secondary"
+                                className="flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
+                                onClick={() => {
+                                    const url = `${window.location.origin}/portal/${client.portalToken}`;
+                                    void navigator.clipboard.writeText(url).then(() => {
+                                        setPortalLinkCopied(true);
+                                        setTimeout(() => setPortalLinkCopied(false), 2000);
+                                    });
+                                }}
+                            >
+                                {portalLinkCopied ? <Check size={18} className="mr-2 text-emerald-400" /> : <Link size={18} className="mr-2" />}
+                                {portalLinkCopied ? 'Kopirano!' : 'Portal Link'}
+                            </Button>
+                        )}
                         <Button variant="secondary" className="flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700">
                             <Edit3 size={18} className="mr-2" />
                             Edit Profile

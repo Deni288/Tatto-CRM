@@ -26,6 +26,7 @@ import { BookingRequests } from './pages/BookingRequests';
 import { Profile } from './pages/Profile';
 import { Admin } from './pages/Admin';
 import { Billing } from './pages/Billing';
+import { ClientPortal } from './pages/ClientPortal';
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -42,6 +43,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/book/:artistId" element={<BookingPage />} />
+          <Route path="/portal/:token" element={<ClientPortal />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<AppLayout />}>

@@ -11,6 +11,7 @@ export interface Client {
     phone: string | null;
     tattooHistory?: string | null;
     customFields?: Record<string, unknown> | null;
+    portalToken?: string | null;
     createdAt: string;
     appointments?: Appointment[];
 }
