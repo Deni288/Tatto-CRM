@@ -8,6 +8,7 @@ import { gooeyToast } from 'goey-toast';
 import { Card } from '../components/tremor/Card';
 import { useAuthStore } from '../store/auth.store';
 import { api } from '../api/axiosInstance';
+import { NotificationsCard } from '../components/profile/NotificationsCard';
 
 const inputClass = (hasError: boolean): string =>
     `w-full bg-slate-950 border ${hasError ? 'border-red-500' : 'border-slate-800'} rounded-lg px-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors`;
@@ -192,6 +193,9 @@ export const Profile = () => {
                     </button>
                 </div>
             </Card>
+
+            {/* Push Notifications */}
+            <NotificationsCard />
         </div>
     );
 };

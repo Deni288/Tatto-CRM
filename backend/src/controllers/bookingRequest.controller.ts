@@ -3,6 +3,7 @@ import { z } from 'zod';
 import prisma from '../config/db';
 import { bookingRequestSchema, bookingRequestStatusSchema } from '@tattoocrm/shared';
 import { sendBookingConfirmation, sendNewBookingAlert } from '../services/email.service';
+import { sendPushToArtist } from '../services/push.service';
 
 const idParamSchema = z.object({ id: z.uuid() });
 const artistIdParamSchema = z.object({ artistId: z.uuid() });
@@ -64,8 +65,13 @@ export const createBookingRequest = async (req: Request, res: Response): Promise
             tattooIdea,
             preferredMonth,
         }),
+        sendPushToArtist(artistId, {
+            title: 'Novi booking request!',
+            body: `${name} — ${tattooIdea.substring(0, 60)}${tattooIdea.length > 60 ? '...' : ''}`,
+            url: '/booking-requests',
+        }),
     ]).catch((err: unknown) => {
-        console.error('[Email] Failed to send booking emails:', err instanceof Error ? err.message : err);
+        console.error('[Notification] Failed:', err instanceof Error ? err.message : err);
     });
 
     res.status(201).json(bookingRequest);

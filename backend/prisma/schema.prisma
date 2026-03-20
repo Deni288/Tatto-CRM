@@ -22,9 +22,10 @@ model User {
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
 
-  clients         Client[]
-  appointments    Appointment[]
-  bookingRequests BookingRequest[]
+  clients           Client[]
+  appointments      Appointment[]
+  bookingRequests   BookingRequest[]
+  pushSubscriptions PushSubscription[]
 }
 
 enum Role {
@@ -129,6 +130,18 @@ model ConsentForm {
   signatureName     String
   signatureImage    String?  @db.Text
   createdAt         DateTime @default(now())
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model ClientGallery {
