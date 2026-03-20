@@ -11,7 +11,7 @@ import { Input } from '../components/tremor/Input';
 import { Label } from '../components/tremor/Label';
 import { Button } from '../components/tremor/Button';
 import { api } from '../api/axiosInstance';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MailCheck } from 'lucide-react';
 
 export const Login = () => {
     const { login } = useAuthStore();
@@ -22,15 +22,23 @@ export const Login = () => {
         resolver: zodResolver(LoginSchema)
     });
 
-    const onSubmit = async (data: LoginInput) => {
+    const [unverifiedEmail, setUnverifiedEmail] = useState(false);
+
+    const onSubmit = async (data: LoginInput): Promise<void> => {
         setIsLoading(true);
+        setUnverifiedEmail(false);
         try {
             const response = await api.post('/auth/login', data);
             login(response.data.user, response.data.token);
-            gooeyToast.success('Welcome back, let\'s create some art!');
+            gooeyToast.success("Welcome back, let's create some art!");
             navigate('/');
-        } catch (error: any) {
-            gooeyToast.error(error.response?.data?.error || 'Failed to login');
+        } catch (err: unknown) {
+            const res = (err as { response?: { data?: { error?: string; code?: string } } }).response;
+            if (res?.data?.code === 'EMAIL_NOT_VERIFIED') {
+                setUnverifiedEmail(true);
+            } else {
+                gooeyToast.error(res?.data?.error ?? 'Failed to login');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -82,6 +90,15 @@ export const Login = () => {
                             )}
                         </div>
 
+                        {unverifiedEmail && (
+                            <div className="flex items-start gap-3 bg-amber-900/30 border border-amber-700/50 rounded-lg p-3">
+                                <MailCheck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                                <p className="text-sm text-amber-300">
+                                    Please verify your email before logging in. Check your inbox for the confirmation link.
+                                </p>
+                            </div>
+                        )}
+
                         <Button
                             type="submit"
                             disabled={isLoading}
@@ -89,7 +106,7 @@ export const Login = () => {
                         >
                             {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : "Sign In"}
                         </Button>
-                        
+
                         <p className="text-center text-sm text-slate-400 mt-4">
                             Don't have an account? <Link to="/register" className="text-gold-500 hover:text-gold-400">Register here</Link>
                         </p>

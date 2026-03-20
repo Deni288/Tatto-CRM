@@ -14,6 +14,9 @@ model User {
   name                 String
   role                 Role               @default(ARTIST)
   isActive             Boolean            @default(true)
+  isEmailVerified      Boolean            @default(false)
+  emailVerificationToken         String?  @unique
+  emailVerificationTokenExpiresAt DateTime?
   trialEndsAt          DateTime?
   stripeCustomerId     String?            @unique
   stripeSubscriptionId String?            @unique

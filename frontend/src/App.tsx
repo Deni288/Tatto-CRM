@@ -28,6 +28,7 @@ const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.P
 const Admin = lazy(() => import('./pages/Admin').then((m) => ({ default: m.Admin })));
 const Billing = lazy(() => import('./pages/Billing').then((m) => ({ default: m.Billing })));
 const ClientPortal = lazy(() => import('./pages/ClientPortal').then((m) => ({ default: m.ClientPortal })));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail').then((m) => ({ default: m.VerifyEmail })));
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -46,6 +47,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/book/:artistId" element={<BookingPage />} />
             <Route path="/portal/:token" element={<ClientPortal />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
 
             <Route element={<PrivateRoute />}>
               <Route path="/" element={<AppLayout />}>
