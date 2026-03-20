@@ -37,14 +37,14 @@ export const ExportCard = () => {
     };
 
     return (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-sm font-semibold text-gray-900 mb-1">Export podataka</h2>
-            <p className="text-sm text-gray-500 mb-4">Preuzmi sve klijente ili termine kao CSV datoteku.</p>
+        <div className="bg-slate-900/50 rounded-xl border border-slate-800 p-6">
+            <h2 className="text-sm font-semibold text-white mb-1">Export podataka</h2>
+            <p className="text-sm text-slate-400 mb-4">Preuzmi sve klijente ili termine kao CSV datoteku.</p>
             <div className="flex gap-3">
                 <button
                     onClick={() => void handleExport('clients')}
                     disabled={loading !== null}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors disabled:opacity-50"
                 >
                     {loading === 'clients' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                     Klijenti

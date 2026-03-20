@@ -70,11 +70,11 @@ export const Dashboard = () => {
                 </div>
                 {/* Desktop Buttons - Hidden on Mobile, moved to Quick Actions */}
                 <div className="hidden sm:flex gap-3">
-                    <Button onClick={handleCopyBookingLink} className="bg-slate-800 hover:bg-slate-700 text-white border-transparent shadow-lg hover:shadow-xl transition-all h-10">
+                    <Button onClick={handleCopyBookingLink} className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700 shadow-lg hover:shadow-xl transition-all h-10">
                         {linkCopied ? <Check size={18} className="mr-2 text-emerald-400" /> : <Link size={18} className="mr-2" />}
                         {linkCopied ? 'Copied!' : 'Booking Link'}
                     </Button>
-                    <Button onClick={() => navigate('/appointments')} className="bg-slate-800 hover:bg-slate-700 text-white border-transparent shadow-lg hover:shadow-xl transition-all h-10">
+                    <Button onClick={() => navigate('/appointments')} className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700 shadow-lg hover:shadow-xl transition-all h-10">
                         <Calendar size={18} className="mr-2 hidden lg:block" />
                         View Calendar
                     </Button>
@@ -260,36 +260,36 @@ export const Dashboard = () => {
                                 <Button
                                     onClick={() => navigate('/clients')}
                                     variant="secondary"
-                                    className="w-full justify-start py-4 bg-slate-950/80 border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all font-medium rounded-xl active:scale-[0.98]"
+                                    className="w-full justify-start py-4 bg-slate-950/80 border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all font-medium rounded-xl active:scale-[0.98] text-white"
                                 >
                                     <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center mr-3 border border-slate-800/50">
                                         <Users size={16} className="text-gold-500" />
                                     </div>
-                                    <span className="text-sm">Manage Clients</span>
+                                    <span className="text-sm text-slate-200">Manage Clients</span>
                                     <ChevronRight className="w-4 h-4 ml-auto text-slate-600" />
                                 </Button>
 
                                 <Button
                                     onClick={() => navigate('/consent')}
                                     variant="secondary"
-                                    className="w-full justify-start py-4 bg-slate-950/80 border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all font-medium rounded-xl active:scale-[0.98]"
+                                    className="w-full justify-start py-4 bg-slate-950/80 border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all font-medium rounded-xl active:scale-[0.98] text-white"
                                 >
                                     <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center mr-3 border border-slate-800/50">
                                         <Plus size={16} className="text-gold-500" />
                                     </div>
-                                    <span className="text-sm">New Consent Form</span>
+                                    <span className="text-sm text-slate-200">New Consent Form</span>
                                     <ChevronRight className="w-4 h-4 ml-auto text-slate-600" />
                                 </Button>
 
                                 <Button
                                     onClick={() => navigate('/appointments')}
                                     variant="secondary"
-                                    className="w-full justify-start py-4 bg-slate-950/80 border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all font-medium rounded-xl active:scale-[0.98]"
+                                    className="w-full justify-start py-4 bg-slate-950/80 border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all font-medium rounded-xl active:scale-[0.98] text-white"
                                 >
                                     <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center mr-3 border border-slate-800/50">
                                         <Calendar size={16} className="text-gold-500" />
                                     </div>
-                                    <span className="text-sm">View Full Schedule</span>
+                                    <span className="text-sm text-slate-200">View Full Schedule</span>
                                     <ChevronRight className="w-4 h-4 ml-auto text-slate-600" />
                                 </Button>
                             </div>

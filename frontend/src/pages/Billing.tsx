@@ -60,21 +60,21 @@ export const Billing = () => {
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-8">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Billing</h1>
-                <p className="text-gray-500 mt-1">Upravljaj svojom pretplatom</p>
+                <h1 className="text-2xl font-bold text-white">Billing</h1>
+                <p className="text-slate-400 mt-1">Upravljaj svojom pretplatom</p>
             </div>
 
             {/* Trenutni status */}
             {status && (
-                <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Trenutni plan</h2>
+                <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
+                    <h2 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">Trenutni plan</h2>
                     <StatusBadge status={status.subscriptionStatus} trialEndsAt={status.trialEndsAt} currentPeriodEnd={status.currentPeriodEnd} />
 
                     {status.hasCustomer && (
                         <button
                             onClick={() => void handlePortal()}
                             disabled={portalLoading}
-                            className="mt-4 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 underline"
+                            className="mt-4 flex items-center gap-2 text-sm text-slate-400 hover:text-white underline"
                         >
                             {portalLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                             Upravljaj pretplatom (Stripe Portal)
@@ -129,23 +129,23 @@ interface PricingCardProps {
 }
 
 const PricingCard = ({ title, price, period, note, loading, onSelect, highlighted = false }: PricingCardProps) => (
-    <div className={`rounded-xl border-2 p-6 flex flex-col gap-6 ${highlighted ? 'border-black' : 'border-gray-200'}`}>
+    <div className={`rounded-xl border-2 p-6 flex flex-col gap-6 bg-slate-900/50 ${highlighted ? 'border-gold-500' : 'border-slate-700'}`}>
         {highlighted && (
-            <span className="text-xs font-bold uppercase tracking-widest text-black">Preporučeno</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-gold-500">Preporučeno</span>
         )}
         <div>
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <h3 className="text-lg font-semibold text-white">{title}</h3>
             <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-gray-900">€{price}</span>
-                <span className="text-gray-500">{period}</span>
+                <span className="text-4xl font-bold text-white">€{price}</span>
+                <span className="text-slate-400">{period}</span>
             </div>
-            {note && <p className="text-xs text-gray-500 mt-1">{note}</p>}
+            {note && <p className="text-xs text-slate-400 mt-1">{note}</p>}
         </div>
 
         <ul className="space-y-2 flex-1">
             {features.map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
-                    <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
                     {f}
                 </li>
             ))}
@@ -156,8 +156,8 @@ const PricingCard = ({ title, price, period, note, loading, onSelect, highlighte
             disabled={loading}
             className={`w-full py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors ${
                 highlighted
-                    ? 'bg-black text-white hover:bg-gray-800'
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                    ? 'bg-gold-500 text-slate-900 hover:bg-gold-400'
+                    : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
             }`}
         >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -174,21 +174,21 @@ interface StatusBadgeProps {
 
 const StatusBadge = ({ status, trialEndsAt, currentPeriodEnd }: StatusBadgeProps) => {
     const labels: Record<string, { label: string; color: string }> = {
-        TRIAL: { label: 'Trial', color: 'bg-blue-100 text-blue-800' },
-        ACTIVE: { label: 'Aktivno', color: 'bg-green-100 text-green-800' },
-        PAST_DUE: { label: 'Plaćanje nije prošlo', color: 'bg-red-100 text-red-800' },
-        CANCELLED: { label: 'Otkazano', color: 'bg-gray-100 text-gray-600' },
-        EXPIRED: { label: 'Isteklo', color: 'bg-red-100 text-red-800' },
+        TRIAL: { label: 'Trial', color: 'bg-blue-900/40 text-blue-400' },
+        ACTIVE: { label: 'Aktivno', color: 'bg-green-900/40 text-green-400' },
+        PAST_DUE: { label: 'Plaćanje nije prošlo', color: 'bg-red-900/40 text-red-400' },
+        CANCELLED: { label: 'Otkazano', color: 'bg-slate-800 text-slate-400' },
+        EXPIRED: { label: 'Isteklo', color: 'bg-red-900/40 text-red-400' },
     };
 
-    const { label, color } = labels[status] ?? { label: status, color: 'bg-gray-100 text-gray-600' };
+    const { label, color } = labels[status] ?? { label: status, color: 'bg-slate-800 text-slate-400' };
     const dateStr = status === 'TRIAL' ? trialEndsAt : currentPeriodEnd;
 
     return (
         <div className="flex items-center gap-3">
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${color}`}>{label}</span>
             {dateStr && (
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-slate-400">
                     {status === 'TRIAL' ? 'Ističe' : 'Sljedeća naplata'}:{' '}
                     {new Date(dateStr).toLocaleDateString('hr-HR')}
                 </span>
