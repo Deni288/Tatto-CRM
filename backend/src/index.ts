@@ -17,6 +17,7 @@ import webhookRoutes from './routes/webhook.routes';
 import billingRoutes from './routes/billing.routes';
 import pushRoutes from './routes/push.routes';
 import portalRoutes from './routes/portal.routes';
+import exportRoutes from './routes/export.routes';
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -55,6 +56,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/portal', portalRoutes);
+app.use('/api/export', exportRoutes);
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
