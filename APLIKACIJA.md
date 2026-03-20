@@ -4,6 +4,34 @@ Alat za tattoo artiste za upravljanje klijentima, terminima i poslovanjem.
 
 ---
 
+## Domena i pristup za artiste
+
+### Kako artist ulazi u aplikaciju
+
+Jedna domena, svi artisti dijele istu aplikaciju. Artist treba samo **email + lozinka** — sam se registrira, nema potrebe da ti kao vlasnik išta radiš ručno. Dobiva 30-dana trial automatski.
+
+### Opcije za domenu
+
+**Opcija 1 — Jedna domena (preporučeno za početak)**
+- Npr. `tattoocrm.app` ili `tattoocrm.io` — svi artisti na istoj domeni
+- Ti kupiš domenu jednom (~$15/god na Namecheap ili Cloudflare), pointaš na Vercel
+- Artist dobiva samo link za registraciju, nema vlastite domene
+
+**Opcija 2 — Subdomene po artistu**
+- Npr. `ime-artista.tattoocrm.app`
+- Profesionalnije, ali tehnički kompleksnije
+- Nije potrebno za početak
+
+### Procedura postavljanja domene
+
+1. Kupi domenu na Namecheap ili Cloudflare
+2. U Vercel dashboardu dodaj custom domenu — Vercel daje točne DNS upute
+3. Backend URL na Renderu ostaje kako jest (ili dodaš `api.tattoocrm.app`)
+
+Artist ne treba ništa od tebe — sam se registrira i ulazi s emailom i lozinkom.
+
+---
+
 ## Dashboard
 
 Prva stranica nakon prijave. Prikazuje pregled svega što se događa danas i ovaj mjesec.
