@@ -49,39 +49,44 @@ export const usePushNotifications = (): UsePushNotifications => {
     const subscribe = async (): Promise<void> => {
         if (!supported) return;
         setIsLoading(true);
+        try {
+            const perm = await Notification.requestPermission();
+            setPermission(perm);
+            if (perm !== 'granted') return;
 
-        const perm = await Notification.requestPermission();
-        setPermission(perm);
-        if (perm !== 'granted') {
+            const publicKey = await getVapidPublicKey();
+            const reg = await navigator.serviceWorker.register('/sw.js');
+            await navigator.serviceWorker.ready;
+            const sub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(publicKey),
+            });
+
+            await savePushSubscription(sub);
+            setIsSubscribed(true);
+        } catch (err: unknown) {
+            console.error('[Push] Subscribe failed:', err instanceof Error ? err.message : err);
+        } finally {
             setIsLoading(false);
-            return;
         }
-
-        const publicKey = await getVapidPublicKey();
-        const reg = await navigator.serviceWorker.register('/sw.js');
-        const sub = await reg.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(publicKey),
-        });
-
-        await savePushSubscription(sub);
-        setIsSubscribed(true);
-        setIsLoading(false);
     };
 
     const unsubscribe = async (): Promise<void> => {
         if (!supported) return;
         setIsLoading(true);
-
-        const reg = await navigator.serviceWorker.getRegistration('/sw.js');
-        const sub = await reg?.pushManager.getSubscription();
-        if (sub) {
-            await deletePushSubscription(sub.endpoint);
-            await sub.unsubscribe();
+        try {
+            const reg = await navigator.serviceWorker.getRegistration('/sw.js');
+            const sub = await reg?.pushManager.getSubscription();
+            if (sub) {
+                await deletePushSubscription(sub.endpoint);
+                await sub.unsubscribe();
+            }
+            setIsSubscribed(false);
+        } catch (err: unknown) {
+            console.error('[Push] Unsubscribe failed:', err instanceof Error ? err.message : err);
+        } finally {
+            setIsLoading(false);
         }
-
-        setIsSubscribed(false);
-        setIsLoading(false);
     };
 
     return { isSupported: supported, permission, isSubscribed, isLoading, subscribe, unsubscribe };
