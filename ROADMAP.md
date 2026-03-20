@@ -2,7 +2,7 @@
 
 **Stack:** React 19 (Vite) + Express 5 + PostgreSQL (Prisma) + JWT + Zod + Zustand + Tailwind v4
 **Deploy:** Render (backend) + Vercel (frontend) + Neon (PostgreSQL)
-**Zadnji update:** 2026-03-18
+**Zadnji update:** 2026-03-19
 
 ---
 
@@ -52,23 +52,11 @@
 ### 🔴 Visoki prioritet (treba prije prvog klijenta)
 Sve ovo je već napravljeno — aplikacija je production-ready za prvog klijenta.
 
-### 🟡 Srednji prioritet
+### 🟡 Srednji prioritet — ✅ SVE ZAVRŠENO (2026-03-19)
 
-**Gallery — pravi file upload**
-- Trenutno se sprema samo URL (kopipasteanje)
-- Potrebno: Cloudinary ili S3 direktan upload iz browsera
-- Klijenti bi mogli vidjeti svoju galeriju radova
-
-**Dashboard grafovi**
-- Prihodi po tjednima / mjesecima (Tremor Charts)
-- Broj termina po statusu (Completed / Cancelled / No-show)
-- Top klijenti po prihodu
-- Booking conversion rate (koliko requesta postane termin)
-
-**Consent form digitalni potpis**
-- Canvas signature pad (`react-signature-canvas`)
-- Čuva se kao base64 slika u bazi
-- Print / PDF export
+**Gallery — Cloudinary direktan upload** ✅
+**Dashboard grafovi — Tremor Charts (revenue bar + donut)** ✅
+**Consent form — Canvas signature pad** ✅
 
 ### 🟢 Niski prioritet (nice to have)
 
@@ -124,7 +112,7 @@ Sve ovo je već napravljeno — aplikacija je production-ready za prvog klijenta
 
 ## Redoslijed za sljedeće sesije
 
-1. **Gallery upload** — Cloudinary integracija (vidljivi efekt, klijenti vide radove)
-2. **Dashboard grafovi** — Tremor Charts za prihode i statistike
-3. **Consent form potpis** — Canvas + PDF export
-4. **Stripe billing** — Monetizacija
+1. **Stripe billing** — Monetizacija (sljedeće)
+2. **Push notifikacije** — Web Push API + service worker
+3. **Klijentski portal** — Magic link, klijent vidi termine i galeriju
+4. **CSV export** — Backup klijenata i termina

@@ -1,10 +1,9 @@
+import 'dotenv/config'; // Mora biti prvi import — učitava .env prije svega
+import './config/env'; // Validacija env varijabli pri startu
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-dotenv.config();
-import './config/env'; // Validate required env vars at startup
 import authRoutes from './routes/auth.routes';
 import clientRoutes from './routes/client.routes';
 import appointmentRoutes from './routes/appointment.routes';
@@ -14,6 +13,8 @@ import bookingRequestRoutes from './routes/bookingRequest.routes';
 import userRoutes from './routes/user.routes';
 import adminRoutes from './routes/admin.routes';
 import uploadRoutes from './routes/upload.routes';
+import webhookRoutes from './routes/webhook.routes';
+import billingRoutes from './routes/billing.routes';
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -27,6 +28,10 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser());
+
+// MORA biti prije express.json() — Stripe signature verifikacija zahtijeva raw body
+app.use('/api/webhook', webhookRoutes);
+
 app.use(express.json());
 
 // Request logger
@@ -45,6 +50,7 @@ app.use('/api/booking-requests', bookingRequestRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/billing', billingRoutes);
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });

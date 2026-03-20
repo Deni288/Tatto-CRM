@@ -42,8 +42,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
+    const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
     const user = await prisma.user.create({
-        data: { email, passwordHash, name, role: 'ARTIST' },
+        data: { email, passwordHash, name, role: 'ARTIST', trialEndsAt },
         select: { id: true, email: true, name: true, role: true },
     });
 

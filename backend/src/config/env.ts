@@ -14,6 +14,10 @@ export const env = {
     CLOUDINARY_CLOUD_NAME: requireEnv('CLOUDINARY_CLOUD_NAME'),
     CLOUDINARY_API_KEY: requireEnv('CLOUDINARY_API_KEY'),
     CLOUDINARY_API_SECRET: requireEnv('CLOUDINARY_API_SECRET'),
+    STRIPE_SECRET_KEY: requireEnv('STRIPE_SECRET_KEY'),
+    STRIPE_WEBHOOK_SECRET: requireEnv('STRIPE_WEBHOOK_SECRET'),
+    STRIPE_MONTHLY_PRICE_ID: requireEnv('STRIPE_MONTHLY_PRICE_ID'),
+    STRIPE_YEARLY_PRICE_ID: requireEnv('STRIPE_YEARLY_PRICE_ID'),
     PORT: process.env.PORT ?? '5000',
     NODE_ENV: process.env.NODE_ENV ?? 'development',
 } as const;

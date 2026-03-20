@@ -8,14 +8,19 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(uuid())
-  email           String           @unique
-  passwordHash    String
-  name            String
-  role            Role             @default(ARTIST)
-  isActive        Boolean          @default(true)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id                   String             @id @default(uuid())
+  email                String             @unique
+  passwordHash         String
+  name                 String
+  role                 Role               @default(ARTIST)
+  isActive             Boolean            @default(true)
+  trialEndsAt          DateTime?
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  subscriptionStatus   SubscriptionStatus @default(TRIAL)
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
 
   clients         Client[]
   appointments    Appointment[]
@@ -25,6 +30,14 @@ model User {
 enum Role {
   ARTIST
   ADMIN
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
 }
 
 model Client {

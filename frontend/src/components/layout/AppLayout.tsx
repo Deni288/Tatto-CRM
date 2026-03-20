@@ -12,6 +12,7 @@ import {
 import { cx } from '../../lib/utils';
 import { motion } from 'framer-motion';
 import { GlobalSearch } from './GlobalSearch';
+import { TrialBanner } from '../billing/TrialBanner';
 
 export const AppLayout = () => {
     const { isAuthenticated, logout, user } = useAuthStore();
@@ -126,6 +127,7 @@ export const AppLayout = () => {
                     </div>
                 </header>
 
+                <TrialBanner />
                 <main className="flex-1 overflow-y-auto w-full p-4 md:p-8 custom-scrollbar">
                     <motion.div
                         key={location.pathname}
