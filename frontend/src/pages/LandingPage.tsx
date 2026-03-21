@@ -129,6 +129,22 @@ export const LandingPage = () => {
                 </div>
             </section>
 
+            {/* Trust bar */}
+            <section className="py-8 px-6 border-y border-slate-800/60 bg-slate-900/30">
+                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16">
+                    {[
+                        { value: '50+', label: 'tattoo artista' },
+                        { value: '30 dana', label: 'besplatni trial' },
+                        { value: '100%', label: 'podataka sigurno' },
+                    ].map((item) => (
+                        <div key={item.label} className="text-center">
+                            <div className="text-2xl font-black text-gold-400">{item.value}</div>
+                            <div className="text-slate-400 text-sm mt-0.5">{item.label}</div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             {/* Features */}
             <section className="py-24 px-6 bg-slate-900/50">
                 <div className="max-w-6xl mx-auto">
@@ -146,8 +162,8 @@ export const LandingPage = () => {
                                 {...fadeUp(i)}
                                 className="group p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-gold-500/30 transition-all hover:shadow-[0_0_30px_rgba(212,175,55,0.05)]"
                             >
-                                <div className="w-12 h-12 rounded-xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center mb-4 group-hover:bg-gold-500/20 transition-colors">
-                                    <f.icon className="w-6 h-6 text-gold-400" />
+                                <div className="w-12 h-12 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center mb-4 group-hover:bg-gold-500/25 transition-colors">
+                                    <f.icon className="w-6 h-6 text-gold-300" strokeWidth={1.75} />
                                 </div>
                                 <h3 className="font-bold text-white text-lg mb-2">{f.title}</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
@@ -223,7 +239,7 @@ export const LandingPage = () => {
                             },
                             {
                                 label: 'Godišnje', price: '€18', sub: '/mjesec · €220/god', badge: 'Uštedi 2 mj.',
-                                features: ['Sve iz Miesečnog', '2 besplatna mjeseca', 'Prioritetna podrška'],
+                                features: ['Neograničeni klijenti', 'Automatski podsjetnici', 'Digitalni consent', 'Booking link', 'Galerija radova', 'CSV export', '2 besplatna mjeseca', 'Prioritetna podrška'],
                             },
                         ].map((plan, i) => (
                             <motion.div
