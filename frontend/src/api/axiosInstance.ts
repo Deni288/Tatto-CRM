@@ -42,8 +42,11 @@ api.interceptors.response.use(
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
         const status = error.response?.status;
 
-        // Only intercept 401s, and never retry the refresh call itself
-        if (status !== 401 || originalRequest._retry || originalRequest.url === '/auth/refresh') {
+        // Only intercept 401s, and never retry auth endpoints
+        const isAuthEndpoint = ['/auth/refresh', '/auth/login', '/auth/register'].some(
+            (path) => originalRequest.url?.includes(path)
+        );
+        if (status !== 401 || originalRequest._retry || isAuthEndpoint) {
             return Promise.reject(error);
         }
 
