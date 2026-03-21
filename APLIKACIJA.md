@@ -24,9 +24,13 @@ Jedna domena, svi artisti dijele istu aplikaciju. Artist treba samo **email + lo
 
 ### Procedura postavljanja domene
 
-1. Kupi domenu na Namecheap ili Cloudflare
-2. U Vercel dashboardu dodaj custom domenu — Vercel daje točne DNS upute
-3. Backend URL na Renderu ostaje kako jest (ili dodaš `api.tattoocrm.app`)
+1. Kupi domenu na Cloudflare Registrar (~$10-14/god za `.app`)
+2. U Vercel dashboardu dodaj custom domenu — Vercel daje DNS zapise
+3. U Cloudflare DNS dodaj zapise — **proxy mora biti isključen** (sivi oblak, DNS only) jer Vercel ima vlastiti SSL
+4. Za backend dodaj `api.tattoocrm.app` kao CNAME koji pokazuje na Render hostname
+5. U Vercelu postavi `VITE_API_URL = https://api.tattoocrm.app/api`
+
+**Trenutna domena:** `tattoocrm.app` (kupljena, pointana na Vercel + Render)
 
 Artist ne treba ništa od tebe — sam se registrira i ulazi s emailom i lozinkom.
 
@@ -199,6 +203,35 @@ Javna stranica za klijenta — bez prijave, samo s magic linkom.
 
 ---
 
+## Automatizirani podsjetnici
+
+Svaki dan u **9:00 UTC** (11:00 CET) backend automatski:
+1. Traži sve `SCHEDULED` termine koji počinju sutra
+2. Filtrira klijente koji imaju email i `reminderSent = false`
+3. Šalje email s detaljima termina i linkom na portal
+4. Označava termin kao `reminderSent = true` (nema duplikata)
+
+Podsjetnik ne zahtijeva nikakvu akciju od artista — radi automatski u pozadini.
+
+---
+
+## Landing page
+
+Javna stranica na `tattoocrm.app` za nove posjetitelje.
+
+**Sekcije:**
+- Hero s CTA gumbima (Počni besplatno / Imam account)
+- Trust bar (50+ artista, 30 dana trial, 100% sigurno)
+- 6 featurea s ikonama
+- Počni za 3 koraka
+- Testimoniali
+- Pricing (Miesečno €22 / Godišnje €18)
+- Footer
+
+Prijavljeni korisnici koji otvore `/` automatski se preusmjeravaju na `/dashboard`.
+
+---
+
 ## Tech stack (za referencu)
 
 | Sloj | Tehnologija |
@@ -211,4 +244,6 @@ Javna stranica za klijenta — bez prijave, samo s magic linkom.
 | Plaćanje | Stripe (Checkout + Webhooks + Customer Portal) |
 | Slike | Cloudinary |
 | Push | Web Push API (VAPID) |
-| Hosting | Render (backend) + Vercel (frontend) |
+| Analytics | Vercel Analytics |
+| Hosting | Render (backend, Starter plan) + Vercel (frontend) |
+| Domena | `tattoocrm.app` (Cloudflare Registrar, DNS only) |
