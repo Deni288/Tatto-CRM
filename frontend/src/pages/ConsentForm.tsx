@@ -35,7 +35,7 @@ export const ConsentForm = () => {
         // Simulate API call
         console.log({ formData, signature });
         gooeyToast.success('Consent form submitted successfully!');
-        navigate('/appointments');
+        navigate('/dashboard/appointments');
     };
 
     const allRequiredChecked = formData.acknowledgedRisks && formData.notUnderInfluence && formData.providedTrueInfo;

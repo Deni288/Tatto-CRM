@@ -74,11 +74,11 @@ export const Dashboard = () => {
                         {linkCopied ? <Check size={18} className="mr-2 text-emerald-400" /> : <Link size={18} className="mr-2" />}
                         {linkCopied ? 'Copied!' : 'Booking Link'}
                     </Button>
-                    <Button onClick={() => navigate('/appointments')} className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700 shadow-lg hover:shadow-xl transition-all h-10">
+                    <Button onClick={() => navigate('/dashboard/appointments')} className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700 shadow-lg hover:shadow-xl transition-all h-10">
                         <Calendar size={18} className="mr-2 hidden lg:block" />
                         View Calendar
                     </Button>
-                    <Button onClick={() => navigate('/appointments')} className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-transparent shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.5)] transition-all font-semibold h-10">
+                    <Button onClick={() => navigate('/dashboard/appointments')} className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-transparent shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.5)] transition-all font-semibold h-10">
                         <Plus size={18} className="mr-2" />
                         New Booking
                     </Button>
@@ -187,7 +187,7 @@ export const Dashboard = () => {
                                     <Calendar className="w-5 h-5 mr-2 text-gold-500 hidden sm:block" />
                                     Today's Appointments
                                 </h2>
-                                <Button variant="secondary" onClick={() => navigate('/appointments')} className="text-xs h-8 px-3">
+                                <Button variant="secondary" onClick={() => navigate('/dashboard/appointments')} className="text-xs h-8 px-3">
                                     View All
                                 </Button>
                             </div>
@@ -201,7 +201,7 @@ export const Dashboard = () => {
                                         <li
                                             key={appt.id}
                                             className="p-4 md:p-6 hover:bg-slate-800/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer active:bg-slate-800/60"
-                                            onClick={() => navigate('/appointments')}
+                                            onClick={() => navigate('/dashboard/appointments')}
                                         >
                                             <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                                                 <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 bg-slate-950 border border-slate-800 rounded-full flex items-center justify-center text-sm md:text-base text-gold-500 font-bold shadow-inner">
@@ -250,7 +250,7 @@ export const Dashboard = () => {
                             <div className="flex flex-col gap-3">
                                 {/* Mobile-only New Booking Button */}
                                 <Button
-                                    onClick={() => navigate('/appointments')}
+                                    onClick={() => navigate('/dashboard/appointments')}
                                     className="sm:hidden w-full justify-center py-5 bg-gold-500 text-slate-900 border-none shadow-[0_0_15px_rgba(212,175,55,0.2)] font-bold rounded-xl active:scale-[0.98] transition-transform"
                                 >
                                     <Plus size={20} className="mr-2" />
@@ -258,7 +258,7 @@ export const Dashboard = () => {
                                 </Button>
 
                                 <Button
-                                    onClick={() => navigate('/clients')}
+                                    onClick={() => navigate('/dashboard/clients')}
                                     variant="secondary"
                                     className="w-full justify-start py-4 bg-slate-950/80 border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all font-medium rounded-xl active:scale-[0.98] text-white"
                                 >
@@ -282,7 +282,7 @@ export const Dashboard = () => {
                                 </Button>
 
                                 <Button
-                                    onClick={() => navigate('/appointments')}
+                                    onClick={() => navigate('/dashboard/appointments')}
                                     variant="secondary"
                                     className="w-full justify-start py-4 bg-slate-950/80 border-slate-800 hover:bg-slate-800 hover:border-slate-700 transition-all font-medium rounded-xl active:scale-[0.98] text-white"
                                 >

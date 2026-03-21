@@ -41,7 +41,7 @@ export const GlobalSearch = () => {
     const handleSelect = (clientId: string) => {
         setSearchTerm('');
         setIsOpen(false);
-        navigate(`/clients/${clientId}`);
+        navigate(`/dashboard/clients/${clientId}`);
     };
 
     return (

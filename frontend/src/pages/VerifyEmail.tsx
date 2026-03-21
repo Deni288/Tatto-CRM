@@ -61,7 +61,7 @@ export const VerifyEmail = () => {
                             <h1 className="text-xl font-bold text-white mb-2">Email confirmed!</h1>
                             <p className="text-slate-400 text-sm mb-6">Your account is active. Welcome to Tattoo CRM.</p>
                             <Link
-                                to="/"
+                                to="/dashboard"
                                 className="inline-block px-6 py-3 bg-gold-500 hover:bg-gold-400 text-slate-900 font-semibold rounded-xl transition-colors"
                             >
                                 Go to Dashboard

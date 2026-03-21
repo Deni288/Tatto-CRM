@@ -31,7 +31,7 @@ export const TrialBanner = () => {
             </span>
             {' '}
             <button
-                onClick={() => navigate('/billing')}
+                onClick={() => navigate('/dashboard/billing')}
                 className="text-amber-900 font-semibold underline hover:no-underline"
             >
                 Aktiviraj pretplatu

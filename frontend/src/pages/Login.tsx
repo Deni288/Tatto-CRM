@@ -31,7 +31,7 @@ export const Login = () => {
             const response = await api.post('/auth/login', data);
             login(response.data.user, response.data.token);
             gooeyToast.success("Welcome back, let's create some art!");
-            navigate('/');
+            navigate('/dashboard');
         } catch (err: unknown) {
             const res = (err as { response?: { data?: { error?: string; code?: string } } }).response;
             if (res?.data?.code === 'EMAIL_NOT_VERIFIED') {

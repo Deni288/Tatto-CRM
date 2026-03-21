@@ -34,7 +34,7 @@ export const ClientDetails = () => {
         try {
             await deleteClient(id);
             gooeyToast.success('Client has been archived successfully');
-            navigate('/clients');
+            navigate('/dashboard/clients');
         } catch {
             gooeyToast.error('Failed to archive client');
         }
@@ -72,7 +72,7 @@ export const ClientDetails = () => {
                 <FileText size={48} className="mx-auto text-slate-600 mb-4" />
                 <h2 className="text-xl font-semibold text-white mb-2">Client Not Found</h2>
                 <p className="text-slate-400 mb-6">{error || "The client you are looking for doesn't exist or you don't have permission to view them."}</p>
-                <Button onClick={() => navigate('/clients')} className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none">
+                <Button onClick={() => navigate('/dashboard/clients')} className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none">
                     Back to Clients
                 </Button>
             </div>
@@ -82,7 +82,7 @@ export const ClientDetails = () => {
     return (
         <div className="max-w-5xl mx-auto pb-12">
             <button
-                onClick={() => navigate('/clients')}
+                onClick={() => navigate('/dashboard/clients')}
                 className="flex items-center text-slate-400 hover:text-white mb-6 transition-colors"
             >
                 <ArrowLeft size={20} className="mr-2" />

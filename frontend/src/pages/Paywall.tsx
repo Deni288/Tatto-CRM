@@ -21,7 +21,7 @@ export const Paywall = () => {
                 </div>
 
                 <button
-                    onClick={() => navigate('/billing')}
+                    onClick={() => navigate('/dashboard/billing')}
                     className="w-full bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
                 >
                     Pogledaj planove

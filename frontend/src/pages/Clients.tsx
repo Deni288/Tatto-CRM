@@ -66,7 +66,7 @@ export const Clients = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 className="group flex items-center justify-between p-4 px-6 hover:bg-slate-800/40 cursor-pointer transition-all duration-200"
-                                onClick={() => navigate(`/clients/${client.id}`)}
+                                onClick={() => navigate(`/dashboard/clients/${client.id}`)}
                             >
                                 <div className="flex items-center space-x-4">
                                     <div className="w-12 h-12 rounded-full bg-slate-950 flex items-center justify-center text-gold-500 font-bold border border-slate-800 shadow-inner shrink-0">

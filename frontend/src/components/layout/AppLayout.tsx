@@ -23,11 +23,11 @@ export const AppLayout = () => {
     }
 
     const navItems = [
-        { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-        { name: 'Clients', path: '/clients', icon: Users },
-        { name: 'Appointments', path: '/appointments', icon: CalendarIcon },
-        { name: 'Requests', path: '/booking-requests', icon: Inbox },
-        ...(user?.role === 'ADMIN' ? [{ name: 'Admin', path: '/admin', icon: ShieldCheck }] : []),
+        { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+        { name: 'Clients', path: '/dashboard/clients', icon: Users },
+        { name: 'Appointments', path: '/dashboard/appointments', icon: CalendarIcon },
+        { name: 'Requests', path: '/dashboard/booking-requests', icon: Inbox },
+        ...(user?.role === 'ADMIN' ? [{ name: 'Admin', path: '/dashboard/admin', icon: ShieldCheck }] : []),
     ];
 
     return (
@@ -43,7 +43,7 @@ export const AppLayout = () => {
                     </div>
 
                     {/* User Info */}
-                    <Link to="/profile" className="flex items-center gap-3 px-6 py-6 border-b border-slate-800/50 hover:bg-slate-800/40 transition-colors">
+                    <Link to="/dashboard/profile" className="flex items-center gap-3 px-6 py-6 border-b border-slate-800/50 hover:bg-slate-800/40 transition-colors">
                         <div className="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center font-bold text-gold-500 shadow-inner shrink-0">
                             {user?.name.charAt(0).toUpperCase()}
                         </div>
@@ -62,7 +62,7 @@ export const AppLayout = () => {
                     <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                         {navItems.map((item) => {
                             const Icon = item.icon;
-                            const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+                            const isActive = location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
 
                             return (
                                 <Link
@@ -121,7 +121,7 @@ export const AppLayout = () => {
                             <Bell size={20} />
                             <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 border-2 border-slate-900 rounded-full"></span>
                         </button>
-                        <Link to="/profile" className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-sm font-bold text-gold-500 hover:border-gold-500/50 transition-colors">
+                        <Link to="/dashboard/profile" className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-sm font-bold text-gold-500 hover:border-gold-500/50 transition-colors">
                             {user?.name.charAt(0).toUpperCase()}
                         </Link>
                     </div>
@@ -146,7 +146,7 @@ export const AppLayout = () => {
                 <nav className="flex items-center justify-between h-16">
                     {navItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+                        const isActive = location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
 
                         return (
                             <Link

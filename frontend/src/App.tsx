@@ -12,9 +12,15 @@ const PrivateRoute = () => {
 
 const AdminRoute = () => {
   const user = useAuthStore((state) => state.user);
-  return user?.role === 'ADMIN' ? <Outlet /> : <Navigate to="/" replace />;
+  return user?.role === 'ADMIN' ? <Outlet /> : <Navigate to="/dashboard" replace />;
 };
 
+const PublicRoute = () => {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Outlet />;
+};
+
+const LandingPage = lazy(() => import('./pages/LandingPage').then((m) => ({ default: m.LandingPage })));
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })));
 const Register = lazy(() => import('./pages/Register').then((m) => ({ default: m.Register })));
 const Dashboard = lazy(() => import('./pages/Dashboard').then((m) => ({ default: m.Dashboard })));
@@ -43,6 +49,10 @@ function App() {
       <BrowserRouter>
         <Suspense fallback={null}>
           <Routes>
+            <Route element={<PublicRoute />}>
+              <Route path="/" element={<LandingPage />} />
+            </Route>
+
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/book/:artistId" element={<BookingPage />} />
@@ -50,7 +60,7 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmail />} />
 
             <Route element={<PrivateRoute />}>
-              <Route path="/" element={<AppLayout />}>
+              <Route path="/dashboard" element={<AppLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="clients" element={<Clients />} />
                 <Route path="clients/:id" element={<ClientDetails />} />
