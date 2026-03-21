@@ -27,7 +27,8 @@ app.use(helmet());
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://tatto-crm-mu.vercel.app'
+    'https://tattoocrm.app',
+    'https://www.tattoocrm.app',
   ],
   credentials: true
 }));
