@@ -22,7 +22,7 @@ export const VerifyEmail = () => {
             return;
         }
 
-        api.post<{ token: string; user: { id: string; email: string; name: string; role: string } }>(
+        api.post<{ token: string; user: { id: string; email: string; name: string; role: 'ARTIST' | 'ADMIN' } }>(
             '/auth/verify-email',
             { token },
         )
