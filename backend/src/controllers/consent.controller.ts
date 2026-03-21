@@ -1,9 +1,17 @@
 import type { Request, Response } from 'express';
+import { z } from 'zod';
 import prisma from '../config/db';
 import { consentFormSchema } from '@tattoocrm/shared';
 
+const uuidSchema = z.string().uuid();
+
 export const getClientConsentForms = async (req: Request, res: Response): Promise<void> => {
-    const clientId = req.params.clientId as string;
+    const idParsed = uuidSchema.safeParse(req.params.clientId);
+    if (!idParsed.success) {
+        res.status(400).json({ error: 'Invalid client ID' });
+        return;
+    }
+    const clientId = idParsed.data;
     const artistId = req.user!.userId;
 
     const client = await prisma.client.findFirst({
@@ -33,7 +41,12 @@ export const getClientConsentForms = async (req: Request, res: Response): Promis
 };
 
 export const createConsentForm = async (req: Request, res: Response): Promise<void> => {
-    const clientId = req.params.clientId as string;
+    const idParsed = uuidSchema.safeParse(req.params.clientId);
+    if (!idParsed.success) {
+        res.status(400).json({ error: 'Invalid client ID' });
+        return;
+    }
+    const clientId = idParsed.data;
     const artistId = req.user!.userId;
 
     const client = await prisma.client.findFirst({

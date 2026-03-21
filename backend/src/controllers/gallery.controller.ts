@@ -1,7 +1,10 @@
 import type { Request, Response } from 'express';
+import { z } from 'zod';
 import prisma from '../config/db';
 import cloudinary from '../config/cloudinary';
 import { gallerySchema } from '@tattoocrm/shared';
+
+const uuidSchema = z.string().uuid();
 
 const gallerySelect = {
     id: true,
@@ -13,7 +16,12 @@ const gallerySelect = {
 } as const;
 
 export const getClientGallery = async (req: Request, res: Response): Promise<void> => {
-    const clientId = req.params.clientId as string;
+    const idParsed = uuidSchema.safeParse(req.params.clientId);
+    if (!idParsed.success) {
+        res.status(400).json({ error: 'Invalid client ID' });
+        return;
+    }
+    const clientId = idParsed.data;
     const artistId = req.user!.userId;
 
     const client = await prisma.client.findFirst({
@@ -35,7 +43,12 @@ export const getClientGallery = async (req: Request, res: Response): Promise<voi
 };
 
 export const addGalleryImage = async (req: Request, res: Response): Promise<void> => {
-    const clientId = req.params.clientId as string;
+    const idParsed = uuidSchema.safeParse(req.params.clientId);
+    if (!idParsed.success) {
+        res.status(400).json({ error: 'Invalid client ID' });
+        return;
+    }
+    const clientId = idParsed.data;
     const artistId = req.user!.userId;
 
     const client = await prisma.client.findFirst({
@@ -67,8 +80,14 @@ export const addGalleryImage = async (req: Request, res: Response): Promise<void
 };
 
 export const deleteGalleryImage = async (req: Request, res: Response): Promise<void> => {
-    const clientId = req.params.clientId as string;
-    const imageId = req.params.id as string;
+    const clientIdParsed = uuidSchema.safeParse(req.params.clientId);
+    const imageIdParsed = uuidSchema.safeParse(req.params.id);
+    if (!clientIdParsed.success || !imageIdParsed.success) {
+        res.status(400).json({ error: 'Invalid ID' });
+        return;
+    }
+    const clientId = clientIdParsed.data;
+    const imageId = imageIdParsed.data;
     const artistId = req.user!.userId;
 
     const client = await prisma.client.findFirst({

@@ -1,8 +1,31 @@
 import { Request, Response } from 'express';
+import { z } from 'zod';
 import prisma from '../config/db';
 import { appointmentSchema } from '@tattoocrm/shared';
 import { env } from '../config/env';
 import { sendAppointmentConfirmation } from '../services/email.service';
+
+const uuidSchema = z.string().uuid();
+
+const appointmentResponseSelect = {
+    id: true,
+    clientId: true,
+    artistId: true,
+    title: true,
+    description: true,
+    startTime: true,
+    endTime: true,
+    status: true,
+    price: true,
+    depositAmount: true,
+    depositPaid: true,
+    deposit: true,
+    createdAt: true,
+} as const;
+
+const appointmentStatusSchema = z.object({
+    status: z.enum(['SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW']),
+});
 
 export const getAppointments = async (req: Request, res: Response) => {
     const artistId = req.user!.userId;
@@ -64,6 +87,7 @@ export const createAppointment = async (req: Request, res: Response) => {
             deposit: parsed.data.deposit ?? 0,
             artistId,
         },
+        select: appointmentResponseSelect,
     });
 
     if (client.email && client.portalToken) {
@@ -82,7 +106,12 @@ export const createAppointment = async (req: Request, res: Response) => {
 };
 
 export const updateAppointment = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+    const idParsed = uuidSchema.safeParse(req.params.id);
+    if (!idParsed.success) {
+        res.status(400).json({ error: 'Invalid appointment ID' });
+        return;
+    }
+    const id = idParsed.data;
     const artistId = req.user!.userId;
 
     const parsed = appointmentSchema.partial().safeParse(req.body);
@@ -91,7 +120,10 @@ export const updateAppointment = async (req: Request, res: Response) => {
         return;
     }
 
-    const existing = await prisma.appointment.findFirst({ where: { id, artistId } });
+    const existing = await prisma.appointment.findFirst({
+        where: { id, artistId },
+        select: { id: true },
+    });
     if (!existing) {
         res.status(404).json({ error: 'Appointment not found' });
         return;
@@ -104,47 +136,54 @@ export const updateAppointment = async (req: Request, res: Response) => {
             ...(parsed.data.price !== undefined && { price: parsed.data.price != null ? Number(parsed.data.price) : null }),
             ...(parsed.data.depositAmount !== undefined && { depositAmount: parsed.data.depositAmount != null ? Number(parsed.data.depositAmount) : null }),
         },
+        select: appointmentResponseSelect,
     });
 
     res.json(appointment);
 };
 
 export const updateAppointmentStatus = async (req: Request, res: Response) => {
-    // Validate valid ApptStatus enum (Prisma)
-    const validStatuses = ['SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW'];
-    if (!validStatuses.includes(req.body.status)) {
-        res.status(400).json({ error: 'Invalid status provided' });
+    const idParsed = uuidSchema.safeParse(req.params.id);
+    if (!idParsed.success) {
+        res.status(400).json({ error: 'Invalid appointment ID' });
         return;
     }
 
-    try {
-        const result = await prisma.appointment.updateMany({
-            where: { 
-                id: req.params.id as string, 
-                artistId: req.user!.userId 
-            },
-            data: { 
-                status: req.body.status 
-            },
-        });
-
-        if (result.count === 0) {
-            res.status(404).json({ error: 'Appointment not found or unauthorized' });
-            return;
-        }
-
-        res.json({ success: true, count: result.count });
-    } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Unknown error';
-        res.status(500).json({ error: 'Failed to update status', details: message });
+    const bodyParsed = appointmentStatusSchema.safeParse(req.body);
+    if (!bodyParsed.success) {
+        res.status(400).json({ error: 'Invalid status', details: bodyParsed.error.issues });
+        return;
     }
+
+    const result = await prisma.appointment.updateMany({
+        where: {
+            id: idParsed.data,
+            artistId: req.user!.userId,
+        },
+        data: { status: bodyParsed.data.status },
+    });
+
+    if (result.count === 0) {
+        res.status(404).json({ error: 'Appointment not found or unauthorized' });
+        return;
+    }
+
+    res.json({ success: true });
 };
 
 export const deleteAppointment = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+    const idParsed = uuidSchema.safeParse(req.params.id);
+    if (!idParsed.success) {
+        res.status(400).json({ error: 'Invalid appointment ID' });
+        return;
+    }
+    const id = idParsed.data;
     const artistId = req.user!.userId;
 
-    const existing = await prisma.appointment.findFirst({ where: { id, artistId } });
+    const existing = await prisma.appointment.findFirst({
+        where: { id, artistId },
+        select: { id: true },
+    });
     if (!existing) {
         res.status(404).json({ error: 'Appointment not found' });
         return;

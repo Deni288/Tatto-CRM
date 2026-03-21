@@ -28,8 +28,16 @@ const refreshLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+const verifyEmailLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 sat
+    max: 10,
+    message: { error: 'Too many verification attempts, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 router.post('/register', registerLimiter, register);
-router.post('/verify-email', verifyEmail);
+router.post('/verify-email', verifyEmailLimiter, verifyEmail);
 router.post('/login', loginLimiter, login);
 router.post('/refresh', refreshLimiter, refresh);
 router.post('/logout', logout);

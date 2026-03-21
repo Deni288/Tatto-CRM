@@ -4,9 +4,7 @@ import prisma from '../config/db';
 import { env } from '../config/env';
 import { createCheckoutSession, createPortalSession, isUserActive } from '../services/billing.service';
 
-const FRONTEND_URL = env.NODE_ENV === 'production'
-    ? 'https://tatto-crm-mu.vercel.app'
-    : 'http://localhost:5173';
+const FRONTEND_URL = env.FRONTEND_URL;
 
 export const getBillingStatus = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
