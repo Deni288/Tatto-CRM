@@ -96,6 +96,45 @@ export const sendBookingConfirmation = async (params: {
     });
 };
 
+export const sendAppointmentReminder = async (params: {
+    to: string;
+    clientName: string;
+    artistName: string;
+    title: string;
+    startTime: Date;
+    endTime: Date;
+    portalUrl: string;
+}): Promise<void> => {
+    const dateStr = params.startTime.toLocaleDateString('hr-HR', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    });
+    const timeStr = `${params.startTime.toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' })} – ${params.endTime.toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' })}`;
+
+    await resend.emails.send({
+        from: FROM,
+        to: params.to,
+        subject: `Podsjetnik: Termin sutra — ${params.title}`,
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px; background: #0f172a; color: #f8fafc; border-radius: 12px;">
+                <h1 style="color: #d4af37; margin-bottom: 8px;">Podsjetnik za termin</h1>
+                <p style="color: #94a3b8; margin-bottom: 24px;">Pozdrav ${params.clientName},</p>
+                <p>Podsjećamo te da imaš termin <strong>sutra</strong> kod <strong>${params.artistName}</strong>.</p>
+                <div style="background: #1e293b; border-radius: 8px; padding: 16px; margin: 24px 0;">
+                    <p style="margin: 0 0 8px; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Detalji termina</p>
+                    <p style="margin: 0 0 4px;"><strong>Naziv:</strong> ${params.title}</p>
+                    <p style="margin: 0 0 4px;"><strong>Datum:</strong> ${dateStr}</p>
+                    <p style="margin: 0;"><strong>Vrijeme:</strong> ${timeStr}</p>
+                </div>
+                <a href="${params.portalUrl}"
+                   style="display: inline-block; margin: 8px 0 24px; padding: 12px 28px; background: #d4af37; color: #0f172a; font-weight: 700; border-radius: 8px; text-decoration: none;">
+                    Pogledaj svoje podatke
+                </a>
+                <p style="color: #64748b; font-size: 12px; margin-top: 32px;">Tattoo CRM — powered by love for art</p>
+            </div>
+        `,
+    });
+};
+
 export const sendNewBookingAlert = async (params: {
     to: string;
     artistName: string;

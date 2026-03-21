@@ -1,5 +1,6 @@
 import 'dotenv/config'; // Mora biti prvi import — učitava .env prije svega
 import { env } from './config/env'; // Validacija env varijabli pri startu
+import { startReminderCron } from './services/reminder.service';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -75,4 +76,5 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
+    startReminderCron();
 });

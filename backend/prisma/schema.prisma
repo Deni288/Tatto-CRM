@@ -99,6 +99,7 @@ model Appointment {
   stripePaymentId String?
   googleEventId   String?
   isActive        Boolean    @default(true)
+  reminderSent    Boolean    @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
