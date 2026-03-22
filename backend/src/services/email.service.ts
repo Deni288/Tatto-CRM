@@ -3,7 +3,7 @@ import { env } from '../config/env';
 
 const resend = new Resend(env.RESEND_API_KEY);
 
-const FROM = 'Tattoo CRM <onboarding@resend.dev>';
+const FROM = 'Tattoo CRM <noreply@tattoocrm.app>';
 
 function escapeHtml(str: string): string {
     return str
