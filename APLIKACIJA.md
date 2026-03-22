@@ -112,6 +112,11 @@ Dolazni upiti od potencijalnih klijenata putem javnog booking linka.
 - WhatsApp brza akcija (otvara WhatsApp s brojem klijenta)
 - Pretvori u termin
 
+**Reference slika:**
+- Klijent može priložiti sliku inspiracije direktno u booking formu (JPG, PNG, WebP, max 5MB)
+- Slika ide direktno na Cloudinary (ne prolazi kroz server)
+- Artist vidi sliku u Booking Requests dashboardu uz ostale detalje upita
+
 ---
 
 ## Consent Forms

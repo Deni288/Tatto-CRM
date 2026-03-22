@@ -183,6 +183,13 @@ export const AppLayout = () => {
                             </Link>
                         );
                     })}
+                    <button
+                        onClick={() => logout()}
+                        className="relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-red-400 transition-colors duration-200"
+                    >
+                        <LogOut className="w-6 h-6" strokeWidth={2} />
+                        <span className="text-[10px] font-semibold mt-1">Sign out</span>
+                    </button>
                 </nav>
                 <div className="h-[env(safe-area-inset-bottom,0px)]" />
             </div>
