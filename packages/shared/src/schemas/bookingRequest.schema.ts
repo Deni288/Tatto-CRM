@@ -6,6 +6,7 @@ export const bookingRequestSchema = z.object({
     phone: z.string().min(1, 'Phone number is required'),
     tattooIdea: z.string().min(1, 'Please describe your tattoo idea'),
     referenceLink: z.string().url({ message: 'Invalid URL' }).optional().or(z.literal('')),
+    referenceImageUrl: z.string().url().optional(),
     preferredMonth: z.string().min(1, 'Please select a preferred month'),
 });
 

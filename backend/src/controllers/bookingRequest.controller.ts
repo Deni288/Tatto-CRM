@@ -91,6 +91,7 @@ export const getBookingRequests = async (req: Request, res: Response): Promise<v
             phone: true,
             tattooIdea: true,
             referenceLink: true,
+            referenceImageUrl: true,
             preferredMonth: true,
             status: true,
             createdAt: true,

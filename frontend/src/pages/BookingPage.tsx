@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { bookingRequestSchema, type BookingRequestFormData } from '@tattoocrm/shared';
-import { Loader2, CheckCircle, Sparkles } from 'lucide-react';
+import { Loader2, CheckCircle, Sparkles, Upload, X } from 'lucide-react';
 import { useBookingRequestStore } from '../store/bookingRequest.store';
+import { useBookingImageUpload } from '../hooks/useBookingImageUpload';
 
 const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -18,15 +19,18 @@ export const BookingPage = () => {
 
     if (!artistId) return <Navigate to="/" replace />;
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<BookingRequestFormData>({
+    const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<BookingRequestFormData>({
         resolver: zodResolver(bookingRequestSchema),
     });
+    const { imageUrl, previewUrl, isUploading, error: uploadError, handleFileSelect, clearImage } = useBookingImageUpload();
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const onSubmit = async (data: BookingRequestFormData) => {
         try {
-            await submitRequest(artistId, data);
+            await submitRequest(artistId, { ...data, referenceImageUrl: imageUrl ?? undefined });
             setIsSubmitted(true);
             reset();
+            clearImage();
         } catch {
             // Error handled in store
         }
@@ -135,6 +139,54 @@ export const BookingPage = () => {
                                 className={`w-full bg-slate-950 border ${errors.referenceLink ? 'border-red-500' : 'border-slate-800'} rounded-lg px-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors`}
                             />
                             {errors.referenceLink && <p className="text-red-400 text-xs">{errors.referenceLink.message}</p>}
+                        </div>
+
+                        {/* Reference Image Upload */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-slate-300">
+                                Reference Image <span className="text-slate-600">(Optional)</span>
+                            </label>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) void handleFileSelect(file);
+                                    setValue('referenceImageUrl', undefined);
+                                }}
+                            />
+                            {previewUrl ? (
+                                <div className="relative rounded-lg overflow-hidden border border-slate-700">
+                                    <img src={previewUrl} alt="Reference preview" className="w-full max-h-48 object-contain bg-slate-950" />
+                                    {isUploading && (
+                                        <div className="absolute inset-0 bg-slate-950/70 flex items-center justify-center">
+                                            <Loader2 className="animate-spin text-gold-500 w-8 h-8" />
+                                        </div>
+                                    )}
+                                    {!isUploading && (
+                                        <button
+                                            type="button"
+                                            onClick={clearImage}
+                                            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center hover:bg-slate-800 transition-colors"
+                                        >
+                                            <X size={14} className="text-slate-300" />
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="w-full border border-dashed border-slate-700 hover:border-gold-500/50 rounded-lg px-4 py-6 flex flex-col items-center gap-2 text-slate-500 hover:text-slate-300 transition-colors"
+                                >
+                                    <Upload size={20} />
+                                    <span className="text-sm">Click to upload image</span>
+                                    <span className="text-xs">JPG, PNG, WebP — max 5MB</span>
+                                </button>
+                            )}
+                            {uploadError && <p className="text-red-400 text-xs">{uploadError}</p>}
                         </div>
 
                         {/* Preferred Month */}

@@ -122,8 +122,9 @@ model BookingRequest {
   email          String
   phone          String
   tattooIdea     String
-  referenceLink  String?
-  preferredMonth String
+  referenceLink     String?
+  referenceImageUrl String?
+  preferredMonth    String
   status         String   @default("PENDING")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

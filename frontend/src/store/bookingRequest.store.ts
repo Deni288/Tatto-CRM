@@ -10,6 +10,7 @@ export interface BookingRequest {
     phone: string;
     tattooIdea: string;
     referenceLink: string | null;
+    referenceImageUrl: string | null;
     preferredMonth: string;
     status: string;
     createdAt: string;
@@ -21,6 +22,7 @@ export interface BookingRequestFormData {
     phone: string;
     tattooIdea: string;
     referenceLink?: string;
+    referenceImageUrl?: string;
     preferredMonth: string;
 }
 

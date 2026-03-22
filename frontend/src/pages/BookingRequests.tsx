@@ -158,6 +158,18 @@ export const BookingRequests = () => {
                                                     <p className="text-slate-300 text-sm leading-relaxed">{req.tattooIdea}</p>
                                                 </div>
 
+                                                {/* Reference image */}
+                                                {req.referenceImageUrl && (
+                                                    <div className="mb-4 rounded-lg overflow-hidden border border-slate-800">
+                                                        <img
+                                                            src={req.referenceImageUrl}
+                                                            alt="Reference"
+                                                            className="w-full max-h-64 object-contain bg-slate-950"
+                                                            loading="lazy"
+                                                        />
+                                                    </div>
+                                                )}
+
                                                 {/* Reference link */}
                                                 {req.referenceLink && (
                                                     <a
