@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Inbox, Loader2, CheckCircle, XCircle, Mail, Phone, Calendar, ExternalLink, Sparkles, MessageCircle, UserPlus } from 'lucide-react';
+import { Inbox, Loader2, CheckCircle, XCircle, Mail, Phone, Calendar, ExternalLink, Sparkles, MessageCircle, UserPlus, AlertTriangle } from 'lucide-react';
+import axios from 'axios';
 import { Card } from '../components/tremor/Card';
 import { Button } from '../components/tremor/Button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,9 +15,24 @@ const statusConfig: Record<string, { bg: string; text: string; dot: string; labe
 
 type StatusFilter = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED';
 
+interface DuplicateClient {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string | null;
+    phone: string | null;
+}
+
+interface DuplicateModal {
+    open: boolean;
+    requestId: string;
+    duplicates: DuplicateClient[];
+}
+
 export const BookingRequests = () => {
     const { requests, isLoading, fetchRequests, updateRequestStatus, convertToClient } = useBookingRequestStore();
     const [filter, setFilter] = useState<StatusFilter>('ALL');
+    const [duplicateModal, setDuplicateModal] = useState<DuplicateModal>({ open: false, requestId: '', duplicates: [] });
 
     useEffect(() => {
         fetchRequests();
@@ -40,13 +56,17 @@ export const BookingRequests = () => {
         window.open(`https://wa.me/${request.phone}?text=${message}`, '_blank');
     };
 
-    const handleConvertToClient = async (id: string) => {
-        if (!window.confirm('Pretvori ovaj upit u službenog klijenta?')) return;
+    const handleConvertToClient = async (id: string, force = false) => {
         try {
-            await convertToClient(id);
-            gooeyToast.success('Request converted to client successfully');
-        } catch {
-            gooeyToast.error('Failed to convert request to client');
+            await convertToClient(id, force);
+            gooeyToast.success('Klijent uspješno kreiran');
+            setDuplicateModal({ open: false, requestId: '', duplicates: [] });
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err) && err.response?.status === 409) {
+                setDuplicateModal({ open: true, requestId: id, duplicates: err.response.data.duplicates });
+            } else {
+                gooeyToast.error('Greška pri kreiranju klijenta');
+            }
         }
     };
 
@@ -194,7 +214,7 @@ export const BookingRequests = () => {
                                                             WhatsApp
                                                         </Button>
                                                         <Button
-                                                            onClick={() => handleConvertToClient(req.id)}
+                                                            onClick={() => { void handleConvertToClient(req.id); }}
                                                             className="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border-indigo-500/20 hover:border-indigo-500/40 text-sm h-9 px-4"
                                                         >
                                                             <UserPlus size={15} className="mr-1.5" />
@@ -244,6 +264,66 @@ export const BookingRequests = () => {
                     )}
                 </AnimatePresence>
             )}
+
+            {/* Duplicate Client Modal */}
+            <AnimatePresence>
+                {duplicateModal.open && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-6"
+                        >
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                                    <AlertTriangle size={20} className="text-amber-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-semibold">Pronađen sličan klijent</h3>
+                                    <p className="text-slate-400 text-sm">Već postoji klijent s istim imenom ili emailom</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 mb-6">
+                                {duplicateModal.duplicates.map(client => (
+                                    <div key={client.id} className="flex items-center gap-3 p-3 bg-slate-800 rounded-xl border border-slate-700">
+                                        <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-gold-500 font-bold text-xs shrink-0">
+                                            {client.firstName.charAt(0)}{client.lastName.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="text-white text-sm font-medium">{client.firstName} {client.lastName}</p>
+                                            {client.email && <p className="text-slate-400 text-xs">{client.email}</p>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="flex gap-3">
+                                <Button
+                                    onClick={() => setDuplicateModal({ open: false, requestId: '', duplicates: [] })}
+                                    variant="secondary"
+                                    className="flex-1"
+                                >
+                                    Otkaži
+                                </Button>
+                                <Button
+                                    onClick={() => { void handleConvertToClient(duplicateModal.requestId, true); }}
+                                    className="flex-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border-indigo-500/20"
+                                >
+                                    <UserPlus size={15} className="mr-1.5" />
+                                    Kreiraj novog
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

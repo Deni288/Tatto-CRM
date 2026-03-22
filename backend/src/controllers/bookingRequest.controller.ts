@@ -144,6 +144,8 @@ export const updateBookingRequestStatus = async (req: Request, res: Response): P
     res.json(updated);
 };
 
+const forceSchema = z.object({ force: z.boolean().optional() });
+
 // Protected — converts a booking request into a Client
 export const convertRequestToClient = async (req: Request, res: Response): Promise<void> => {
     const paramsParsed = idParamSchema.safeParse(req.params);
@@ -153,6 +155,7 @@ export const convertRequestToClient = async (req: Request, res: Response): Promi
     }
     const { id } = paramsParsed.data;
     const artistId = req.user!.userId;
+    const { force } = forceSchema.parse(req.body);
 
     const bookingRequest = await prisma.bookingRequest.findUnique({
         where: { id },
@@ -178,6 +181,28 @@ export const convertRequestToClient = async (req: Request, res: Response): Promi
     const nameParts = bookingRequest.name.trim().split(/\s+/);
     const firstName = nameParts[0];
     const lastName = nameParts.slice(1).join(' ') || '';
+
+    if (!force) {
+        const duplicates = await prisma.client.findMany({
+            where: {
+                artistId,
+                isActive: true,
+                OR: [
+                    { email: bookingRequest.email || undefined },
+                    {
+                        firstName: { equals: firstName, mode: 'insensitive' },
+                        lastName: { equals: lastName, mode: 'insensitive' },
+                    },
+                ],
+            },
+            select: { id: true, firstName: true, lastName: true, email: true, phone: true },
+        });
+
+        if (duplicates.length > 0) {
+            res.status(409).json({ duplicates });
+            return;
+        }
+    }
 
     const client = await prisma.client.create({
         data: {

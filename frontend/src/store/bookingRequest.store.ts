@@ -33,7 +33,7 @@ interface BookingRequestState {
     fetchRequests: () => Promise<void>;
     submitRequest: (artistId: string, data: BookingRequestFormData) => Promise<void>;
     updateRequestStatus: (id: string, status: 'APPROVED' | 'REJECTED') => Promise<void>;
-    convertToClient: (id: string) => Promise<void>;
+    convertToClient: (id: string, force?: boolean) => Promise<void>;
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -77,13 +77,13 @@ export const useBookingRequestStore = create<BookingRequestState>()((set, get) =
         }
     },
 
-    convertToClient: async (id: string) => {
+    convertToClient: async (id: string, force?: boolean) => {
         set({ isLoading: true, error: null });
         try {
-            await api.post(`/booking-requests/${id}/convert`);
+            await api.post(`/booking-requests/${id}/convert`, { force });
             get().fetchRequests();
-        } catch (err: any) {
-            set({ error: err.response?.data?.error || 'Failed to convert request to client', isLoading: false });
+        } catch (err: unknown) {
+            set({ isLoading: false });
             throw err;
         }
     },
