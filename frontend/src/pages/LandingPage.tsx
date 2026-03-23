@@ -14,17 +14,17 @@ const fadeUp = (i: number) => ({
 
 const features = [
     { icon: Users, title: 'Upravljanje klijentima', desc: 'Kompletni profili klijenata s historijom, galerijem radova i custom poljima.' },
-    { icon: Calendar, title: 'Kalendar termina', desc: 'Zakazivanje s praćenjem depozita, statusima i automatskim podsjetniciima.' },
-    { icon: Inbox, title: 'Booking Requests', desc: 'Javni booking link za Instagram. Klijenti šalju upite, ti ih odobravaš.' },
-    { icon: FileText, title: 'Digitalni consent', desc: 'Klijent potpisuje pristanak prstom na licu mjesta. Sve u oblaku.' },
-    { icon: Image, title: 'Galerija radova', desc: 'Upload fotografija direktno na Cloudinary. Brzo, bezlično, sigurno.' },
+    { icon: Calendar, title: 'Kalendar termina', desc: 'Zakazivanje s praćenjem depozita, statusima i automatskim podsjetnicima.' },
+    { icon: Inbox, title: 'Booking upiti', desc: 'Javni booking link za Instagram. Klijenti šalju upite, ti ih odobravaš.' },
+    { icon: FileText, title: 'Digitalni pristanak', desc: 'Klijent potpisuje pristanak prstom na licu mjesta. Sve u oblaku.' },
+    { icon: Image, title: 'Galerija radova', desc: 'Upload fotografija direktno na Cloudinary. Brzo, pouzdano, sigurno.' },
     { icon: Bell, title: 'Automatski podsjetnici', desc: 'Klijent dan ranije automatski dobiva email s detaljima termina.' },
 ];
 
 const steps = [
-    { num: '01', title: 'Registracija', desc: '30 dana besplatno, bez kartice. Kreiraj account za 60 sekundi.' },
-    { num: '02', title: 'Postavi profil', desc: 'Kopiraj tvoj booking link na Instagram ili web stranicu.' },
-    { num: '03', title: 'Upravljaj poslom', desc: 'Klijenti, termini i consent forme — sve na jednom mjestu.' },
+    { num: '01', title: 'Registracija', desc: '30 dana besplatno, bez kartice. Kreiraj račun za 60 sekundi.' },
+    { num: '02', title: 'Postavi profil', desc: 'Kopiraj svoj booking link na Instagram ili web stranicu.' },
+    { num: '03', title: 'Upravljaj poslom', desc: 'Klijenti, termini i pristanačne forme — sve na jednom mjestu.' },
 ];
 
 const testimonials = [
@@ -93,8 +93,8 @@ export const LandingPage = () => {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
                     >
-                        Upravljaj klijentima, terminima i booking requestima na jednom mjestu.
-                        Manje administracije, više tattooiranja.
+                        Upravljaj klijentima, terminima i booking upitima na jednom mjestu.
+                        Manje administracije, više tetoviranja.
                     </motion.p>
 
                     <motion.div
@@ -114,7 +114,7 @@ export const LandingPage = () => {
                             to="/login"
                             className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-lg transition-colors border border-slate-700"
                         >
-                            Imam account
+                            Imam račun
                         </Link>
                     </motion.div>
 
@@ -178,7 +178,7 @@ export const LandingPage = () => {
                 <div className="max-w-4xl mx-auto">
                     <motion.div {...fadeUp(0)} className="text-center mb-16">
                         <h2 className="text-4xl font-black mb-4">Počni za 3 koraka</h2>
-                        <p className="text-slate-400 text-lg">Setup traje manje od 5 minuta.</p>
+                        <p className="text-slate-400 text-lg">Postavljanje traje manje od 5 minuta.</p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -235,11 +235,11 @@ export const LandingPage = () => {
                         {[
                             {
                                 label: 'Mjesečno', price: '€22', sub: '/mjesec', badge: undefined,
-                                features: ['Neograničeni klijenti', 'Automatski podsjetnici', 'Digitalni consent', 'Booking link', 'Galerija radova', 'CSV export'],
+                                features: ['Neograničeni klijenti', 'Automatski podsjetnici', 'Digitalni pristanak', 'Booking link', 'Galerija radova', 'CSV izvoz'],
                             },
                             {
                                 label: 'Godišnje', price: '€18', sub: '/mjesec · €220/god', badge: 'Uštedi 2 mj.',
-                                features: ['Neograničeni klijenti', 'Automatski podsjetnici', 'Digitalni consent', 'Booking link', 'Galerija radova', 'CSV export', '2 besplatna mjeseca', 'Prioritetna podrška'],
+                                features: ['Neograničeni klijenti', 'Automatski podsjetnici', 'Digitalni pristanak', 'Booking link', 'Galerija radova', 'CSV izvoz', '2 besplatna mjeseca', 'Prioritetna podrška'],
                             },
                         ].map((plan, i) => (
                             <motion.div
