@@ -17,7 +17,7 @@ interface AuthState {
     logout: () => void;
     setToken: (token: string) => void;
     checkAuth: () => void;
-    updateUser: (updates: Partial<Pick<User, 'name'>>) => void;
+    updateUser: (updates: Partial<Pick<User, 'name' | 'aftercareText'>>) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
