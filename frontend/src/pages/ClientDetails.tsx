@@ -9,6 +9,7 @@ import { useConsentStore } from '../store/consent.store';
 import { useGalleryStore } from '../store/gallery.store';
 import { NewConsentFormModal } from '../components/clients/NewConsentFormModal';
 import { AddImageModal } from '../components/clients/AddImageModal';
+import { EditClientModal } from '../components/clients/EditClientModal';
 import { PrintableConsentForm } from '../components/clients/PrintableConsentForm';
 import { gooeyToast } from 'goey-toast';
 
@@ -17,6 +18,7 @@ export const ClientDetails = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<'info' | 'gallery' | 'appointments' | 'consents'>('info');
     const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [portalLinkCopied, setPortalLinkCopied] = useState(false);
     const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
     const printRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -138,7 +140,7 @@ export const ClientDetails = () => {
                                 {portalLinkCopied ? 'Kopirano!' : 'Portal Link'}
                             </Button>
                         )}
-                        <Button variant="secondary" className="flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700">
+                        <Button variant="secondary" onClick={() => setIsEditModalOpen(true)} className="flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700">
                             <Edit3 size={18} className="mr-2" />
                             Edit Profile
                         </Button>
@@ -451,6 +453,14 @@ export const ClientDetails = () => {
                     open={isGalleryModalOpen}
                     onOpenChange={setIsGalleryModalOpen}
                     clientId={client.id}
+                />
+            )}
+
+            {client && (
+                <EditClientModal
+                    open={isEditModalOpen}
+                    onOpenChange={setIsEditModalOpen}
+                    client={client}
                 />
             )}
         </div>
