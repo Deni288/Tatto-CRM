@@ -10,6 +10,7 @@ import { useGalleryStore } from '../store/gallery.store';
 import { NewConsentFormModal } from '../components/clients/NewConsentFormModal';
 import { AddImageModal } from '../components/clients/AddImageModal';
 import { EditClientModal } from '../components/clients/EditClientModal';
+import { NewBookingModal } from '../components/appointments/NewBookingModal';
 import { PrintableConsentForm } from '../components/clients/PrintableConsentForm';
 import { gooeyToast } from 'goey-toast';
 
@@ -19,6 +20,7 @@ export const ClientDetails = () => {
     const [activeTab, setActiveTab] = useState<'info' | 'gallery' | 'appointments' | 'consents'>('info');
     const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isNewBookingModalOpen, setIsNewBookingModalOpen] = useState(false);
     const [portalLinkCopied, setPortalLinkCopied] = useState(false);
     const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
     const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
@@ -329,7 +331,7 @@ export const ClientDetails = () => {
                                     </div>
                                     <h3 className="text-white font-medium mb-1">No appointments yet</h3>
                                     <p className="text-slate-400 text-sm max-w-sm mx-auto mb-6">This client doesn't have any booked appointments. Create a new booking to get started.</p>
-                                    <Button variant="secondary" className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700" onClick={() => document.dispatchEvent(new CustomEvent('open-new-booking-modal'))}>
+                                    <Button variant="secondary" className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700" onClick={() => setIsNewBookingModalOpen(true)}>
                                         <Plus size={16} className="mr-2" /> Book Appointment
                                     </Button>
                                 </div>
@@ -476,6 +478,8 @@ export const ClientDetails = () => {
                     </button>
                 </div>
             )}
+
+            <NewBookingModal open={isNewBookingModalOpen} onOpenChange={setIsNewBookingModalOpen} />
 
             {client && (
                 <EditClientModal
