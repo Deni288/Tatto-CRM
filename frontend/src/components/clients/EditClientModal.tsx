@@ -77,7 +77,8 @@ export const EditClientModal = ({ client, open, onOpenChange }: Props) => {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-slate-300">Phone</label>
-                            <Input {...register('phone')} placeholder="+1 234 567 8900" />
+                            <Input {...register('phone')} placeholder="+38761234567" />
+                            <p className="text-xs text-slate-500">Međunarodni format: +38761234567 (BiH), +385911234567 (HR)</p>
                         </div>
 
                         <div className="space-y-2">
