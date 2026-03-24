@@ -17,6 +17,7 @@ model User {
   isEmailVerified      Boolean            @default(false)
   emailVerificationToken         String?  @unique
   emailVerificationTokenExpiresAt DateTime?
+  aftercareText        String?   @db.Text
   trialEndsAt          DateTime?
   stripeCustomerId     String?            @unique
   stripeSubscriptionId String?            @unique

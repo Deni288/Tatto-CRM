@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UpdateProfileSchema, ChangePasswordSchema, type UpdateProfileInput, type ChangePasswordInput } from '@tattoocrm/shared';
-import { Loader2, Link, Check, KeyRound, User } from 'lucide-react';
+import { Loader2, Link, Check, KeyRound, User, MessageCircle } from 'lucide-react';
 import { gooeyToast } from 'goey-toast';
 import { Card } from '../components/tremor/Card';
 import { useAuthStore } from '../store/auth.store';
@@ -69,6 +69,25 @@ export const Profile = () => {
                 ? (err.response?.data?.error ?? err.message)
                 : 'Failed to change password';
             gooeyToast.error(message);
+        }
+    };
+
+    const [aftercareText, setAftercareText] = useState(user?.aftercareText ?? '');
+    const [isSavingAftercare, setIsSavingAftercare] = useState(false);
+
+    const onSaveAftercare = async (): Promise<void> => {
+        setIsSavingAftercare(true);
+        try {
+            const res = await api.patch('/users/me', { name: user?.name ?? '', aftercareText });
+            updateUser({ name: res.data.name, aftercareText: res.data.aftercareText });
+            gooeyToast.success('Aftercare tekst spremljen');
+        } catch (err: unknown) {
+            const message = axios.isAxiosError(err)
+                ? (err.response?.data?.error ?? err.message)
+                : 'Greška pri spremanju';
+            gooeyToast.error(message);
+        } finally {
+            setIsSavingAftercare(false);
         }
     };
 
@@ -170,6 +189,32 @@ export const Profile = () => {
                         Change Password
                     </button>
                 </form>
+            </Card>
+
+            {/* Aftercare Instructions */}
+            <Card className="p-6 bg-slate-900/50 border border-slate-800">
+                <div className="flex items-center gap-2 mb-2">
+                    <MessageCircle size={18} className="text-gold-500" />
+                    <h2 className="text-base font-semibold text-white">Aftercare upute</h2>
+                </div>
+                <p className="text-sm text-slate-400 mb-4">Tekst koji se šalje klijentu putem WhatsAppa nakon tetoviranja.</p>
+                <div className="space-y-3">
+                    <textarea
+                        rows={6}
+                        value={aftercareText}
+                        onChange={(e) => setAftercareText(e.target.value)}
+                        placeholder="Npr: Hvala na povjerenju! Evo uputa za njegu tetovaže&#10;1. Foliju drži 3 sata&#10;2. Peri blagim sapunom&#10;..."
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-gold-500/50 resize-none transition-colors"
+                    />
+                    <button
+                        onClick={() => { void onSaveAftercare(); }}
+                        disabled={isSavingAftercare}
+                        className="px-5 py-2.5 bg-gold-500 hover:bg-gold-400 text-slate-900 font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                        {isSavingAftercare && <Loader2 size={16} className="animate-spin" />}
+                        Spremi aftercare
+                    </button>
+                </div>
             </Card>
 
             {/* Booking Link */}

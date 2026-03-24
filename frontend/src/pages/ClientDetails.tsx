@@ -5,6 +5,7 @@ import { Card } from '../components/tremor/Card';
 import { TabNavigation, TabNavigationLink } from '../components/tremor/TabNavigation';
 import { Button } from '../components/tremor/Button';
 import { useClientStore } from '../store/client.store';
+import { useAuthStore } from '../store/auth.store';
 import { useConsentStore } from '../store/consent.store';
 import { useGalleryStore } from '../store/gallery.store';
 import { NewConsentFormModal } from '../components/clients/NewConsentFormModal';
@@ -27,6 +28,7 @@ export const ClientDetails = () => {
     const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const { selectedClient: client, isLoading, error, fetchClientById, deleteClient } = useClientStore();
+    const aftercareText = useAuthStore((state) => state.user?.aftercareText);
     const { consentForms, fetchClientConsents, isLoading: isConsentsLoading } = useConsentStore();
     const { images: galleryImages, fetchGallery, deleteImage, isLoading: isGalleryLoading } = useGalleryStore();
 
@@ -111,8 +113,8 @@ export const ClientDetails = () => {
                                         <button
                                             onClick={() => {
                                                 const cleanPhone = client.phone!.replace(/[^0-9]/g, '');
-                                                const aftercareText = 'Hvala na povjerenju! Evo uputa za njegu tetovaže: 1. Foliju drži 3 sata... 2. Peri blagim sapunom...';
-                                                window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(aftercareText)}`, '_blank');
+                                                const text = aftercareText || 'Hvala na povjerenju! Evo uputa za njegu tetovaže: 1. Foliju drži 3 sata... 2. Peri blagim sapunom...';
+                                                window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
                                             }}
                                             className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-colors"
                                             title="Send aftercare instructions via WhatsApp"

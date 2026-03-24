@@ -8,6 +8,7 @@ const userSelect = {
     name: true,
     email: true,
     role: true,
+    aftercareText: true,
 } as const;
 
 export const getMe = async (req: Request, res: Response): Promise<void> => {
@@ -33,7 +34,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 
     const user = await prisma.user.update({
         where: { id: req.user!.userId },
-        data: { name: parsed.data.name },
+        data: { name: parsed.data.name, aftercareText: parsed.data.aftercareText },
         select: userSelect,
     });
 

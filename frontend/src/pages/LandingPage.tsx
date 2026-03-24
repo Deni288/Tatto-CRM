@@ -13,7 +13,7 @@ const fadeUp = (i: number) => ({
 });
 
 const features = [
-    { icon: Users, title: 'Upravljanje klijentima', desc: 'Kompletni profili klijenata s historijom, galerijem radova i custom poljima.' },
+    { icon: Users, title: 'Upravljanje klijentima', desc: 'Kompletni profili klijenata s poviješću, galerijom radova i prilagođenim poljima.' },
     { icon: Calendar, title: 'Kalendar termina', desc: 'Zakazivanje s praćenjem depozita, statusima i automatskim podsjetnicima.' },
     { icon: Inbox, title: 'Booking upiti', desc: 'Javni booking link za Instagram. Klijenti šalju upite, ti ih odobravaš.' },
     { icon: FileText, title: 'Digitalni pristanak', desc: 'Klijent potpisuje pristanak prstom na licu mjesta. Sve u oblaku.' },

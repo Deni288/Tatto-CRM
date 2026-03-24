@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const UpdateProfileSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+    aftercareText: z.string().max(2000).optional(),
 }).strict();
 
 export const ChangePasswordSchema = z.object({
