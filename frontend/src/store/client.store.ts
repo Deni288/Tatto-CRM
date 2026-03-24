@@ -46,7 +46,7 @@ const LIMIT = 20;
 export const useClientStore = create<ClientState>((set, get) => ({
     clients: [],
     selectedClient: null,
-    isLoading: false,
+    isLoading: true,
     error: null,
     pagination: { page: 1, totalPages: 1, total: 0 },
 
