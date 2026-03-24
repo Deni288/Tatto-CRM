@@ -123,11 +123,11 @@ export const ClientDetails = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                         {client.portalToken && (
                             <Button
                                 variant="secondary"
-                                className="flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
+                                className="flex-1 md:flex-none flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
                                 onClick={() => {
                                     const url = `${window.location.origin}/portal/${client.portalToken}`;
                                     void navigator.clipboard.writeText(url).then(() => {
@@ -140,14 +140,14 @@ export const ClientDetails = () => {
                                 {portalLinkCopied ? 'Kopirano!' : 'Portal Link'}
                             </Button>
                         )}
-                        <Button variant="secondary" onClick={() => setIsEditModalOpen(true)} className="flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700">
+                        <Button variant="secondary" onClick={() => setIsEditModalOpen(true)} className="flex-1 md:flex-none flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700">
                             <Edit3 size={18} className="mr-2" />
                             Edit Profile
                         </Button>
                         <Button
                             onClick={handleDeleteClient}
                             variant="secondary"
-                            className="flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border-red-500/20 hover:border-red-500/40 transition-colors"
+                            className="flex-1 md:flex-none flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border-red-500/20 hover:border-red-500/40 transition-colors"
                         >
                             <Trash2 size={18} className="mr-2" />
                             Delete Client
