@@ -62,7 +62,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
         }}>
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 animate-in fade-in" />
-                <Dialog.Content className="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] bg-slate-900 border border-slate-800 rounded-xl shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                <Dialog.Content className="fixed left-[50%] top-[50%] z-50 w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] bg-slate-900 border border-slate-800 rounded-xl shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
                     <div className="flex items-center justify-between p-6 border-b border-slate-800/80">
                         <Dialog.Title className="text-xl font-bold text-white tracking-tight">
                             New Booking
@@ -74,7 +74,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
                         </Dialog.Close>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit as any)} className="p-6 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                    <form onSubmit={handleSubmit(onSubmit as any)} className="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                         
                         <div className="space-y-2">
                             <Label htmlFor="clientId" className="text-slate-300">Client</Label>
