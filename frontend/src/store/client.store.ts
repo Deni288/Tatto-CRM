@@ -66,7 +66,12 @@ export const useClientStore = create<ClientState>((set, get) => ({
     },
 
     fetchClientById: async (id: string) => {
-        set({ isLoading: true, error: null, selectedClient: null });
+        const cached = get().clients.find((c) => c.id === id);
+        if (cached) {
+            set({ selectedClient: cached, isLoading: false, error: null });
+        } else {
+            set({ isLoading: true, error: null, selectedClient: null });
+        }
         try {
             const response = await api.get<Client>(`/clients/${id}`);
             set({ selectedClient: response.data, isLoading: false });
