@@ -15,7 +15,7 @@ export const Clients = () => {
     const [editingClient, setEditingClient] = useState<Client | null>(null);
     const navigate = useNavigate();
     
-    const { clients, isLoading, fetchClients, pagination } = useClientStore();
+    const { clients, isLoading, initialized, fetchClients, pagination } = useClientStore();
     const { page, totalPages, total } = pagination;
 
     useEffect(() => {
@@ -54,7 +54,7 @@ export const Clients = () => {
             </div>
 
             <Card className="p-0 sm:p-0 overflow-hidden bg-slate-900/50 backdrop-blur-md border border-slate-800/80 shadow-xl min-h-[400px]">
-                {isLoading ? (
+                {(isLoading || !initialized) ? (
                     <div className="flex items-center justify-center h-[400px]">
                         <Loader2 className="w-8 h-8 text-gold-500 animate-spin" />
                     </div>

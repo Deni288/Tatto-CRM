@@ -26,6 +26,7 @@ interface ClientState {
     clients: Client[];
     selectedClient: Client | null;
     isLoading: boolean;
+    initialized: boolean;
     error: string | null;
     pagination: Pagination;
     fetchClients: (page?: number) => Promise<void>;
@@ -46,7 +47,8 @@ const LIMIT = 20;
 export const useClientStore = create<ClientState>((set, get) => ({
     clients: [],
     selectedClient: null,
-    isLoading: true,
+    isLoading: false,
+    initialized: false,
     error: null,
     pagination: { page: 1, totalPages: 1, total: 0 },
 
@@ -57,9 +59,9 @@ export const useClientStore = create<ClientState>((set, get) => ({
                 `/clients?page=${page}&limit=${LIMIT}`
             );
             const { data, total, totalPages } = response.data;
-            set({ clients: data, pagination: { page, total, totalPages }, isLoading: false });
+            set({ clients: data, pagination: { page, total, totalPages }, isLoading: false, initialized: true });
         } catch (err: unknown) {
-            set({ error: getErrorMessage(err, 'Failed to fetch clients'), isLoading: false });
+            set({ error: getErrorMessage(err, 'Failed to fetch clients'), isLoading: false, initialized: true });
         }
     },
 
