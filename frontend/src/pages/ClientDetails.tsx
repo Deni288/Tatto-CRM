@@ -233,27 +233,26 @@ export const ClientDetails = () => {
                             ) : galleryImages && galleryImages.length > 0 ? (
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                     {galleryImages.map(img => (
-                                        <div key={img.id} className="group relative rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700 transition-all bg-slate-950 aspect-square cursor-pointer">
+                                        <div key={img.id} onClick={() => setLightboxUrl(img.imageUrl)} className="group relative rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700 transition-all bg-slate-950 aspect-square cursor-pointer">
                                             <img
                                                 src={img.imageUrl}
                                                 alt={img.description || 'Gallery image'}
                                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                onClick={() => setLightboxUrl(img.imageUrl)}
                                                 onError={(e) => {
                                                     (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiI+PHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSIvPjwvc3ZnPg==';
                                                     (e.target as HTMLImageElement).className = 'w-16 h-16 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2';
                                                 }}
                                             />
                                             {/* Hover overlay with delete */}
-                                            <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-3">
+                                            <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-slate-950/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-3">
                                                 {img.description && (
                                                     <p className="text-white text-sm font-medium truncate mb-2">{img.description}</p>
                                                 )}
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-xs text-slate-400">{new Date(img.createdAt).toLocaleDateString()}</span>
                                                     <button
-                                                        onClick={() => handleDeleteImage(img.id)}
-                                                        className="p-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/40 hover:text-red-300 transition-colors"
+                                                        onClick={(e) => { e.stopPropagation(); void handleDeleteImage(img.id); }}
+                                                        className="pointer-events-auto p-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/40 hover:text-red-300 transition-colors"
                                                     >
                                                         <Trash2 size={14} />
                                                     </button>
