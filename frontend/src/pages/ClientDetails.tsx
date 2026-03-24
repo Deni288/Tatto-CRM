@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature, Trash2, Printer, MessageCircle, Link, Check } from 'lucide-react';
+import { ArrowLeft, Edit3, Image as ImageIcon, FileText, Calendar, Plus, Loader2, FileSignature, Trash2, Printer, MessageCircle, Link, Check, X } from 'lucide-react';
 import { Card } from '../components/tremor/Card';
 import { TabNavigation, TabNavigationLink } from '../components/tremor/TabNavigation';
 import { Button } from '../components/tremor/Button';
@@ -21,6 +21,7 @@ export const ClientDetails = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [portalLinkCopied, setPortalLinkCopied] = useState(false);
     const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
+    const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
     const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const { selectedClient: client, isLoading, error, fetchClientById, deleteClient } = useClientStore();
@@ -232,11 +233,12 @@ export const ClientDetails = () => {
                             ) : galleryImages && galleryImages.length > 0 ? (
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                     {galleryImages.map(img => (
-                                        <div key={img.id} className="group relative rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700 transition-all bg-slate-950 aspect-square">
+                                        <div key={img.id} className="group relative rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700 transition-all bg-slate-950 aspect-square cursor-pointer">
                                             <img
                                                 src={img.imageUrl}
                                                 alt={img.description || 'Gallery image'}
                                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                onClick={() => setLightboxUrl(img.imageUrl)}
                                                 onError={(e) => {
                                                     (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiI+PHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSIvPjwvc3ZnPg==';
                                                     (e.target as HTMLImageElement).className = 'w-16 h-16 object-contain opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2';
@@ -454,6 +456,26 @@ export const ClientDetails = () => {
                     onOpenChange={setIsGalleryModalOpen}
                     clientId={client.id}
                 />
+            )}
+
+            {/* Lightbox */}
+            {lightboxUrl && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+                    onClick={() => setLightboxUrl(null)}
+                >
+                    <img
+                        src={lightboxUrl}
+                        alt="Preview"
+                        className="max-w-full max-h-full rounded-xl object-contain shadow-2xl"
+                    />
+                    <button
+                        className="absolute top-4 right-4 p-2 rounded-full bg-slate-800 text-white hover:bg-slate-700 transition-colors"
+                        onClick={() => setLightboxUrl(null)}
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
             )}
 
             {client && (
