@@ -34,9 +34,10 @@ export const Clients = () => {
                     <p className="text-slate-400 mt-1 text-sm">Manage your client database</p>
                 </div>
 
-                <Button 
+                <Button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none px-6"
+                    variant="gold"
+                    className="px-6"
                 >
                     <Plus size={18} className="mr-2 -ml-1 shrink-0" />
                     New Client

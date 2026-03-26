@@ -120,9 +120,10 @@ export const Appointments = () => {
                     <h1 className="text-2xl font-bold text-white tracking-tight">Appointments</h1>
                     <p className="text-slate-400 mt-1 text-sm">Manage your schedule and bookings</p>
                 </div>
-                <Button 
+                <Button
                     onClick={() => setIsNewModalOpen(true)}
-                    className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none px-6 font-semibold"
+                    variant="gold"
+                    className="px-6 font-semibold"
                 >
                     <Plus size={18} className="mr-1.5 -ml-1 shrink-0" />
                     New Booking

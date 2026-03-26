@@ -1,7 +1,17 @@
 // Tremor Raw cx [v0.0.0]
 
 import clsx, { type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { extendTailwindMerge } from "tailwind-merge"
+
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      "bg-color": [{ bg: ["gold-500", "gold-400", "gold-600"] }],
+      "text-color": [{ text: ["gold-500", "gold-400", "gold-600"] }],
+      "border-color": [{ border: ["gold-500", "gold-400"] }],
+    },
+  },
+})
 
 export function cx(...args: ClassValue[]) {
   return twMerge(clsx(...args))

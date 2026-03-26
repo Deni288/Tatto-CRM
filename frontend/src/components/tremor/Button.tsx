@@ -85,6 +85,13 @@ const buttonVariants = tv({
         "disabled:bg-red-300 disabled:text-white",
         "disabled:dark:bg-red-950 disabled:dark:text-red-400",
       ],
+      gold: [
+        "border-transparent",
+        "text-slate-900",
+        "bg-gold-500",
+        "hover:bg-gold-400",
+        "disabled:bg-gold-500/50 disabled:text-slate-700",
+      ],
     },
   },
   defaultVariants: {
