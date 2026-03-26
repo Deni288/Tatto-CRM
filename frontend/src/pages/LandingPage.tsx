@@ -126,22 +126,23 @@ export const LandingPage = () => {
                     >
                         Bez kartice. Bez obaveza. Otkaži kad hoćeš.
                     </motion.p>
-                </div>
-            </section>
 
-            {/* App Mockup */}
-            <section className="pb-16 px-6">
-                <motion.div
-                    {...fadeUp(0)}
-                    className="max-w-5xl mx-auto"
-                >
-                    <img
-                        src="/11.jpeg"
-                        alt="Tattoo CRM na mobitelu"
-                        className="w-full rounded-2xl shadow-[0_0_80px_rgba(212,175,55,0.1)] border border-slate-800/50"
-                        loading="lazy"
-                    />
-                </motion.div>
+                    {/* App Mockup */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, delay: 0.6 }}
+                        className="mt-16 relative"
+                    >
+                        <div className="absolute inset-0 rounded-2xl bg-gold-500/5 blur-2xl scale-95 translate-y-4" />
+                        <img
+                            src="/11.jpeg"
+                            alt="Tattoo CRM na mobitelu"
+                            className="relative w-full max-w-3xl mx-auto rounded-2xl border border-slate-800/80 shadow-[0_32px_80px_rgba(0,0,0,0.6)] block"
+                            loading="lazy"
+                        />
+                    </motion.div>
+                </div>
             </section>
 
             {/* Trust bar */}
@@ -161,7 +162,7 @@ export const LandingPage = () => {
             </section>
 
             {/* Features */}
-            <section className="py-24 px-6 bg-slate-900/50">
+            <section className="py-16 px-6 bg-slate-900/50">
                 <div className="max-w-6xl mx-auto">
                     <motion.div {...fadeUp(0)} className="text-center mb-16">
                         <h2 className="text-4xl font-black mb-4">Sve što trebaš, ništa što ne trebaš</h2>
@@ -189,7 +190,7 @@ export const LandingPage = () => {
             </section>
 
             {/* How it works */}
-            <section className="py-24 px-6">
+            <section className="py-16 px-6">
                 <div className="max-w-4xl mx-auto">
                     <motion.div {...fadeUp(0)} className="text-center mb-16">
                         <h2 className="text-4xl font-black mb-4">Počni za 3 koraka</h2>
@@ -209,7 +210,7 @@ export const LandingPage = () => {
             </section>
 
             {/* Testimonials */}
-            <section className="py-24 px-6 bg-slate-900/50">
+            <section className="py-16 px-6 bg-slate-900/50">
                 <div className="max-w-6xl mx-auto">
                     <motion.div {...fadeUp(0)} className="text-center mb-16">
                         <h2 className="text-4xl font-black mb-4">Artisti koji koriste Tattoo CRM</h2>
@@ -239,7 +240,7 @@ export const LandingPage = () => {
             </section>
 
             {/* Pricing */}
-            <section className="py-24 px-6">
+            <section className="py-16 px-6">
                 <div className="max-w-4xl mx-auto">
                     <motion.div {...fadeUp(0)} className="text-center mb-16">
                         <h2 className="text-4xl font-black mb-4">Jednostavne cijene</h2>
@@ -293,7 +294,7 @@ export const LandingPage = () => {
             </section>
 
             {/* CTA */}
-            <section className="py-24 px-6 relative overflow-hidden">
+            <section className="py-16 px-6 relative overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold-500/5 rounded-full blur-3xl" />
                 </div>
