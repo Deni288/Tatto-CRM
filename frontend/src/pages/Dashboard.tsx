@@ -70,11 +70,11 @@ export const Dashboard = () => {
                 </div>
                 {/* Desktop Buttons - Hidden on Mobile, moved to Quick Actions */}
                 <div className="hidden sm:flex gap-3">
-                    <Button onClick={handleCopyBookingLink} className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700 shadow-lg hover:shadow-xl transition-all h-10">
+                    <Button onClick={handleCopyBookingLink} variant="secondary" className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700 shadow-lg hover:shadow-xl transition-all h-10">
                         {linkCopied ? <Check size={18} className="mr-2 text-emerald-400" /> : <Link size={18} className="mr-2" />}
                         {linkCopied ? 'Copied!' : 'Booking Link'}
                     </Button>
-                    <Button onClick={() => navigate('/dashboard/appointments')} className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700 shadow-lg hover:shadow-xl transition-all h-10">
+                    <Button onClick={() => navigate('/dashboard/appointments')} variant="secondary" className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700 shadow-lg hover:shadow-xl transition-all h-10">
                         <Calendar size={18} className="mr-2 hidden lg:block" />
                         View Calendar
                     </Button>

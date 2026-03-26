@@ -106,7 +106,7 @@ export const Clients = () => {
                             {searchTerm ? `No clients matching "${searchTerm}"` : "You haven't added any clients yet. Add your first client to get started."}
                         </p>
                         {!searchTerm && (
-                            <Button onClick={() => setIsModalOpen(true)} className="mt-6 bg-slate-800 hover:bg-slate-700 text-white border-none">
+                            <Button onClick={() => setIsModalOpen(true)} variant="secondary" className="mt-6 bg-slate-800 hover:bg-slate-700 text-white border-none">
                                 Add Client
                             </Button>
                         )}
