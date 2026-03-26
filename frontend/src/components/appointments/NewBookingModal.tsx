@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, CheckCircle, MessageCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { appointmentSchema, type AppointmentFormInput } from '@tattoocrm/shared';
@@ -11,6 +11,13 @@ import { useClientStore } from '../../store/client.store';
 import { useAppointmentStore } from '../../store/appointment.store';
 import { gooeyToast } from 'goey-toast';
 
+interface SuccessData {
+    clientName: string;
+    clientPhone: string | null;
+    title: string;
+    startTime: string;
+}
+
 interface NewBookingModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -20,6 +27,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
     const { clients, fetchClients, selectedClient, fetchClientById } = useClientStore();
     const { addAppointment } = useAppointmentStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [successData, setSuccessData] = useState<SuccessData | null>(null);
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<AppointmentFormInput>({
         resolver: zodResolver(appointmentSchema),
@@ -29,51 +37,92 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
         if (open) fetchClients();
     }, [open, fetchClients]);
 
+    const handleClose = () => {
+        reset();
+        setSuccessData(null);
+        onOpenChange(false);
+    };
+
+    const handleWhatsApp = (data: SuccessData) => {
+        const phone = data.clientPhone?.replace(/[^0-9]/g, '') ?? '';
+        const date = new Date(data.startTime).toLocaleDateString('hr-HR', { weekday: 'long', day: 'numeric', month: 'long' });
+        const time = new Date(data.startTime).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' });
+        const message = encodeURIComponent(`Bok ${data.clientName}! ✅ Tvoj termin je potvrđen.\n\n📅 ${date} u ${time}\n💉 ${data.title}\n\nVidimo se!`);
+        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+    };
+
     const onSubmit = async (data: AppointmentFormInput) => {
         setIsSubmitting(true);
         try {
-            // Reformat datetime-local strings to actual ISO strings for Prisma
             const payload = {
                 ...data,
                 startTime: new Date(data.startTime).toISOString(),
                 endTime: new Date(data.endTime).toISOString(),
             };
-            
+
             await addAppointment(payload);
-            
+
             if (selectedClient?.id === payload.clientId) {
                 await fetchClientById(payload.clientId);
             }
 
-            gooeyToast.success('Booking created successfully!');
+            const client = clients.find(c => c.id === payload.clientId);
+            setSuccessData({
+                clientName: client ? `${client.firstName} ${client.lastName}` : 'klijent',
+                clientPhone: client?.phone ?? null,
+                title: data.title,
+                startTime: payload.startTime,
+            });
             reset();
-            onOpenChange(false);
-        } catch (error: any) {
-            gooeyToast.error(error?.response?.data?.error || 'Failed to create booking');
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { error?: string } } };
+            gooeyToast.error(err?.response?.data?.error || 'Failed to create booking');
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <Dialog.Root open={open} onOpenChange={(val) => {
-            if (!val) reset();
-            onOpenChange(val);
-        }}>
+        <Dialog.Root open={open} onOpenChange={(val) => { if (!val) handleClose(); }}>
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 animate-in fade-in" />
                 <Dialog.Content className="fixed left-[50%] top-[50%] z-50 w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] bg-slate-900 border border-slate-800 rounded-xl shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
                     <div className="flex items-center justify-between p-6 border-b border-slate-800/80">
                         <Dialog.Title className="text-xl font-bold text-white tracking-tight">
-                            New Booking
+                            {successData ? 'Booking Created!' : 'New Booking'}
                         </Dialog.Title>
-                        <Dialog.Close asChild>
-                            <button className="text-slate-500 hover:text-white transition-colors rounded-lg p-1 hover:bg-slate-800">
-                                <X size={20} />
-                            </button>
-                        </Dialog.Close>
+                        <button onClick={handleClose} className="text-slate-500 hover:text-white transition-colors rounded-lg p-1 hover:bg-slate-800">
+                            <X size={20} />
+                        </button>
                     </div>
 
+                    {successData ? (
+                        <div className="p-8 flex flex-col items-center text-center gap-5">
+                            <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                                <CheckCircle size={32} className="text-emerald-400" />
+                            </div>
+                            <div>
+                                <p className="text-white font-semibold text-lg">Termin je kreiran!</p>
+                                <p className="text-slate-400 text-sm mt-1">
+                                    Email potvrda je poslana {successData.clientName}.
+                                </p>
+                            </div>
+                            <div className="w-full flex flex-col gap-3">
+                                {successData.clientPhone && (
+                                    <Button
+                                        onClick={() => handleWhatsApp(successData)}
+                                        className="w-full bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/20 font-semibold"
+                                    >
+                                        <MessageCircle size={17} className="mr-2" />
+                                        Pošalji WhatsApp potvrdu
+                                    </Button>
+                                )}
+                                <Button variant="secondary" onClick={handleClose} className="w-full">
+                                    Zatvori
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
                     <form onSubmit={handleSubmit(onSubmit as any)} className="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                         
                         <div className="space-y-2">
@@ -182,6 +231,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
                             </Button>
                         </div>
                     </form>
+                    )}
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
