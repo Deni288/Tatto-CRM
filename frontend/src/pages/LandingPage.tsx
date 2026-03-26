@@ -129,6 +129,21 @@ export const LandingPage = () => {
                 </div>
             </section>
 
+            {/* App Mockup */}
+            <section className="pb-16 px-6">
+                <motion.div
+                    {...fadeUp(0)}
+                    className="max-w-5xl mx-auto"
+                >
+                    <img
+                        src="/app-mockup.png"
+                        alt="Tattoo CRM na mobitelu"
+                        className="w-full rounded-2xl shadow-[0_0_80px_rgba(212,175,55,0.1)] border border-slate-800/50"
+                        loading="lazy"
+                    />
+                </motion.div>
+            </section>
+
             {/* Trust bar */}
             <section className="py-8 px-6 border-y border-slate-800/60 bg-slate-900/30">
                 <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16">
