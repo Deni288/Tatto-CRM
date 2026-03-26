@@ -342,11 +342,11 @@ export const Appointments = () => {
                                                     </div>
 
                                                     {/* Deposit / Balance row */}
-                                                    {(Number(appt.price) > 0 || appt.deposit > 0) && (
+                                                    {(Number(appt.price) > 0 || Number(appt.depositAmount) > 0) && (
                                                         <div className="flex items-center gap-4 px-5 py-3 border-t border-slate-800/60 bg-slate-950/40 text-xs">
                                                             <span className="text-slate-500">Total: <span className="text-slate-300 font-medium">€{Number(appt.price || 0).toFixed(0)}</span></span>
-                                                            <span className="text-slate-500">Deposit: <span className="text-emerald-400 font-medium">€{Number(appt.deposit || 0).toFixed(0)}</span></span>
-                                                            <span className="text-slate-500">Balance: <span className="text-gold-400 font-medium">€{(Number(appt.price || 0) - Number(appt.deposit || 0)).toFixed(0)}</span></span>
+                                                            <span className="text-slate-500">Deposit: <span className="text-emerald-400 font-medium">€{Number(appt.depositAmount || 0).toFixed(0)}</span></span>
+                                                            <span className="text-slate-500">Balance: <span className="text-gold-400 font-medium">€{(Number(appt.price || 0) - Number(appt.depositAmount || 0)).toFixed(0)}</span></span>
                                                         </div>
                                                     )}
                                                 </Card>

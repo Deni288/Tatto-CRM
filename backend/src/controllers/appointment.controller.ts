@@ -21,6 +21,9 @@ const appointmentResponseSelect = {
     depositPaid: true,
     deposit: true,
     createdAt: true,
+    client: {
+        select: { id: true, firstName: true, lastName: true },
+    },
 } as const;
 
 const appointmentStatusSchema = z.object({
