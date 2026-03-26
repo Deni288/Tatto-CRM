@@ -159,6 +159,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
                                 <input
                                     id="startTime"
                                     type="datetime-local"
+                                    step="900"
                                     {...register('startTime')}
                                     className={`w-full bg-slate-950 border ${errors.startTime ? 'border-red-500' : 'border-slate-800'} rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-gold-500/50`}
                                 />
@@ -169,6 +170,7 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
                                 <input
                                     id="endTime"
                                     type="datetime-local"
+                                    step="900"
                                     {...register('endTime')}
                                     className={`w-full bg-slate-950 border ${errors.endTime ? 'border-red-500' : 'border-slate-800'} rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-gold-500/50`}
                                 />
