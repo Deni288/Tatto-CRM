@@ -6,7 +6,7 @@ import { z } from 'zod';
 import prisma from '../config/db';
 import { env } from '../config/env';
 import { RegisterSchema, LoginSchema } from '@tattoocrm/shared';
-import { sendVerificationEmail } from '../services/email.service';
+import { sendVerificationEmail, sendNewArtistAlert } from '../services/email.service';
 
 interface TokenPayload {
     userId: string;
@@ -65,6 +65,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const verificationUrl = `${env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`;
     await sendVerificationEmail({ to: email, name, verificationUrl });
+
+    if (env.ADMIN_EMAIL) {
+        void sendNewArtistAlert({ adminEmail: env.ADMIN_EMAIL, artistName: name, artistEmail: email });
+    }
 
     res.status(201).json({ message: 'Account created. Please check your email to confirm your account.' });
 };

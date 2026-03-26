@@ -144,6 +144,30 @@ export const sendAppointmentReminder = async (params: {
     });
 };
 
+export const sendNewArtistAlert = async (params: {
+    adminEmail: string;
+    artistName: string;
+    artistEmail: string;
+}): Promise<void> => {
+    await resend.emails.send({
+        from: FROM,
+        to: params.adminEmail,
+        subject: `New artist registered: ${escapeHtml(params.artistName)}`,
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px; background: #0f172a; color: #f8fafc; border-radius: 12px;">
+                <h1 style="color: #d4af37; margin-bottom: 8px;">New Artist Registration</h1>
+                <p style="color: #94a3b8; margin-bottom: 24px;">A new artist just signed up on Tattoo CRM.</p>
+                <div style="background: #1e293b; border-radius: 8px; padding: 16px; margin: 24px 0;">
+                    <p style="margin: 0 0 8px; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Artist Info</p>
+                    <p style="margin: 0 0 4px;"><strong>Name:</strong> ${escapeHtml(params.artistName)}</p>
+                    <p style="margin: 0;"><strong>Email:</strong> ${escapeHtml(params.artistEmail)}</p>
+                </div>
+                <p style="color: #64748b; font-size: 12px; margin-top: 32px;">Tattoo CRM Admin Notification</p>
+            </div>
+        `,
+    });
+};
+
 export const sendNewBookingAlert = async (params: {
     to: string;
     artistName: string;

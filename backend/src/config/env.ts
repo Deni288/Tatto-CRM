@@ -22,6 +22,7 @@ export const env = {
     STRIPE_WEBHOOK_SECRET: requireEnv('STRIPE_WEBHOOK_SECRET'),
     STRIPE_MONTHLY_PRICE_ID: requireEnv('STRIPE_MONTHLY_PRICE_ID'),
     STRIPE_YEARLY_PRICE_ID: requireEnv('STRIPE_YEARLY_PRICE_ID'),
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     FRONTEND_URL: process.env.FRONTEND_URL ?? 'http://localhost:5173',
     PORT: process.env.PORT ?? '5000',
     NODE_ENV: process.env.NODE_ENV ?? 'development',
