@@ -78,7 +78,7 @@ export const Dashboard = () => {
                         <Calendar size={18} className="mr-2 hidden lg:block" />
                         View Calendar
                     </Button>
-                    <Button onClick={() => navigate('/dashboard/appointments')} className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-transparent shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.5)] transition-all font-semibold h-10">
+                    <Button onClick={() => navigate('/dashboard/appointments')} variant="gold" className="shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_rgba(212,175,55,0.5)] transition-all font-semibold h-10">
                         <Plus size={18} className="mr-2" />
                         New Booking
                     </Button>
@@ -251,7 +251,8 @@ export const Dashboard = () => {
                                 {/* Mobile-only New Booking Button */}
                                 <Button
                                     onClick={() => navigate('/dashboard/appointments')}
-                                    className="sm:hidden w-full justify-center py-5 bg-gold-500 text-slate-900 border-none shadow-[0_0_15px_rgba(212,175,55,0.2)] font-bold rounded-xl active:scale-[0.98] transition-transform"
+                                    variant="gold"
+                                    className="sm:hidden w-full justify-center py-5 shadow-[0_0_15px_rgba(212,175,55,0.2)] font-bold rounded-xl active:scale-[0.98] transition-transform"
                                 >
                                     <Plus size={20} className="mr-2" />
                                     New Booking
