@@ -136,7 +136,7 @@ export const LandingPage = () => {
                     className="max-w-5xl mx-auto"
                 >
                     <img
-                        src="/app-mockup.png"
+                        src="/11.jpeg"
                         alt="Tattoo CRM na mobitelu"
                         className="w-full rounded-2xl shadow-[0_0_80px_rgba(212,175,55,0.1)] border border-slate-800/50"
                         loading="lazy"
