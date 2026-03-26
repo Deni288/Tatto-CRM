@@ -80,11 +80,11 @@ export const Profile = () => {
         try {
             const res = await api.patch('/users/me', { name: user?.name ?? '', aftercareText });
             updateUser({ name: res.data.name, aftercareText: res.data.aftercareText });
-            gooeyToast.success('Aftercare tekst spremljen');
+            gooeyToast.success('Aftercare text saved');
         } catch (err: unknown) {
             const message = axios.isAxiosError(err)
                 ? (err.response?.data?.error ?? err.message)
-                : 'Greška pri spremanju';
+                : 'Failed to save';
             gooeyToast.error(message);
         } finally {
             setIsSavingAftercare(false);

@@ -31,10 +31,10 @@ export const EditClientModal = ({ client, open, onOpenChange }: Props) => {
     const onSubmit = async (data: ClientFormData): Promise<void> => {
         try {
             await updateClient(client.id, data);
-            gooeyToast.success('Klijent uspješno ažuriran');
+            gooeyToast.success('Client updated successfully');
             onOpenChange(false);
         } catch {
-            gooeyToast.error('Greška pri ažuriranju klijenta');
+            gooeyToast.error('Failed to update client');
         }
     };
 

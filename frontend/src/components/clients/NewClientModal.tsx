@@ -31,12 +31,12 @@ export const NewClientModal = ({ open, onOpenChange }: Props) => {
         try {
             // Zamjeni prazna polja s undefined/null specifično za naš backend ako treba, ali zod literali to handleaju.
             await addClient(data);
-            gooeyToast.success('Klijent uspješno dodan');
+            gooeyToast.success('Client added successfully');
             reset();
             onOpenChange(false);
         } catch (error: unknown) {
             const apiErr = error as { response?: { data?: { error?: string } }; message?: string };
-            const errorMsg = apiErr.response?.data?.error ?? apiErr.message ?? 'Greška pri dodavanju klijenta';
+            const errorMsg = apiErr.response?.data?.error ?? apiErr.message ?? 'Failed to add client';
             gooeyToast.error(errorMsg);
         }
     };

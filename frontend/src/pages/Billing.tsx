@@ -32,7 +32,7 @@ export const Billing = () => {
             const url = await createCheckoutSession(plan);
             window.location.href = url;
         } catch {
-            gooeyToast.error('Greška pri otvaranju Stripe checkoutа.');
+            gooeyToast.error('Failed to open Stripe checkout.');
             setCheckoutLoading(null);
         }
     };
@@ -43,7 +43,7 @@ export const Billing = () => {
             const url = await createPortalSession();
             window.open(url, '_blank');
         } catch {
-            gooeyToast.error('Greška pri otvaranju billing portala.');
+            gooeyToast.error('Failed to open billing portal.');
         } finally {
             setPortalLoading(false);
         }

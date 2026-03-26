@@ -28,7 +28,7 @@ export const Paywall = () => {
                 </button>
 
                 <p className="text-xs text-gray-400">
-                    €22/mjesec · €220/godina · Otkaži u bilo koje vrijeme
+                    €22/month · €220/year · Cancel anytime
                 </p>
             </div>
         </div>

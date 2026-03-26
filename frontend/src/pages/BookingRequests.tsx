@@ -59,13 +59,13 @@ export const BookingRequests = () => {
     const handleConvertToClient = async (id: string, force = false) => {
         try {
             await convertToClient(id, force);
-            gooeyToast.success('Klijent uspješno kreiran');
+            gooeyToast.success('Client created successfully');
             setDuplicateModal({ open: false, requestId: '', duplicates: [] });
         } catch (err: unknown) {
             if (axios.isAxiosError(err) && err.response?.status === 409) {
                 setDuplicateModal({ open: true, requestId: id, duplicates: err.response.data.duplicates });
             } else {
-                gooeyToast.error('Greška pri kreiranju klijenta');
+                gooeyToast.error('Failed to create client');
             }
         }
     };
@@ -285,8 +285,8 @@ export const BookingRequests = () => {
                                     <AlertTriangle size={20} className="text-amber-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-white font-semibold">Pronađen sličan klijent</h3>
-                                    <p className="text-slate-400 text-sm">Već postoji klijent s istim imenom ili emailom</p>
+                                    <h3 className="text-white font-semibold">Duplicate client found</h3>
+                                    <p className="text-slate-400 text-sm">A client with the same name or email already exists</p>
                                 </div>
                             </div>
 
@@ -310,14 +310,14 @@ export const BookingRequests = () => {
                                     variant="secondary"
                                     className="flex-1"
                                 >
-                                    Otkaži
+                                    Cancel
                                 </Button>
                                 <Button
                                     onClick={() => { void handleConvertToClient(duplicateModal.requestId, true); }}
                                     className="flex-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border-indigo-500/20"
                                 >
                                     <UserPlus size={15} className="mr-1.5" />
-                                    Kreiraj novog
+                                    Create new
                                 </Button>
                             </div>
                         </motion.div>
