@@ -175,7 +175,8 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
                             <Button 
                                 type="submit" 
                                 disabled={isSubmitting}
-                                className="bg-gold-500 hover:bg-gold-400 text-slate-900 font-semibold border-none min-w-[120px] flex justify-center"
+                                variant="gold"
+                                className="font-semibold min-w-[120px] flex justify-center"
                             >
                                 {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : 'Save Booking'}
                             </Button>

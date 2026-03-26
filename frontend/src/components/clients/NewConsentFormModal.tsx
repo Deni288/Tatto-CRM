@@ -120,7 +120,7 @@ export const NewConsentFormModal = ({ open, onOpenChange, clientId }: NewConsent
                             <Button type="button" variant="secondary" onClick={handleClose}
                                 className="bg-slate-800 hover:bg-slate-700 text-white border-none">Cancel</Button>
                             <Button type="submit" disabled={isSubmitting}
-                                className="bg-gold-500 hover:bg-gold-400 text-slate-900 font-semibold border-none min-w-[140px] flex justify-center">
+                                variant="gold" className="font-semibold min-w-[140px] flex justify-center">
                                 {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : 'Sign & Complete'}
                             </Button>
                         </div>

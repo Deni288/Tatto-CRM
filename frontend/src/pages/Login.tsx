@@ -102,7 +102,8 @@ export const Login = () => {
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-gold-500 hover:bg-gold-400 text-slate-900 font-semibold py-3 border-none flex justify-center items-center cursor-pointer"
+                            variant="gold"
+                            className="w-full font-semibold py-3 flex justify-center items-center cursor-pointer"
                         >
                             {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : "Sign In"}
                         </Button>

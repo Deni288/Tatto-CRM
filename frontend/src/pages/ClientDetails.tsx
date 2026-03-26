@@ -79,7 +79,7 @@ export const ClientDetails = () => {
                 <FileText size={48} className="mx-auto text-slate-600 mb-4" />
                 <h2 className="text-xl font-semibold text-white mb-2">Client Not Found</h2>
                 <p className="text-slate-400 mb-6">{error || "The client you are looking for doesn't exist or you don't have permission to view them."}</p>
-                <Button onClick={() => navigate('/dashboard/clients')} className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none">
+                <Button onClick={() => navigate('/dashboard/clients')} variant="gold">
                     Back to Clients
                 </Button>
             </div>
@@ -224,7 +224,7 @@ export const ClientDetails = () => {
                                 <h3 className="text-lg font-semibold text-white">Reference Gallery</h3>
                                 <Button 
                                     onClick={() => setIsGalleryModalOpen(true)}
-                                    className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none"
+                                    variant="gold"
                                 >
                                     <Plus size={16} className="mr-1.5" /> Add Image
                                 </Button>
@@ -347,7 +347,7 @@ export const ClientDetails = () => {
                                 <h3 className="text-lg font-semibold text-white">Digital Consent Forms</h3>
                                 <Button 
                                     onClick={() => setIsConsentModalOpen(true)}
-                                    className="bg-gold-500 hover:bg-gold-400 text-slate-900 border-none"
+                                    variant="gold"
                                 >
                                     <Plus size={16} className="mr-1.5" /> New Consent Form
                                 </Button>

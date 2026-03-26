@@ -97,7 +97,7 @@ export const NewClientModal = ({ open, onOpenChange }: Props) => {
                             <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
                                 Cancel
                             </Button>
-                            <Button type="submit" className="bg-gold-500 hover:bg-gold-400 text-slate-900 font-semibold border-none" isLoading={isSubmitting}>
+                            <Button type="submit" variant="gold" className="font-semibold" isLoading={isSubmitting}>
                                 Save Client
                             </Button>
                         </div>
