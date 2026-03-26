@@ -6,7 +6,7 @@ import { clientSchema, type ClientFormData } from '@tattoocrm/shared';
 import { useClientStore, type Client } from '../../store/client.store';
 import { Button } from '../tremor/Button';
 import { Input } from '../tremor/Input';
-import { toast } from 'sonner';
+import { gooeyToast } from 'goey-toast';
 
 interface Props {
     client: Client;
@@ -31,10 +31,10 @@ export const EditClientModal = ({ client, open, onOpenChange }: Props) => {
     const onSubmit = async (data: ClientFormData): Promise<void> => {
         try {
             await updateClient(client.id, data);
-            toast.success('Client updated successfully');
+            gooeyToast.success('Klijent uspješno ažuriran');
             onOpenChange(false);
         } catch {
-            toast.error('Failed to update client. Please try again.');
+            gooeyToast.error('Greška pri ažuriranju klijenta');
         }
     };
 

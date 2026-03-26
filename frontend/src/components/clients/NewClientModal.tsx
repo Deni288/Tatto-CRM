@@ -6,7 +6,7 @@ import { clientSchema, type ClientFormData } from '@tattoocrm/shared';
 import { useClientStore } from '../../store/client.store';
 import { Button } from '../tremor/Button';
 import { Input } from '../tremor/Input';
-import { toast } from 'sonner';
+import { gooeyToast } from 'goey-toast';
 
 interface Props {
     open: boolean;
@@ -31,12 +31,13 @@ export const NewClientModal = ({ open, onOpenChange }: Props) => {
         try {
             // Zamjeni prazna polja s undefined/null specifično za naš backend ako treba, ali zod literali to handleaju.
             await addClient(data);
-            toast.success('Client added successfully');
+            gooeyToast.success('Klijent uspješno dodan');
             reset();
             onOpenChange(false);
-        } catch (error: any) {
-            const errorMsg = error.response?.data?.error || error.message || 'Failed to add client. Please try again.';
-            toast.error(`Error: ${errorMsg}`);
+        } catch (error: unknown) {
+            const apiErr = error as { response?: { data?: { error?: string } }; message?: string };
+            const errorMsg = apiErr.response?.data?.error ?? apiErr.message ?? 'Greška pri dodavanju klijenta';
+            gooeyToast.error(errorMsg);
         }
     };
 
