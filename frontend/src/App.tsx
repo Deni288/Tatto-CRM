@@ -4,6 +4,8 @@ import 'goey-toast/styles.css';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from './store/auth.store';
 import { AppLayout } from './components/layout/AppLayout';
+import { PWAUpdateToast } from './components/ui/PWAUpdateToast';
+import { InstallBanner } from './components/ui/InstallBanner';
 
 const PrivateRoute = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -46,6 +48,8 @@ function App() {
   return (
     <>
       <GooeyToaster position="bottom-right" theme="dark" />
+      <PWAUpdateToast />
+      <InstallBanner />
       <BrowserRouter>
         <Suspense fallback={null}>
           <Routes>

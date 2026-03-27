@@ -37,6 +37,8 @@ export const useAuthStore = create<AuthState>()(
                     method: 'POST',
                     credentials: 'include',
                 }).catch(() => {});
+                // Clear offline cache on logout (security: no PII left on device)
+                import('../lib/offlineStorage').then((m) => m.clearOfflineCache()).catch(() => {});
                 set({ user: null, token: null, isAuthenticated: false });
             },
 

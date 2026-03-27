@@ -2,6 +2,7 @@ import cron from 'node-cron';
 import prisma from '../config/db';
 import { env } from '../config/env';
 import { sendAppointmentReminder } from './email.service';
+import { sendPushToArtist } from './push.service';
 
 const sendReminders = async (): Promise<void> => {
     const now = new Date();
@@ -34,8 +35,9 @@ const sendReminders = async (): Promise<void> => {
                 },
             },
             artist: {
-                select: { name: true },
+                select: { id: true, name: true },
             },
+            artistId: true,
         },
     });
 
@@ -54,9 +56,19 @@ const sendReminders = async (): Promise<void> => {
                 portalUrl: `${env.FRONTEND_URL}/portal/${client.portalToken}`,
             });
 
+            // Send push notification to the artist
+            await sendPushToArtist(appt.artist.id, {
+                title: `Sutra: ${client.firstName} ${client.lastName}`,
+                body: `${appt.title} — ${appt.startTime.toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' })}`,
+                url: '/dashboard/appointments',
+            }).catch((pushErr: unknown) => {
+                console.error(`[Push] Failed for appointment ${appt.id}:`, pushErr instanceof Error ? pushErr.message : pushErr);
+            });
+
             await prisma.appointment.update({
                 where: { id: appt.id },
                 data: { reminderSent: true },
+                select: { id: true },
             });
         } catch (err: unknown) {
             console.error(`Failed to send reminder for appointment ${appt.id}:`, err instanceof Error ? err.message : err);

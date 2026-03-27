@@ -37,7 +37,7 @@ export const usePushNotifications = (): UsePushNotifications => {
         setPermission(Notification.permission);
 
         const checkSubscription = async (): Promise<void> => {
-            const reg = await navigator.serviceWorker.register('/sw.js');
+            const reg = await navigator.serviceWorker.ready;
             const sub = await reg.pushManager.getSubscription();
             setIsSubscribed(Boolean(sub));
             setIsLoading(false);
@@ -55,8 +55,7 @@ export const usePushNotifications = (): UsePushNotifications => {
             if (perm !== 'granted') return;
 
             const publicKey = await getVapidPublicKey();
-            const reg = await navigator.serviceWorker.register('/sw.js');
-            await navigator.serviceWorker.ready;
+            const reg = await navigator.serviceWorker.ready;
             const sub = await reg.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: urlBase64ToUint8Array(publicKey),
@@ -75,8 +74,8 @@ export const usePushNotifications = (): UsePushNotifications => {
         if (!supported) return;
         setIsLoading(true);
         try {
-            const reg = await navigator.serviceWorker.getRegistration('/sw.js');
-            const sub = await reg?.pushManager.getSubscription();
+            const reg = await navigator.serviceWorker.ready;
+            const sub = await reg.pushManager.getSubscription();
             if (sub) {
                 await deletePushSubscription(sub.endpoint);
                 await sub.unsubscribe();
