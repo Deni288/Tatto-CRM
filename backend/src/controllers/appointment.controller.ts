@@ -4,6 +4,7 @@ import prisma from '../config/db';
 import { appointmentSchema } from '@tattoocrm/shared';
 import { env } from '../config/env';
 import { sendAppointmentConfirmation } from '../services/email.service';
+import { syncAppointmentToCalendar } from '../services/calendar.service';
 
 const uuidSchema = z.string().uuid();
 
@@ -20,6 +21,7 @@ const appointmentResponseSelect = {
     depositAmount: true,
     depositPaid: true,
     deposit: true,
+    googleEventId: true,
     createdAt: true,
     client: {
         select: { id: true, firstName: true, lastName: true },
@@ -93,6 +95,13 @@ export const createAppointment = async (req: Request, res: Response) => {
         select: appointmentResponseSelect,
     });
 
+    void syncAppointmentToCalendar('create', artistId, {
+        ...appointment,
+        startTime: new Date(appointment.startTime),
+        endTime: new Date(appointment.endTime),
+        client: appointment.client,
+    });
+
     if (client.email && client.portalToken) {
         void sendAppointmentConfirmation({
             to: client.email,
@@ -142,6 +151,13 @@ export const updateAppointment = async (req: Request, res: Response) => {
         select: appointmentResponseSelect,
     });
 
+    void syncAppointmentToCalendar('update', artistId, {
+        ...appointment,
+        startTime: new Date(appointment.startTime),
+        endTime: new Date(appointment.endTime),
+        client: appointment.client,
+    });
+
     res.json(appointment);
 };
 
@@ -185,7 +201,15 @@ export const deleteAppointment = async (req: Request, res: Response) => {
 
     const existing = await prisma.appointment.findFirst({
         where: { id, artistId },
-        select: { id: true },
+        select: {
+            id: true,
+            title: true,
+            description: true,
+            startTime: true,
+            endTime: true,
+            googleEventId: true,
+            client: { select: { firstName: true, lastName: true } },
+        },
     });
     if (!existing) {
         res.status(404).json({ error: 'Appointment not found' });
@@ -197,5 +221,10 @@ export const deleteAppointment = async (req: Request, res: Response) => {
         data: { isActive: false },
         select: { id: true },
     });
+
+    if (existing.googleEventId) {
+        void syncAppointmentToCalendar('delete', artistId, existing);
+    }
+
     res.status(204).send();
 };

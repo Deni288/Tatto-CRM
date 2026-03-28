@@ -9,6 +9,7 @@ import { Card } from '../components/tremor/Card';
 import { useAuthStore } from '../store/auth.store';
 import { api } from '../api/axiosInstance';
 import { NotificationsCard } from '../components/profile/NotificationsCard';
+import { GoogleCalendarCard } from '../components/profile/GoogleCalendarCard';
 import { ExportCard } from '../components/profile/ExportCard';
 
 const inputClass = (hasError: boolean): string =>
@@ -239,6 +240,9 @@ export const Profile = () => {
                     </button>
                 </div>
             </Card>
+
+            {/* Google Calendar */}
+            <GoogleCalendarCard />
 
             {/* Push Notifications */}
             <NotificationsCard />
