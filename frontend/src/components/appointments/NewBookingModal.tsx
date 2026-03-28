@@ -23,14 +23,26 @@ interface NewBookingModalProps {
     onOpenChange: (open: boolean) => void;
 }
 
+function roundTo15Min(date: Date): string {
+    const rounded = new Date(date);
+    rounded.setMinutes(Math.ceil(rounded.getMinutes() / 15) * 15, 0, 0);
+    const pad = (n: number): string => String(n).padStart(2, '0');
+    return `${rounded.getFullYear()}-${pad(rounded.getMonth() + 1)}-${pad(rounded.getDate())}T${pad(rounded.getHours())}:${pad(rounded.getMinutes())}`;
+}
+
 export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) => {
     const { clients, fetchClients, selectedClient, fetchClientById } = useClientStore();
     const { addAppointment } = useAppointmentStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successData, setSuccessData] = useState<SuccessData | null>(null);
 
+    const now = new Date();
+    const defaultStart = roundTo15Min(now);
+    const defaultEnd = roundTo15Min(new Date(now.getTime() + 60 * 60 * 1000));
+
     const { register, handleSubmit, formState: { errors }, reset } = useForm<AppointmentFormInput>({
         resolver: zodResolver(appointmentSchema),
+        defaultValues: { startTime: defaultStart, endTime: defaultEnd },
     });
 
     useEffect(() => {

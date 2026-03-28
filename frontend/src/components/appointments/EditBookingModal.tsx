@@ -33,7 +33,8 @@ export const EditBookingModal = ({ open, onOpenChange, appointment }: EditBookin
                 // Formatting dates for datetime-local input
                 const formatForInput = (isoString: string) => {
                     const date = new Date(isoString);
-                    // Adjust for local timezone offset
+                    // Round to nearest 15 minutes for step="900" compatibility
+                    date.setMinutes(Math.round(date.getMinutes() / 15) * 15, 0, 0);
                     const tzOffset = date.getTimezoneOffset() * 60000;
                     const localISOTime = (new Date(date.getTime() - tzOffset)).toISOString().slice(0, -1);
                     return localISOTime.substring(0, 16);
