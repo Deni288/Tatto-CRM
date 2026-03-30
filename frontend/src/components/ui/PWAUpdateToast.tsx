@@ -2,9 +2,27 @@ import type { ReactElement } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { RefreshCw, Wifi } from 'lucide-react';
 import { usePWA } from '../../hooks/usePWA';
+import { useLangStore } from '../../store/lang.store';
+
+const i18n = {
+  hr: {
+    offlineReady: 'Aplikacija spremna za offline rad',
+    newVersion: 'Nova verzija dostupna!',
+    later: 'Kasnije',
+    update: 'Ažuriraj',
+  },
+  en: {
+    offlineReady: 'App ready for offline use',
+    newVersion: 'New version available!',
+    later: 'Later',
+    update: 'Update',
+  },
+} as const;
 
 export function PWAUpdateToast(): ReactElement | null {
   const { needRefresh, offlineReady, updateServiceWorker, close } = usePWA();
+  const { lang } = useLangStore();
+  const t = i18n[lang];
 
   const isVisible = needRefresh || offlineReady;
 
@@ -21,7 +39,7 @@ export function PWAUpdateToast(): ReactElement | null {
           {offlineReady && (
             <div className="flex items-center gap-3">
               <Wifi className="h-5 w-5 shrink-0 text-amber-500" />
-              <p className="text-sm text-zinc-200">Aplikacija spremna za offline rad</p>
+              <p className="text-sm text-zinc-200">{t.offlineReady}</p>
               <button
                 onClick={close}
                 className="ml-auto text-xs text-zinc-400 hover:text-zinc-200"
@@ -34,19 +52,19 @@ export function PWAUpdateToast(): ReactElement | null {
           {needRefresh && (
             <div className="flex items-center gap-3">
               <RefreshCw className="h-5 w-5 shrink-0 text-amber-500" />
-              <p className="text-sm text-zinc-200">Nova verzija dostupna!</p>
+              <p className="text-sm text-zinc-200">{t.newVersion}</p>
               <div className="ml-auto flex gap-2">
                 <button
                   onClick={close}
                   className="rounded-lg px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200"
                 >
-                  Kasnije
+                  {t.later}
                 </button>
                 <button
                   onClick={() => void updateServiceWorker(true)}
                   className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-medium text-black hover:bg-amber-400"
                 >
-                  Ažuriraj
+                  {t.update}
                 </button>
               </div>
             </div>

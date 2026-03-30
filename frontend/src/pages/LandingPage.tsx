@@ -4,6 +4,130 @@ import {
     Users, Calendar, Inbox, FileText, Image,
     ArrowRight, CheckCircle, Star, Zap, Shield, Bell,
 } from 'lucide-react';
+import { useLangStore } from '../store/lang.store';
+
+const translations = {
+    hr: {
+        nav: { login: 'Prijava', cta: 'Počni besplatno' },
+        heroBadge: 'CRM dizajniran isključivo za tattoo artiste',
+        heroH1a: 'Tvoj posao.',
+        heroH1b: 'Tvoja pravila.',
+        heroP: 'Upravljaj klijentima, terminima i booking upitima na jednom mjestu. Manje administracije, više tetoviranja.',
+        heroCta: 'Počni besplatno — 30 dana',
+        heroLogin: 'Imam račun',
+        heroFine: 'Bez kartice. Bez obaveza. Otkaži kad hoćeš.',
+        heroImgAlt: 'Tattoo CRM na mobitelu',
+        trust: [
+            { value: '50+', label: 'tattoo artista' },
+            { value: '30 dana', label: 'besplatni trial' },
+            { value: '100%', label: 'podataka sigurno' },
+        ],
+        featuresH2: 'Sve što trebaš, ništa što ne trebaš',
+        featuresP: 'Svaki feature je osmišljen za tattoo artiste — ne za generičke biznise.',
+        features: [
+            { title: 'Upravljanje klijentima', desc: 'Kompletni profili klijenata s poviješću, galerijom radova i prilagođenim poljima.' },
+            { title: 'Kalendar termina', desc: 'Zakazivanje s praćenjem depozita, statusima i automatskim podsjetnicima.' },
+            { title: 'Booking upiti', desc: 'Javni booking link za Instagram. Klijenti šalju upite, ti ih odobravaš.' },
+            { title: 'Digitalni pristanak', desc: 'Klijent potpisuje pristanak prstom na licu mjesta. Sve u oblaku.' },
+            { title: 'Galerija radova', desc: 'Upload fotografija direktno na Cloudinary. Brzo, pouzdano, sigurno.' },
+            { title: 'Automatski podsjetnici', desc: 'Klijent dan ranije automatski dobiva email s detaljima termina.' },
+        ],
+        stepsH2: 'Počni za 3 koraka',
+        stepsP: 'Postavljanje traje manje od 5 minuta.',
+        steps: [
+            { num: '01', title: 'Registracija', desc: '30 dana besplatno, bez kartice. Kreiraj račun za 60 sekundi.' },
+            { num: '02', title: 'Postavi profil', desc: 'Kopiraj svoj booking link na Instagram ili web stranicu.' },
+            { num: '03', title: 'Upravljaj poslom', desc: 'Klijenti, termini i pristanačne forme — sve na jednom mjestu.' },
+        ],
+        testimonialsH2: 'Artisti koji koriste Tattoo CRM',
+        testimonials: [
+            { name: 'Marko T.', role: 'Tattoo Artist · Zagreb', text: 'Napokon mogu zaboraviti Excel tablice. Sve što trebam je na jednom mjestu.' },
+            { name: 'Ana K.', role: 'Tattoo Artist · Split', text: 'Klijenti su oduševljeni kad dobiju automatski email s detaljima termina.' },
+            { name: 'Dino R.', role: 'Tattoo Artist · Sarajevo', text: 'Booking link na Instagramu mi je duplirao broj upita u prvom tjednu.' },
+        ],
+        pricingH2: 'Jednostavne cijene',
+        pricingP: '30 dana besplatno. Bez kartice.',
+        plans: [
+            {
+                label: 'Mjesečno', price: '€22', sub: '/mjesec', badge: undefined,
+                features: ['Neograničeni klijenti', 'Automatski podsjetnici', 'Digitalni pristanak', 'Booking link', 'Galerija radova', 'CSV izvoz'],
+            },
+            {
+                label: 'Godišnje', price: '€18', sub: '/mjesec · €220/god', badge: 'Uštedi 2 mj.',
+                features: ['Neograničeni klijenti', 'Automatski podsjetnici', 'Digitalni pristanak', 'Booking link', 'Galerija radova', 'CSV izvoz', '2 besplatna mjeseca', 'Prioritetna podrška'],
+            },
+        ],
+        planCta: 'Počni besplatno',
+        ctaH2: 'Spreman za promjenu?',
+        ctaP: 'Pridruži se tattoo artistima koji su zamijenili WhatsApp i Excel s pravim alatom.',
+        ctaBtn: 'Počni besplatno — 30 dana',
+        ctaFine: 'Bez kartice · Otkaži kad hoćeš',
+        footerRights: 'Sva prava pridržana.',
+        footerLogin: 'Prijava',
+        footerRegister: 'Registracija',
+    },
+    en: {
+        nav: { login: 'Login', cta: 'Start free' },
+        heroBadge: 'CRM designed exclusively for tattoo artists',
+        heroH1a: 'Your business.',
+        heroH1b: 'Your rules.',
+        heroP: 'Manage clients, appointments and booking requests in one place. Less admin, more tattooing.',
+        heroCta: 'Start free — 30 days',
+        heroLogin: 'I have an account',
+        heroFine: 'No credit card. No commitment. Cancel anytime.',
+        heroImgAlt: 'Tattoo CRM on mobile',
+        trust: [
+            { value: '50+', label: 'tattoo artists' },
+            { value: '30 days', label: 'free trial' },
+            { value: '100%', label: 'data secure' },
+        ],
+        featuresH2: 'Everything you need, nothing you don\'t',
+        featuresP: 'Every feature is built for tattoo artists — not generic businesses.',
+        features: [
+            { title: 'Client Management', desc: 'Complete client profiles with history, work gallery and custom fields.' },
+            { title: 'Appointment Calendar', desc: 'Scheduling with deposit tracking, statuses and automatic reminders.' },
+            { title: 'Booking Requests', desc: 'Public booking link for Instagram. Clients submit requests, you approve them.' },
+            { title: 'Digital Consent', desc: 'Client signs the consent form with their finger on-site. Everything in the cloud.' },
+            { title: 'Work Gallery', desc: 'Upload photos directly to Cloudinary. Fast, reliable, secure.' },
+            { title: 'Automatic Reminders', desc: 'Client automatically receives an email with appointment details the day before.' },
+        ],
+        stepsH2: 'Get started in 3 steps',
+        stepsP: 'Setup takes less than 5 minutes.',
+        steps: [
+            { num: '01', title: 'Register', desc: '30 days free, no credit card. Create your account in 60 seconds.' },
+            { num: '02', title: 'Set up your profile', desc: 'Copy your booking link to Instagram or your website.' },
+            { num: '03', title: 'Run your business', desc: 'Clients, appointments and consent forms — all in one place.' },
+        ],
+        testimonialsH2: 'Artists using Tattoo CRM',
+        testimonials: [
+            { name: 'Marko T.', role: 'Tattoo Artist · Zagreb', text: 'I can finally forget about Excel spreadsheets. Everything I need is in one place.' },
+            { name: 'Ana K.', role: 'Tattoo Artist · Split', text: 'Clients love it when they get an automatic email with their appointment details.' },
+            { name: 'Dino R.', role: 'Tattoo Artist · Sarajevo', text: 'The booking link on Instagram doubled my inquiry count in the first week.' },
+        ],
+        pricingH2: 'Simple pricing',
+        pricingP: '30 days free. No credit card.',
+        plans: [
+            {
+                label: 'Monthly', price: '€22', sub: '/month', badge: undefined,
+                features: ['Unlimited clients', 'Automatic reminders', 'Digital consent', 'Booking link', 'Work gallery', 'CSV export'],
+            },
+            {
+                label: 'Yearly', price: '€18', sub: '/month · €220/yr', badge: 'Save 2 mo.',
+                features: ['Unlimited clients', 'Automatic reminders', 'Digital consent', 'Booking link', 'Work gallery', 'CSV export', '2 free months', 'Priority support'],
+            },
+        ],
+        planCta: 'Start free',
+        ctaH2: 'Ready for a change?',
+        ctaP: 'Join tattoo artists who replaced WhatsApp and Excel with a proper tool.',
+        ctaBtn: 'Start free — 30 days',
+        ctaFine: 'No credit card · Cancel anytime',
+        footerRights: 'All rights reserved.',
+        footerLogin: 'Login',
+        footerRegister: 'Register',
+    },
+} as const;
+
+const featureIcons = [Users, Calendar, Inbox, FileText, Image, Bell];
 
 const fadeUp = (i: number) => ({
     initial: { opacity: 0, y: 30 },
@@ -12,28 +136,10 @@ const fadeUp = (i: number) => ({
     viewport: { once: true as const, margin: '-60px' as const },
 });
 
-const features = [
-    { icon: Users, title: 'Upravljanje klijentima', desc: 'Kompletni profili klijenata s poviješću, galerijom radova i prilagođenim poljima.' },
-    { icon: Calendar, title: 'Kalendar termina', desc: 'Zakazivanje s praćenjem depozita, statusima i automatskim podsjetnicima.' },
-    { icon: Inbox, title: 'Booking upiti', desc: 'Javni booking link za Instagram. Klijenti šalju upite, ti ih odobravaš.' },
-    { icon: FileText, title: 'Digitalni pristanak', desc: 'Klijent potpisuje pristanak prstom na licu mjesta. Sve u oblaku.' },
-    { icon: Image, title: 'Galerija radova', desc: 'Upload fotografija direktno na Cloudinary. Brzo, pouzdano, sigurno.' },
-    { icon: Bell, title: 'Automatski podsjetnici', desc: 'Klijent dan ranije automatski dobiva email s detaljima termina.' },
-];
-
-const steps = [
-    { num: '01', title: 'Registracija', desc: '30 dana besplatno, bez kartice. Kreiraj račun za 60 sekundi.' },
-    { num: '02', title: 'Postavi profil', desc: 'Kopiraj svoj booking link na Instagram ili web stranicu.' },
-    { num: '03', title: 'Upravljaj poslom', desc: 'Klijenti, termini i pristanačne forme — sve na jednom mjestu.' },
-];
-
-const testimonials = [
-    { name: 'Marko T.', role: 'Tattoo Artist · Zagreb', text: 'Napokon mogu zaboraviti Excel tablice. Sve što trebam je na jednom mjestu.' },
-    { name: 'Ana K.', role: 'Tattoo Artist · Split', text: 'Klijenti su oduševljeni kad dobiju automatski email s detaljima termina.' },
-    { name: 'Dino R.', role: 'Tattoo Artist · Sarajevo', text: 'Booking link na Instagramu mi je duplirao broj upita u prvom tjednu.' },
-];
-
 export const LandingPage = () => {
+    const { lang, setLang } = useLangStore();
+    const t = translations[lang];
+
     return (
         <div className="min-h-screen bg-slate-950 text-slate-50 overflow-x-hidden">
 
@@ -44,14 +150,20 @@ export const LandingPage = () => {
                         Tattoo <span className="text-white">CRM</span>
                     </span>
                     <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setLang(lang === 'hr' ? 'en' : 'hr')}
+                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors"
+                        >
+                            {lang === 'hr' ? 'EN' : 'HR'}
+                        </button>
                         <Link to="/login" className="text-sm text-slate-400 hover:text-white transition-colors px-4 py-2">
-                            Prijava
+                            {t.nav.login}
                         </Link>
                         <Link
                             to="/register"
                             className="text-sm font-semibold px-4 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-slate-900 transition-colors"
                         >
-                            Počni besplatno
+                            {t.nav.cta}
                         </Link>
                     </div>
                 </div>
@@ -72,7 +184,7 @@ export const LandingPage = () => {
                         className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-sm font-medium mb-8"
                     >
                         <Zap className="w-3.5 h-3.5" />
-                        CRM dizajniran isključivo za tattoo artiste
+                        {t.heroBadge}
                     </motion.div>
 
                     <motion.h1
@@ -81,9 +193,9 @@ export const LandingPage = () => {
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="text-5xl md:text-7xl font-black leading-tight mb-6"
                     >
-                        Tvoj posao.{' '}
+                        {t.heroH1a}{' '}
                         <span className="text-transparent bg-clip-text bg-linear-to-r from-gold-400 to-yellow-500">
-                            Tvoja pravila.
+                            {t.heroH1b}
                         </span>
                     </motion.h1>
 
@@ -93,8 +205,7 @@ export const LandingPage = () => {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
                     >
-                        Upravljaj klijentima, terminima i booking upitima na jednom mjestu.
-                        Manje administracije, više tetoviranja.
+                        {t.heroP}
                     </motion.p>
 
                     <motion.div
@@ -107,14 +218,14 @@ export const LandingPage = () => {
                             to="/register"
                             className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gold-500 hover:bg-gold-400 text-slate-900 font-bold text-lg transition-all shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:shadow-[0_0_40px_rgba(212,175,55,0.5)]"
                         >
-                            Počni besplatno — 30 dana
+                            {t.heroCta}
                             <ArrowRight className="w-5 h-5" />
                         </Link>
                         <Link
                             to="/login"
                             className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-lg transition-colors border border-slate-700"
                         >
-                            Imam račun
+                            {t.heroLogin}
                         </Link>
                     </motion.div>
 
@@ -124,10 +235,9 @@ export const LandingPage = () => {
                         transition={{ delay: 0.5 }}
                         className="mt-6 text-slate-500 text-sm"
                     >
-                        Bez kartice. Bez obaveza. Otkaži kad hoćeš.
+                        {t.heroFine}
                     </motion.p>
 
-                    {/* App Mockup */}
                     <motion.div
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -137,7 +247,7 @@ export const LandingPage = () => {
                         <div className="absolute inset-0 rounded-2xl bg-gold-500/5 blur-2xl scale-95 translate-y-4" />
                         <img
                             src="/11.jpeg"
-                            alt="Tattoo CRM na mobitelu"
+                            alt={t.heroImgAlt}
                             className="relative w-full max-w-3xl mx-auto rounded-2xl border border-slate-800/80 shadow-[0_32px_80px_rgba(0,0,0,0.6)] block"
                             loading="lazy"
                         />
@@ -148,11 +258,7 @@ export const LandingPage = () => {
             {/* Trust bar */}
             <section className="py-8 px-6 border-y border-slate-800/60 bg-slate-900/30">
                 <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16">
-                    {[
-                        { value: '50+', label: 'tattoo artista' },
-                        { value: '30 dana', label: 'besplatni trial' },
-                        { value: '100%', label: 'podataka sigurno' },
-                    ].map((item) => (
+                    {t.trust.map((item) => (
                         <div key={item.label} className="text-center">
                             <div className="text-2xl font-black text-gold-400">{item.value}</div>
                             <div className="text-slate-400 text-sm mt-0.5">{item.label}</div>
@@ -165,26 +271,27 @@ export const LandingPage = () => {
             <section className="py-16 px-6 bg-slate-900/50">
                 <div className="max-w-6xl mx-auto">
                     <motion.div {...fadeUp(0)} className="text-center mb-16">
-                        <h2 className="text-4xl font-black mb-4">Sve što trebaš, ništa što ne trebaš</h2>
-                        <p className="text-slate-400 text-lg max-w-xl mx-auto">
-                            Svaki feature je osmišljen za tattoo artiste — ne za generičke biznise.
-                        </p>
+                        <h2 className="text-4xl font-black mb-4">{t.featuresH2}</h2>
+                        <p className="text-slate-400 text-lg max-w-xl mx-auto">{t.featuresP}</p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {features.map((f, i) => (
-                            <motion.div
-                                key={f.title}
-                                {...fadeUp(i)}
-                                className="group p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-gold-500/30 transition-all hover:shadow-[0_0_30px_rgba(212,175,55,0.05)]"
-                            >
-                                <div className="w-12 h-12 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center mb-4 group-hover:bg-gold-500/25 transition-colors">
-                                    <f.icon className="w-6 h-6 text-gold-300" strokeWidth={1.75} />
-                                </div>
-                                <h3 className="font-bold text-white text-lg mb-2">{f.title}</h3>
-                                <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
-                            </motion.div>
-                        ))}
+                        {t.features.map((f, i) => {
+                            const Icon = featureIcons[i];
+                            return (
+                                <motion.div
+                                    key={f.title}
+                                    {...fadeUp(i)}
+                                    className="group p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-gold-500/30 transition-all hover:shadow-[0_0_30px_rgba(212,175,55,0.05)]"
+                                >
+                                    <div className="w-12 h-12 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center mb-4 group-hover:bg-gold-500/25 transition-colors">
+                                        <Icon className="w-6 h-6 text-gold-300" strokeWidth={1.75} />
+                                    </div>
+                                    <h3 className="font-bold text-white text-lg mb-2">{f.title}</h3>
+                                    <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </div>
             </section>
@@ -193,12 +300,12 @@ export const LandingPage = () => {
             <section className="py-16 px-6">
                 <div className="max-w-4xl mx-auto">
                     <motion.div {...fadeUp(0)} className="text-center mb-16">
-                        <h2 className="text-4xl font-black mb-4">Počni za 3 koraka</h2>
-                        <p className="text-slate-400 text-lg">Postavljanje traje manje od 5 minuta.</p>
+                        <h2 className="text-4xl font-black mb-4">{t.stepsH2}</h2>
+                        <p className="text-slate-400 text-lg">{t.stepsP}</p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {steps.map((s, i) => (
+                        {t.steps.map((s, i) => (
                             <motion.div key={s.num} {...fadeUp(i)} className="text-center">
                                 <div className="text-6xl font-black text-gold-500/20 mb-4">{s.num}</div>
                                 <h3 className="text-xl font-bold text-white mb-2">{s.title}</h3>
@@ -213,13 +320,13 @@ export const LandingPage = () => {
             <section className="py-16 px-6 bg-slate-900/50">
                 <div className="max-w-6xl mx-auto">
                     <motion.div {...fadeUp(0)} className="text-center mb-16">
-                        <h2 className="text-4xl font-black mb-4">Artisti koji koriste Tattoo CRM</h2>
+                        <h2 className="text-4xl font-black mb-4">{t.testimonialsH2}</h2>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {testimonials.map((t, i) => (
+                        {t.testimonials.map((testimonial, i) => (
                             <motion.div
-                                key={t.name}
+                                key={testimonial.name}
                                 {...fadeUp(i)}
                                 className="p-6 rounded-2xl bg-slate-900 border border-slate-800"
                             >
@@ -228,10 +335,10 @@ export const LandingPage = () => {
                                         <Star key={j} className="w-4 h-4 fill-gold-500 text-gold-500" />
                                     ))}
                                 </div>
-                                <p className="text-slate-300 text-sm leading-relaxed mb-4">"{t.text}"</p>
+                                <p className="text-slate-300 text-sm leading-relaxed mb-4">"{testimonial.text}"</p>
                                 <div>
-                                    <p className="font-semibold text-white text-sm">{t.name}</p>
-                                    <p className="text-slate-500 text-xs">{t.role}</p>
+                                    <p className="font-semibold text-white text-sm">{testimonial.name}</p>
+                                    <p className="text-slate-500 text-xs">{testimonial.role}</p>
                                 </div>
                             </motion.div>
                         ))}
@@ -243,21 +350,12 @@ export const LandingPage = () => {
             <section className="py-16 px-6">
                 <div className="max-w-4xl mx-auto">
                     <motion.div {...fadeUp(0)} className="text-center mb-16">
-                        <h2 className="text-4xl font-black mb-4">Jednostavne cijene</h2>
-                        <p className="text-slate-400 text-lg">30 dana besplatno. Bez kartice.</p>
+                        <h2 className="text-4xl font-black mb-4">{t.pricingH2}</h2>
+                        <p className="text-slate-400 text-lg">{t.pricingP}</p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                        {[
-                            {
-                                label: 'Mjesečno', price: '€22', sub: '/mjesec', badge: undefined,
-                                features: ['Neograničeni klijenti', 'Automatski podsjetnici', 'Digitalni pristanak', 'Booking link', 'Galerija radova', 'CSV izvoz'],
-                            },
-                            {
-                                label: 'Godišnje', price: '€18', sub: '/mjesec · €220/god', badge: 'Uštedi 2 mj.',
-                                features: ['Neograničeni klijenti', 'Automatski podsjetnici', 'Digitalni pristanak', 'Booking link', 'Galerija radova', 'CSV izvoz', '2 besplatna mjeseca', 'Prioritetna podrška'],
-                            },
-                        ].map((plan, i) => (
+                        {t.plans.map((plan, i) => (
                             <motion.div
                                 key={plan.label}
                                 {...fadeUp(i)}
@@ -285,7 +383,7 @@ export const LandingPage = () => {
                                     to="/register"
                                     className={`block text-center py-3 rounded-xl font-semibold transition-all ${i === 1 ? 'bg-gold-500 hover:bg-gold-400 text-slate-900' : 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700'}`}
                                 >
-                                    Počni besplatno
+                                    {t.planCta}
                                 </Link>
                             </motion.div>
                         ))}
@@ -300,18 +398,16 @@ export const LandingPage = () => {
                 </div>
                 <motion.div {...fadeUp(0)} className="relative max-w-2xl mx-auto text-center">
                     <Shield className="w-12 h-12 text-gold-500/50 mx-auto mb-6" />
-                    <h2 className="text-4xl md:text-5xl font-black mb-6">Spreman za promjenu?</h2>
-                    <p className="text-slate-400 text-lg mb-10">
-                        Pridruži se tattoo artistima koji su zamijenili WhatsApp i Excel s pravim alatom.
-                    </p>
+                    <h2 className="text-4xl md:text-5xl font-black mb-6">{t.ctaH2}</h2>
+                    <p className="text-slate-400 text-lg mb-10">{t.ctaP}</p>
                     <Link
                         to="/register"
                         className="inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-gold-500 hover:bg-gold-400 text-slate-900 font-bold text-xl transition-all shadow-[0_0_40px_rgba(212,175,55,0.3)] hover:shadow-[0_0_50px_rgba(212,175,55,0.5)]"
                     >
-                        Počni besplatno — 30 dana
+                        {t.ctaBtn}
                         <ArrowRight className="w-6 h-6" />
                     </Link>
-                    <p className="mt-4 text-slate-500 text-sm">Bez kartice · Otkaži kad hoćeš</p>
+                    <p className="mt-4 text-slate-500 text-sm">{t.ctaFine}</p>
                 </motion.div>
             </section>
 
@@ -321,10 +417,10 @@ export const LandingPage = () => {
                     <span className="text-lg font-black text-transparent bg-clip-text bg-linear-to-r from-gold-500 to-yellow-500 tracking-wider">
                         Tattoo <span className="text-white">CRM</span>
                     </span>
-                    <p className="text-slate-500 text-sm">© {new Date().getFullYear()} Tattoo CRM. Sva prava pridržana.</p>
+                    <p className="text-slate-500 text-sm">© {new Date().getFullYear()} Tattoo CRM. {t.footerRights}</p>
                     <div className="flex items-center gap-6 text-sm text-slate-400">
-                        <Link to="/login" className="hover:text-white transition-colors">Prijava</Link>
-                        <Link to="/register" className="hover:text-white transition-colors">Registracija</Link>
+                        <Link to="/login" className="hover:text-white transition-colors">{t.footerLogin}</Link>
+                        <Link to="/register" className="hover:text-white transition-colors">{t.footerRegister}</Link>
                     </div>
                 </div>
             </footer>
