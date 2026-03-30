@@ -23,6 +23,7 @@ model User {
   stripeSubscriptionId String?            @unique
   subscriptionStatus   SubscriptionStatus @default(TRIAL)
   currentPeriodEnd     DateTime?
+  plan                 String?
   googleRefreshToken    String?
   googleCalendarId      String?
   googleConnectedAt     DateTime?

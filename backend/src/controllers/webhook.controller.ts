@@ -81,6 +81,11 @@ const handleCheckoutCompleted = async (session: Stripe.Checkout.Session): Promis
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     const currentPeriodEnd = getSubscriptionPeriodEnd(subscription);
 
+    const priceId = subscription.items.data[0]?.price.id;
+    const plan = priceId === env.STRIPE_MONTHLY_PRICE_ID ? 'monthly'
+        : priceId === env.STRIPE_YEARLY_PRICE_ID ? 'yearly'
+        : null;
+
     await prisma.user.update({
         where: { id: userId },
         data: {
@@ -88,6 +93,7 @@ const handleCheckoutCompleted = async (session: Stripe.Checkout.Session): Promis
             stripeSubscriptionId: subscriptionId,
             subscriptionStatus: 'ACTIVE',
             currentPeriodEnd,
+            ...(plan !== null && { plan }),
         },
         select: { id: true },
     });

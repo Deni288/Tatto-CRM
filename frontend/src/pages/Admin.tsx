@@ -1,36 +1,37 @@
 import { useState, useEffect } from 'react';
-import { ShieldCheck, ToggleLeft, ToggleRight, Loader2 } from 'lucide-react';
+import { ShieldCheck, Loader2 } from 'lucide-react';
 import { api } from '../api/axiosInstance';
 import { gooeyToast } from 'goey-toast';
-
-interface Artist {
-    id: string;
-    name: string;
-    email: string;
-    isActive: boolean;
-    createdAt: string;
-}
+import { AdminStatsOverview } from '../components/admin/AdminStatsOverview';
+import { TrialTracker } from '../components/admin/TrialTracker';
+import { ArtistManagementTable } from '../components/admin/ArtistManagementTable';
+import type { AdminArtist, AdminStats } from '../types/admin.types';
 
 export const Admin = () => {
-    const [artists, setArtists] = useState<Artist[]>([]);
+    const [artists, setArtists] = useState<AdminArtist[]>([]);
+    const [stats, setStats] = useState<AdminStats | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [togglingId, setTogglingId] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchArtists = async (): Promise<void> => {
+        const fetchData = async (): Promise<void> => {
             try {
-                const res = await api.get<{ data: Artist[] }>('/admin/artists');
-                setArtists(res.data.data);
+                const [artistsRes, statsRes] = await Promise.all([
+                    api.get<{ data: AdminArtist[] }>('/admin/artists'),
+                    api.get<{ data: AdminStats }>('/admin/stats'),
+                ]);
+                setArtists(artistsRes.data.data);
+                setStats(statsRes.data.data);
             } catch {
-                gooeyToast.error('Failed to load artists');
+                gooeyToast.error('Failed to load admin data');
             } finally {
                 setIsLoading(false);
             }
         };
-        void fetchArtists();
+        void fetchData();
     }, []);
 
-    const handleToggle = async (artist: Artist): Promise<void> => {
+    const handleToggle = async (artist: AdminArtist): Promise<void> => {
         setTogglingId(artist.id);
         const prev = artists;
         setArtists((curr) =>
@@ -56,68 +57,48 @@ export const Admin = () => {
     }
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-8">
             <div className="flex items-center gap-3">
                 <ShieldCheck className="text-gold-500 h-6 w-6" />
                 <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
                 <span className="text-slate-400 text-sm ml-2">{artists.length} artists</span>
             </div>
 
-            <div className="rounded-xl border border-slate-800 overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead className="bg-slate-800/60">
-                        <tr>
-                            <th className="text-left px-4 py-3 text-slate-400 font-medium">Artist</th>
-                            <th className="text-left px-4 py-3 text-slate-400 font-medium">Email</th>
-                            <th className="text-left px-4 py-3 text-slate-400 font-medium">Joined</th>
-                            <th className="text-left px-4 py-3 text-slate-400 font-medium">Status</th>
-                            <th className="text-right px-4 py-3 text-slate-400 font-medium">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800">
-                        {artists.map((artist) => (
-                            <tr key={artist.id} className="bg-slate-900/40 hover:bg-slate-800/40 transition-colors">
-                                <td className="px-4 py-3 text-white font-medium">{artist.name}</td>
-                                <td className="px-4 py-3 text-slate-300">{artist.email}</td>
-                                <td className="px-4 py-3 text-slate-400">
-                                    {new Date(artist.createdAt).toLocaleDateString()}
-                                </td>
-                                <td className="px-4 py-3">
-                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                        artist.isActive
-                                            ? 'bg-emerald-500/20 text-emerald-400'
-                                            : 'bg-red-500/20 text-red-400'
-                                    }`}>
-                                        {artist.isActive ? 'Active' : 'Inactive'}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-right">
-                                    <button
-                                        onClick={() => void handleToggle(artist)}
-                                        disabled={togglingId === artist.id}
-                                        className="inline-flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors disabled:opacity-50 cursor-pointer"
-                                    >
-                                        {togglingId === artist.id ? (
-                                            <Loader2 className="animate-spin h-4 w-4" />
-                                        ) : artist.isActive ? (
-                                            <ToggleRight className="h-5 w-5 text-emerald-400" />
-                                        ) : (
-                                            <ToggleLeft className="h-5 w-5 text-slate-500" />
-                                        )}
-                                        {artist.isActive ? 'Deactivate' : 'Activate'}
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        {artists.length === 0 && (
-                            <tr>
-                                <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
-                                    No artists registered yet.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+            {stats && (
+                <>
+                    <AdminStatsOverview overview={stats.overview} mrr={stats.mrr} />
+                    <TrialTracker trial={stats.trial} />
+
+                    {stats.churnRisk.length > 0 && (
+                        <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-4">
+                            <p className="text-sm font-semibold text-red-400 mb-3">
+                                Churn Risk — Past Due ({stats.churnRisk.length})
+                            </p>
+                            <ul className="space-y-2">
+                                {stats.churnRisk.map((u) => (
+                                    <li key={u.id} className="flex items-center justify-between text-sm">
+                                        <span className="text-white">{u.name}</span>
+                                        <span className="text-slate-400">{u.email}</span>
+                                        <span className="text-red-400 text-xs">
+                                            Period ended {u.currentPeriodEnd
+                                                ? new Date(u.currentPeriodEnd).toLocaleDateString()
+                                                : '—'}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </>
+            )}
+
+            <div>
+                <h2 className="text-lg font-semibold text-white mb-4">All Artists</h2>
+                <ArtistManagementTable
+                    artists={artists}
+                    togglingId={togglingId}
+                    onToggle={handleToggle}
+                />
             </div>
         </div>
     );
