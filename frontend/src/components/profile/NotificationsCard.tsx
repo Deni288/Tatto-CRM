@@ -7,8 +7,8 @@ export const NotificationsCard = () => {
     if (!isSupported) {
         return (
             <div className="bg-slate-900/50 rounded-xl border border-slate-800 p-6">
-                <h2 className="text-sm font-semibold text-white mb-1">Push notifikacije</h2>
-                <p className="text-sm text-slate-400">Tvoj browser ne podržava push notifikacije.</p>
+                <h2 className="text-sm font-semibold text-white mb-1">Push notifications</h2>
+                <p className="text-sm text-slate-400">Your browser does not support push notifications.</p>
             </div>
         );
     }
@@ -17,15 +17,15 @@ export const NotificationsCard = () => {
         <div className="bg-slate-900/50 rounded-xl border border-slate-800 p-6">
             <div className="flex items-start justify-between">
                 <div>
-                    <h2 className="text-sm font-semibold text-white mb-1">Push notifikacije</h2>
+                    <h2 className="text-sm font-semibold text-white mb-1">Push notifications</h2>
                     <p className="text-sm text-slate-400">
                         {isSubscribed
-                            ? 'Dobit ćeš obavijest kad stigne novi booking request.'
-                            : 'Omogući obavijesti za nove booking requeste.'}
+                            ? 'You will be notified when a new booking request arrives.'
+                            : 'Enable notifications for new booking requests.'}
                     </p>
                     {permission === 'denied' && (
                         <p className="text-xs text-red-400 mt-2">
-                            Notifikacije su blokirane u postavkama browsera. Omogući ih ručno i reload-aj stranicu.
+                            Notifications are blocked in browser settings. Enable them manually and reload the page.
                         </p>
                     )}
                 </div>
@@ -49,7 +49,7 @@ export const NotificationsCard = () => {
                     }`}
                 >
                     {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                    {isSubscribed ? 'Isključi notifikacije' : 'Uključi notifikacije'}
+                    {isSubscribed ? 'Disable notifications' : 'Enable notifications'}
                 </button>
             )}
         </div>

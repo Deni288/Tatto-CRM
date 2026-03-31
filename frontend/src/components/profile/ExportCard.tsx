@@ -26,11 +26,11 @@ export const ExportCard = () => {
     const handleExport = async (type: 'clients' | 'appointments'): Promise<void> => {
         setLoading(type);
         try {
-            const filename = `${type === 'clients' ? 'klijenti' : 'termini'}-${new Date().toISOString().slice(0, 10)}.csv`;
+            const filename = `${type}-${new Date().toISOString().slice(0, 10)}.csv`;
             await downloadCSV(`export/${type}`, filename, token);
         } catch {
             // gooeyToast not imported here to keep component small
-            alert('Export nije uspio. Pokušaj ponovo.');
+            alert('Export failed. Please try again.');
         } finally {
             setLoading(null);
         }
@@ -38,8 +38,8 @@ export const ExportCard = () => {
 
     return (
         <div className="bg-slate-900/50 rounded-xl border border-slate-800 p-6">
-            <h2 className="text-sm font-semibold text-white mb-1">Export podataka</h2>
-            <p className="text-sm text-slate-400 mb-4">Preuzmi sve klijente ili termine kao CSV datoteku.</p>
+            <h2 className="text-sm font-semibold text-white mb-1">Export data</h2>
+            <p className="text-sm text-slate-400 mb-4">Download all clients or appointments as a CSV file.</p>
             <div className="flex gap-3">
                 <button
                     onClick={() => void handleExport('clients')}
@@ -47,7 +47,7 @@ export const ExportCard = () => {
                     className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors disabled:opacity-50"
                 >
                     {loading === 'clients' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                    Klijenti
+                    Clients
                 </button>
                 <button
                     onClick={() => void handleExport('appointments')}
@@ -55,7 +55,7 @@ export const ExportCard = () => {
                     className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-black text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
                 >
                     {loading === 'appointments' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                    Termini
+                    Appointments
                 </button>
             </div>
         </div>

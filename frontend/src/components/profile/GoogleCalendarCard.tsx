@@ -19,10 +19,10 @@ export function GoogleCalendarCard(): ReactElement {
         const params = new URLSearchParams(window.location.search);
         const gcal = params.get('gcal');
         if (gcal === 'connected') {
-            gooeyToast.success('Google Calendar povezan!');
+            gooeyToast.success('Google Calendar connected!');
             window.history.replaceState({}, '', window.location.pathname);
         } else if (gcal === 'error') {
-            gooeyToast.error('Greška pri povezivanju Google Calendara');
+            gooeyToast.error('Failed to connect Google Calendar');
             window.history.replaceState({}, '', window.location.pathname);
         }
     }, []);
@@ -39,7 +39,7 @@ export function GoogleCalendarCard(): ReactElement {
             const res = await api.get<{ url: string }>('/google-calendar/connect');
             window.location.href = res.data.url;
         } catch {
-            gooeyToast.error('Greška pri pokretanju povezivanja');
+            gooeyToast.error('Failed to initiate connection');
         }
     };
 
@@ -48,9 +48,9 @@ export function GoogleCalendarCard(): ReactElement {
         try {
             await api.delete('/google-calendar/disconnect');
             setStatus({ connected: false, calendarId: null, connectedAt: null });
-            gooeyToast.success('Google Calendar odpojen');
+            gooeyToast.success('Google Calendar disconnected');
         } catch {
-            gooeyToast.error('Greška pri odpajanju');
+            gooeyToast.error('Failed to disconnect');
         } finally {
             setIsDisconnecting(false);
         }
@@ -66,21 +66,21 @@ export function GoogleCalendarCard(): ReactElement {
             {isLoading ? (
                 <div className="flex items-center gap-2 text-slate-400">
                     <Loader2 size={16} className="animate-spin" />
-                    <span className="text-sm">Učitavanje...</span>
+                    <span className="text-sm">Loading...</span>
                 </div>
             ) : status?.connected ? (
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                        <span className="text-sm text-slate-300">Povezano</span>
+                        <span className="text-sm text-slate-300">Connected</span>
                         {status.connectedAt && (
                             <span className="text-xs text-slate-500">
-                                od {new Date(status.connectedAt).toLocaleDateString('hr-HR')}
+                                since {new Date(status.connectedAt).toLocaleDateString('en-GB')}
                             </span>
                         )}
                     </div>
                     <p className="text-xs text-slate-400">
-                        Novi termini se automatski sinkroniziraju u tvoj Google Calendar.
+                        New appointments are automatically synced to your Google Calendar.
                     </p>
                     <button
                         onClick={() => { void handleDisconnect(); }}
@@ -88,20 +88,20 @@ export function GoogleCalendarCard(): ReactElement {
                         className="flex items-center gap-2 px-4 py-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-colors disabled:opacity-50"
                     >
                         {isDisconnecting ? <Loader2 size={14} className="animate-spin" /> : <Unplug size={14} />}
-                        Odpoji kalendar
+                        Disconnect calendar
                     </button>
                 </div>
             ) : (
                 <div className="space-y-3">
                     <p className="text-sm text-slate-400">
-                        Poveži Google Calendar da se termini automatski pojave u tvom kalendaru.
+                        Connect Google Calendar to automatically sync your appointments.
                     </p>
                     <button
                         onClick={() => { void handleConnect(); }}
                         className="flex items-center gap-2 px-5 py-2.5 bg-gold-500 hover:bg-gold-400 text-slate-900 font-semibold rounded-xl transition-all duration-200"
                     >
                         <Calendar size={16} />
-                        Poveži Google Calendar
+                        Connect Google Calendar
                     </button>
                 </div>
             )}

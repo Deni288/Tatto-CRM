@@ -57,9 +57,9 @@ export const NewBookingModal = ({ open, onOpenChange }: NewBookingModalProps) =>
 
     const handleWhatsApp = (data: SuccessData) => {
         const phone = data.clientPhone?.replace(/[^0-9]/g, '') ?? '';
-        const date = new Date(data.startTime).toLocaleDateString('hr-HR', { weekday: 'long', day: 'numeric', month: 'long' });
-        const time = new Date(data.startTime).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' });
-        const message = encodeURIComponent(`Bok ${data.clientName}! ✅ Tvoj termin je potvrđen.\n\n📅 ${date} u ${time}\n💉 ${data.title}\n\nVidimo se!`);
+        const date = new Date(data.startTime).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+        const time = new Date(data.startTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        const message = encodeURIComponent(`Hi ${data.clientName}! ✅ Your appointment is confirmed.\n\n📅 ${date} at ${time}\n💉 ${data.title}\n\nSee you then!`);
         window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     };
 

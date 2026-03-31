@@ -196,15 +196,15 @@ export const Profile = () => {
             <Card className="p-6 bg-slate-900/50 border border-slate-800">
                 <div className="flex items-center gap-2 mb-2">
                     <MessageCircle size={18} className="text-gold-500" />
-                    <h2 className="text-base font-semibold text-white">Aftercare upute</h2>
+                    <h2 className="text-base font-semibold text-white">Aftercare instructions</h2>
                 </div>
-                <p className="text-sm text-slate-400 mb-4">Tekst koji se šalje klijentu putem WhatsAppa nakon tetoviranja.</p>
+                <p className="text-sm text-slate-400 mb-4">Text sent to the client via WhatsApp after the tattoo session.</p>
                 <div className="space-y-3">
                     <textarea
                         rows={6}
                         value={aftercareText}
                         onChange={(e) => setAftercareText(e.target.value)}
-                        placeholder="Npr: Hvala na povjerenju! Evo uputa za njegu tetovaže&#10;1. Foliju drži 3 sata&#10;2. Peri blagim sapunom&#10;..."
+                        placeholder="e.g. Thank you for your trust! Here are your aftercare instructions&#10;1. Keep the wrap on for 3 hours&#10;2. Wash gently with mild soap&#10;..."
                         className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-gold-500/50 resize-none transition-colors"
                     />
                     <button
@@ -213,7 +213,7 @@ export const Profile = () => {
                         className="px-5 py-2.5 bg-gold-500 hover:bg-gold-400 text-slate-900 font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
                         {isSavingAftercare && <Loader2 size={16} className="animate-spin" />}
-                        Spremi aftercare
+                        Save aftercare
                     </button>
                 </div>
             </Card>
