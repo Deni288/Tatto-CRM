@@ -51,7 +51,7 @@ export const BookingRequests = () => {
 
     const handleWhatsApp = (request: { name: string; phone: string }) => {
         const message = encodeURIComponent(
-            `Bok ${request.name}, ovdje studio! Vidio sam tvoj upit za tetovažu, ideja je super. Idemo dogovoriti termin!`
+            `Hi ${request.name}, I saw your tattoo inquiry and love the idea! Let's set up a consultation.`
         );
         window.open(`https://wa.me/${request.phone}?text=${message}`, '_blank');
     };

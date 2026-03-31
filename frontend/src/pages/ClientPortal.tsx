@@ -30,10 +30,10 @@ interface PortalData {
 }
 
 const statusConfig = {
-    SCHEDULED: { label: 'Zakazan', icon: Clock, color: 'text-blue-600 bg-blue-50' },
-    COMPLETED: { label: 'Završen', icon: CheckCircle, color: 'text-green-600 bg-green-50' },
-    CANCELLED: { label: 'Otkazan', icon: XCircle, color: 'text-red-600 bg-red-50' },
-    NO_SHOW: { label: 'Nije došao', icon: AlertCircle, color: 'text-gray-600 bg-gray-100' },
+    SCHEDULED: { label: 'Scheduled', icon: Clock, color: 'text-blue-600 bg-blue-50' },
+    COMPLETED: { label: 'Completed', icon: CheckCircle, color: 'text-green-600 bg-green-50' },
+    CANCELLED: { label: 'Cancelled', icon: XCircle, color: 'text-red-600 bg-red-50' },
+    NO_SHOW: { label: 'No show', icon: AlertCircle, color: 'text-gray-600 bg-gray-100' },
 };
 
 export const ClientPortal = () => {
@@ -69,8 +69,8 @@ export const ClientPortal = () => {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900">Portal nije pronađen</h1>
-                    <p className="text-gray-500 mt-2">Link je nevažeći ili je istekao.</p>
+                    <h1 className="text-2xl font-bold text-gray-900">Portal not found</h1>
+                    <p className="text-gray-500 mt-2">The link is invalid or has expired.</p>
                 </div>
             </div>
         );
@@ -81,7 +81,7 @@ export const ClientPortal = () => {
             {/* Header */}
             <div className="bg-white border-b border-gray-200">
                 <div className="max-w-3xl mx-auto px-4 py-6">
-                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Klijentski portal</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Client portal</p>
                     <h1 className="text-2xl font-bold text-gray-900">{data.firstName} {data.lastName}</h1>
                 </div>
             </div>
@@ -91,12 +91,12 @@ export const ClientPortal = () => {
                 <section>
                     <div className="flex items-center gap-2 mb-4">
                         <Calendar className="w-5 h-5 text-gray-500" />
-                        <h2 className="text-lg font-semibold text-gray-900">Termini</h2>
+                        <h2 className="text-lg font-semibold text-gray-900">Appointments</h2>
                         <span className="text-sm text-gray-400">({data.appointments.length})</span>
                     </div>
 
                     {data.appointments.length === 0 ? (
-                        <p className="text-sm text-gray-500 bg-white border border-gray-200 rounded-xl p-6">Nema termina.</p>
+                        <p className="text-sm text-gray-500 bg-white border border-gray-200 rounded-xl p-6">No appointments yet.</p>
                     ) : (
                         <div className="space-y-3">
                             {data.appointments.map((appt) => {
@@ -111,7 +111,7 @@ export const ClientPortal = () => {
                                                     <p className="text-sm text-gray-500 mt-0.5">{appt.description}</p>
                                                 )}
                                                 <p className="text-xs text-gray-400 mt-2">
-                                                    {new Date(appt.startTime).toLocaleDateString('hr-HR', {
+                                                    {new Date(appt.startTime).toLocaleDateString('en-GB', {
                                                         day: 'numeric', month: 'long', year: 'numeric',
                                                         hour: '2-digit', minute: '2-digit',
                                                     })}
@@ -124,9 +124,9 @@ export const ClientPortal = () => {
                                         </div>
                                         {appt.price !== null && (
                                             <div className="mt-3 pt-3 border-t border-gray-100 flex gap-4 text-xs text-gray-500">
-                                                <span>Cijena: <strong className="text-gray-800">€{Number(appt.price).toFixed(0)}</strong></span>
+                                                <span>Price: <strong className="text-gray-800">€{Number(appt.price).toFixed(0)}</strong></span>
                                                 {appt.depositAmount !== null && (
-                                                    <span>Depozit: <strong className="text-gray-800">€{Number(appt.depositAmount).toFixed(0)}</strong> {appt.depositPaid ? '✓' : '(nije plaćen)'}</span>
+                                                    <span>Deposit: <strong className="text-gray-800">€{Number(appt.depositAmount).toFixed(0)}</strong> {appt.depositPaid ? '✓' : '(not paid)'}</span>
                                                 )}
                                             </div>
                                         )}
@@ -142,7 +142,7 @@ export const ClientPortal = () => {
                     <section>
                         <div className="flex items-center gap-2 mb-4">
                             <Image className="w-5 h-5 text-gray-500" />
-                            <h2 className="text-lg font-semibold text-gray-900">Galerija radova</h2>
+                            <h2 className="text-lg font-semibold text-gray-900">Work gallery</h2>
                             <span className="text-sm text-gray-400">({data.gallery.length})</span>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

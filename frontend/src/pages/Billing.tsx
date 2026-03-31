@@ -21,7 +21,7 @@ export const Billing = () => {
 
     useEffect(() => {
         if (searchParams.get('success') === 'true') {
-            gooeyToast.success('Pretplata aktivirana! Hvala ti.');
+            gooeyToast.success('Subscription activated! Thank you.');
             void fetchStatus();
         }
     }, [searchParams, fetchStatus]);
@@ -61,13 +61,13 @@ export const Billing = () => {
         <div className="max-w-4xl mx-auto p-6 space-y-8">
             <div>
                 <h1 className="text-2xl font-bold text-white">Billing</h1>
-                <p className="text-slate-400 mt-1">Upravljaj svojom pretplatom</p>
+                <p className="text-slate-400 mt-1">Manage your subscription</p>
             </div>
 
             {/* Trenutni status */}
             {status && (
                 <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
-                    <h2 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">Trenutni plan</h2>
+                    <h2 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">Current plan</h2>
                     <StatusBadge status={status.subscriptionStatus} trialEndsAt={status.trialEndsAt} currentPeriodEnd={status.currentPeriodEnd} />
 
                     {status.hasCustomer && (
@@ -77,7 +77,7 @@ export const Billing = () => {
                             className="mt-4 flex items-center gap-2 text-sm text-slate-400 hover:text-white underline"
                         >
                             {portalLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                            Upravljaj pretplatom (Stripe Portal)
+                            Manage subscription (Stripe Portal)
                         </button>
                     )}
                 </div>
@@ -87,18 +87,18 @@ export const Billing = () => {
             {status?.subscriptionStatus !== 'ACTIVE' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <PricingCard
-                        title="Mjesečno"
+                        title="Monthly"
                         price={MONTHLY_PRICE}
-                        period="/ mj"
+                        period="/ mo"
                         note={null}
                         loading={checkoutLoading === 'monthly'}
                         onSelect={() => void handleCheckout('monthly')}
                     />
                     <PricingCard
-                        title="Godišnje"
+                        title="Yearly"
                         price={YEARLY_MONTHLY_EQUIVALENT}
-                        period="/ mj"
-                        note={`€${YEARLY_PRICE} naplaćeno godišnje · Uštedi 2 mjeseca`}
+                        period="/ mo"
+                        note={`€${YEARLY_PRICE} billed yearly · Save 2 months`}
                         loading={checkoutLoading === 'yearly'}
                         onSelect={() => void handleCheckout('yearly')}
                         highlighted
@@ -110,12 +110,12 @@ export const Billing = () => {
 };
 
 const features = [
-    'Neograničeni klijenti',
-    'Kalendar termina',
-    'Booking linkovi',
-    'Galerija radova',
-    'Consent forme',
-    'Email notifikacije',
+    'Unlimited clients',
+    'Appointment calendar',
+    'Booking links',
+    'Work gallery',
+    'Consent forms',
+    'Email notifications',
 ];
 
 interface PricingCardProps {
@@ -131,7 +131,7 @@ interface PricingCardProps {
 const PricingCard = ({ title, price, period, note, loading, onSelect, highlighted = false }: PricingCardProps) => (
     <div className={`rounded-xl border-2 p-6 flex flex-col gap-6 bg-slate-900/50 ${highlighted ? 'border-gold-500' : 'border-slate-700'}`}>
         {highlighted && (
-            <span className="text-xs font-bold uppercase tracking-widest text-gold-500">Preporučeno</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-gold-500">Recommended</span>
         )}
         <div>
             <h3 className="text-lg font-semibold text-white">{title}</h3>
@@ -161,7 +161,7 @@ const PricingCard = ({ title, price, period, note, loading, onSelect, highlighte
             }`}
         >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Odaberi plan
+            Select plan
         </button>
     </div>
 );
@@ -175,10 +175,10 @@ interface StatusBadgeProps {
 const StatusBadge = ({ status, trialEndsAt, currentPeriodEnd }: StatusBadgeProps) => {
     const labels: Record<string, { label: string; color: string }> = {
         TRIAL: { label: 'Trial', color: 'bg-blue-900/40 text-blue-400' },
-        ACTIVE: { label: 'Aktivno', color: 'bg-green-900/40 text-green-400' },
-        PAST_DUE: { label: 'Plaćanje nije prošlo', color: 'bg-red-900/40 text-red-400' },
-        CANCELLED: { label: 'Otkazano', color: 'bg-slate-800 text-slate-400' },
-        EXPIRED: { label: 'Isteklo', color: 'bg-red-900/40 text-red-400' },
+        ACTIVE: { label: 'Active', color: 'bg-green-900/40 text-green-400' },
+        PAST_DUE: { label: 'Payment failed', color: 'bg-red-900/40 text-red-400' },
+        CANCELLED: { label: 'Cancelled', color: 'bg-slate-800 text-slate-400' },
+        EXPIRED: { label: 'Expired', color: 'bg-red-900/40 text-red-400' },
     };
 
     const { label, color } = labels[status] ?? { label: status, color: 'bg-slate-800 text-slate-400' };
@@ -189,8 +189,8 @@ const StatusBadge = ({ status, trialEndsAt, currentPeriodEnd }: StatusBadgeProps
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${color}`}>{label}</span>
             {dateStr && (
                 <span className="text-sm text-slate-400">
-                    {status === 'TRIAL' ? 'Ističe' : 'Sljedeća naplata'}:{' '}
-                    {new Date(dateStr).toLocaleDateString('hr-HR')}
+                    {status === 'TRIAL' ? 'Expires' : 'Next billing'}:{' '}
+                    {new Date(dateStr).toLocaleDateString('en-GB')}
                 </span>
             )}
         </div>

@@ -113,7 +113,7 @@ export const ClientDetails = () => {
                                         <button
                                             onClick={() => {
                                                 const cleanPhone = client.phone!.replace(/[^0-9]/g, '');
-                                                const text = aftercareText || 'Hvala na povjerenju! Evo uputa za njegu tetovaže: 1. Foliju drži 3 sata... 2. Peri blagim sapunom...';
+                                                const text = aftercareText ?? '';
                                                 window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
                                             }}
                                             className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-colors"
@@ -142,7 +142,7 @@ export const ClientDetails = () => {
                                 }}
                             >
                                 {portalLinkCopied ? <Check size={18} className="mr-2 text-emerald-400" /> : <Link size={18} className="mr-2" />}
-                                {portalLinkCopied ? 'Kopirano!' : 'Portal Link'}
+                                {portalLinkCopied ? 'Copied!' : 'Portal Link'}
                             </Button>
                         )}
                         <Button variant="secondary" onClick={() => setIsEditModalOpen(true)} className="flex-1 md:flex-none flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white border-slate-700">
